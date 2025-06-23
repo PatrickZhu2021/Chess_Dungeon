@@ -4770,6 +4770,7 @@ GameObject:
   - component: {fileID: 981396161}
   - component: {fileID: 981396164}
   - component: {fileID: 981396163}
+  - component: {fileID: 981396165}
   - component: {fileID: 981396162}
   m_Layer: 5
   m_Name: KillButton
@@ -4796,7 +4797,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 881.85974, y: 337.60004}
+  m_AnchoredPosition: {x: 881.85974, y: 375}
   m_SizeDelta: {x: 206.28, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &981396162
@@ -4897,6 +4898,21 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!114 &981396165
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 981396160}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 863ed05b5b8f520408fa5743a8e8dcdf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  banner: {fileID: 1399188170}
+  stretchAmount: 50
+  animationSpeed: 5
 --- !u!1 &1007194075
 GameObject:
   m_ObjectHideFlags: 0
@@ -5451,6 +5467,7 @@ GameObject:
   - component: {fileID: 1150269653}
   - component: {fileID: 1150269656}
   - component: {fileID: 1150269655}
+  - component: {fileID: 1150269657}
   - component: {fileID: 1150269654}
   m_Layer: 5
   m_Name: ExitButton
@@ -5578,6 +5595,21 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!114 &1150269657
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1150269652}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 863ed05b5b8f520408fa5743a8e8dcdf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  banner: {fileID: 1591323898}
+  stretchAmount: 50
+  animationSpeed: 5
 --- !u!1 &1172797929
 GameObject:
   m_ObjectHideFlags: 0
@@ -7011,6 +7043,7 @@ GameObject:
   - component: {fileID: 1324913497}
   - component: {fileID: 1324913496}
   - component: {fileID: 1324913495}
+  - component: {fileID: 1324913498}
   m_Layer: 5
   m_Name: EndTurnButton
   m_TagString: Untagged
@@ -7035,7 +7068,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 876, y: -447}
+  m_AnchoredPosition: {x: 865, y: -470}
   m_SizeDelta: {x: 400, y: 400}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1324913495
@@ -7102,7 +7135,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 6165896455806160158, guid: e0969b130c66f2d4c81f23a39a881541, type: 3}
+  m_Sprite: {fileID: 689105556676326465, guid: a99210e65d506664bbdc781a21ee6998, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -7120,6 +7153,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1324913493}
   m_CullTransparentMesh: 1
+--- !u!114 &1324913498
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1324913493}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fc1fe4c2e85f6a64e96096dfdb2c5e0e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1327613694
 GameObject:
   m_ObjectHideFlags: 0
