@@ -32,7 +32,7 @@ public class EndTurnButtonRotation : MonoBehaviour
     {
         if (isRotated)
         {
-            StartCoroutine(RotateButton(-180f));
+            StartCoroutine(RotateButton(180f));
             isRotated = false;
         }
     }
