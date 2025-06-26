@@ -62,12 +62,12 @@ public class Oil : Card
 
     public override GameObject GetPrefab()
     {
-        return Resources.Load<GameObject>("Prefabs/Card/Attack/oil");
+        return Resources.Load<GameObject>("Prefabs/Card/Attack/oil_card");
     }
 
     public override Sprite GetSprite()
     {
-        return Resources.Load<Sprite>("Sprites/Card/Attack/oil");
+        return Resources.Load<Sprite>("Sprites/Card/Attack/oil_card");
     }
 
     public override string GetDescription()
