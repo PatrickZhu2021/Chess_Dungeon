@@ -1,26 +1,15 @@
-﻿using UnityEngine;
-using System.Collections.Generic;
 using UnityEngine;
+using System.Collections.Generic;
 
-public class oil : CardButtonBase
+
+public class tidewyrm_oil_candle : CardButtonBase
 {
+    Vector2Int[] tidewyrm_oil_candleDirections = { Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right };
 
-
-    // 全方向二级
-    private static readonly Vector2Int[] oilDirections = new Vector2Int[]
-   {
-    new Vector2Int(-2, -2), new Vector2Int(-2, -1), new Vector2Int(-2, 0), new Vector2Int(-2, 1), new Vector2Int(-2, 2),
-    new Vector2Int(-1, -2), new Vector2Int(-1, -1), new Vector2Int(-1, 0), new Vector2Int(-1, 1), new Vector2Int(-1, 2),
-    new Vector2Int(0, -2),  new Vector2Int(0, -1),     /* center */        new Vector2Int(0, 1),  new Vector2Int(0, 2),
-    new Vector2Int(1, -2),  new Vector2Int(1, -1),  new Vector2Int(1, 0),  new Vector2Int(1, 1),  new Vector2Int(1, 2),
-    new Vector2Int(2, -2),  new Vector2Int(2, -1),  new Vector2Int(2, 0),  new Vector2Int(2, 1),  new Vector2Int(2, 2)
-   };
 
     public override void Initialize(Card card, DeckManager deckManager)
     {
         base.Initialize(card, deckManager);
-        card.isQuick = true;
-        card.isTemporary = true; // 不确定消耗与临时牌能否通用一个变量——表现形式还不明确
     }
 
     protected override void Start()
@@ -47,32 +36,32 @@ public class oil : CardButtonBase
             {
                 int damage = 0; //伤害为0
                 player.damage = damage;
-                player.ShowAttackOptions(oilDirections, card);
+                player.ShowAttackOptions(tidewyrm_oil_candleDirections, card);
             }
         }
     }
 }
 
-public class Oil : Card
+public class Tidewyrm_oil_candle : Card
 {
     // 构造函数中设置卡牌类型、编号和费用
-    public Oil() : base(CardType.Attack, "FA04", 1)
+    public Tidewyrm_oil_candle() : base(CardType.Attack, "FA03", 1)
     {
     }
 
     public override GameObject GetPrefab()
     {
-        return Resources.Load<GameObject>("Prefabs/Card/Attack/oil_card");
+        return Resources.Load<GameObject>("Prefabs/Card/Attack/tidewyrm_oil_candle_card");
     }
 
     public override Sprite GetSprite()
     {
-        return Resources.Load<Sprite>("Sprites/Card/Attack/oil_card");
+        return Resources.Load<Sprite>("Sprites/Card/Attack/tidewyrm_oil_candle_card");
     }
 
     public override string GetDescription()
     {
-        return "消耗，快速，仅在地形火域上时可以打出；以目标处为中心，所有十字相邻格创造地形燃点。";
+        return "在临近位置随机创造3处地形燃点";
     }
 
 
@@ -83,7 +72,6 @@ public class Oil : Card
         // 此处我们在攻击目标处铺设燃点
 
         Vector2Int pos = GetAttackTargetPosition();
-
         // 获取目标周围的4个相邻格子
         // 检测是否为合法地图位置，例如有越界或障碍物
         List<Vector2Int> adjacentPositions = new List<Vector2Int>();
@@ -104,12 +92,15 @@ public class Oil : Card
             adjacentPositions.Add(pos + Vector2Int.right);
         }
 
-        foreach (var position in adjacentPositions)
+        // 随机选择最多3个位置
+        int count = Mathf.Min(3, adjacentPositions.Count);
+        for (int i = 0; i < count; i++)
         {
-            PlaceFirePointAt(position);
+            int index = UnityEngine.Random.Range(0, adjacentPositions.Count);
+            Vector2Int chosenPos = adjacentPositions[index];
+            PlaceFirePointAt(chosenPos); //放燃点
+            adjacentPositions.RemoveAt(index); // 保证不重复
         }
-
-
     }
 
     /// <summary>
@@ -126,6 +117,8 @@ public class Oil : Card
         return player.position;
     }
 
+    // firePoint effect 是不是也放到 KeyWordEffects.cs 比较好
+
     private void PlaceFirePointAt(Vector2Int gridPosition)
     {
         Debug.Log("Placing FirePoint at grid position: " + gridPosition);
@@ -139,3 +132,4 @@ public class Oil : Card
         return position.x >= 0 && position.x < player.boardSize && position.y >= 0 && position.y < player.boardSize;
     }
 }
+
