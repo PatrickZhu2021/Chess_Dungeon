@@ -73,12 +73,22 @@ public class Flameberge : Card
         base.OnCardExecuted();
 
         int triggerTime=deckManager.hand.Count;
+
+        deckManager.StartCoroutine(DiscardAfterFrame(triggerTime)); // wait one frame before discarding
+
+}
+
+
+private System.Collections.IEnumerator DiscardAfterFrame(int triggerTime)
+{
+    yield return null;
         deckManager.DiscardHand();  // discard hands
         for (int i=0;i<triggerTime;i++)
         {
+            Debug.Log("trigger once");
             TriggerOnMonsterTurnStart();
         }
-    }
+}
     
     public void TriggerOnMonsterTurnStart()    // end turn trigger
     {
@@ -86,7 +96,8 @@ public class Flameberge : Card
         {
             if (zone != null)
             {
-                zone.OnEnemyTurnStart(); // current dicreases the remaining turn
+                zone.remainingEnemyTurns++; // don't affect the remaining turn
+                zone.OnEnemyTurnStart(); // currently won't dicreases the remaining turn
             }
         }
         //MoveMonsters();
