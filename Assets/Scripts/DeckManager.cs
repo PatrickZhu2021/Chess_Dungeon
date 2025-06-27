@@ -179,6 +179,8 @@ public class DeckManager : MonoBehaviour
         allCards.Add(new Book());
         allCards.Add(new Oil());
         allCards.Add(new Tidewyrm_oil_candle());
+        allCards.Add(new Flameberge());
+
         UpdateCardEditorPanel();
     }
 
