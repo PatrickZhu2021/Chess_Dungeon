@@ -70,25 +70,37 @@ public class Flameberge : Card
     
     public override void OnCardExecuted()
     {
-        base.OnCardExecuted();
+      base.OnCardExecuted();
 
-        int triggerTime=deckManager.hand.Count;
+      if (deckManager == null)
+           deckManager = UnityEngine.Object.FindObjectOfType<DeckManager>();
+    
+       if (deckManager == null) return;
 
-        deckManager.StartCoroutine(DiscardAfterFrame(triggerTime)); // wait one frame before discarding
-
-}
-
+       int triggerTime = deckManager.hand.Count;
+    
+          // Use Player or another persistent MonoBehaviour instead
+        Player player = UnityEngine.Object.FindObjectOfType<Player>();
+      if (player != null)
+          player.StartCoroutine(DiscardAfterFrame(triggerTime));
+    }
 
 private System.Collections.IEnumerator DiscardAfterFrame(int triggerTime)
 {
     yield return null;
-        deckManager.DiscardHand();  // discard hands
-        for (int i=0;i<triggerTime;i++)
+    
+    var currentDeckManager = UnityEngine.Object.FindObjectOfType<DeckManager>();
+    if (currentDeckManager != null)
+    {
+        currentDeckManager.DiscardHand();
+        for (int i = 0; i < triggerTime; i++)
         {
-            Debug.Log("trigger once");
             TriggerOnMonsterTurnStart();
         }
+    }
 }
+
+
     
     public void TriggerOnMonsterTurnStart()    // end turn trigger
     {
