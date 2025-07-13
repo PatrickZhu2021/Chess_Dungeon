@@ -213,4 +213,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8484783483be87a408c00ec284454f6f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  player: {fileID: 0}
+  monsterManager: {fileID: 0}
+  hoverScale: 2
+  animationSpeed: 8

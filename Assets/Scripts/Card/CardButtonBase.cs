@@ -3,7 +3,7 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using System.Collections.Generic;
 
-public abstract class CardButtonBase : MonoBehaviour, CardButton, IPointerClickHandler, IBeginDragHandler, IDragHandler, IEndDragHandler
+public abstract class CardButtonBase : MonoBehaviour, CardButton, IPointerClickHandler, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerEnterHandler, IPointerExitHandler
 {
     protected Card card;
     protected DeckManager deckManager;
@@ -23,6 +23,12 @@ public abstract class CardButtonBase : MonoBehaviour, CardButton, IPointerClickH
     private Image cardImage; 
     private RectTransform canvasRectTransform;
     private Transform upgradeEffectTransform;
+    
+    [Header("悬停放大设置")]
+    public float hoverScale = 2.0f;
+    public float animationSpeed = 8f;
+    private Vector3 originalScale;
+    private RectTransform rectTransform;
 
     protected virtual void Awake()
     {
@@ -30,6 +36,8 @@ public abstract class CardButtonBase : MonoBehaviour, CardButton, IPointerClickH
         buttonText = GetComponentInChildren<Text>();
         canvasRectTransform = GameObject.Find("Canvas").GetComponent<RectTransform>();
         cardImage = GetComponent<Image>();
+        rectTransform = GetComponent<RectTransform>();
+        originalScale = rectTransform.localScale;
     }
 
     protected virtual void Start()
@@ -254,6 +262,34 @@ public abstract class CardButtonBase : MonoBehaviour, CardButton, IPointerClickH
     public virtual void SetDraggable(bool draggable)
     {
         canDrag = draggable;
+    }
+
+    public void OnPointerEnter(PointerEventData eventData)
+    {
+        if (!isDragging)
+        {
+            StopAllCoroutines();
+            StartCoroutine(ScaleCard(originalScale * hoverScale));
+        }
+    }
+    
+    public void OnPointerExit(PointerEventData eventData)
+    {
+        if (!isDragging)
+        {
+            StopAllCoroutines();
+            StartCoroutine(ScaleCard(originalScale));
+        }
+    }
+    
+    private System.Collections.IEnumerator ScaleCard(Vector3 targetScale)
+    {
+        while (Vector3.Distance(rectTransform.localScale, targetScale) > 0.01f)
+        {
+            rectTransform.localScale = Vector3.Lerp(rectTransform.localScale, targetScale, Time.deltaTime * animationSpeed);
+            yield return null;
+        }
+        rectTransform.localScale = targetScale;
     }
 
     private static bool IsBlockedByMonster(Vector2Int position)

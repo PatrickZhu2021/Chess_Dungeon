@@ -73,7 +73,7 @@ public class SwordCard : Card
 
     public override void OnCardExecuted(Vector2Int attackPos)
     {
-        KeywordEffects.AttackWithKnockback(player, attackPos);
+        //KeywordEffects.AttackWithKnockback(player, attackPos);
         
     }
 

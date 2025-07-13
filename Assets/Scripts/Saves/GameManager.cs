@@ -106,7 +106,7 @@ public class GameManager : MonoBehaviour
         List<string> deckIds = new List<string>();
         foreach (Card card in playerDeck)
         {
-            if (card != null)
+            if (card != null && !card.isTemporary)
             {
                 Debug.Log($"SaveDeck 写入 Id = {card.Id}");
                 deckIds.Add(card.Id);

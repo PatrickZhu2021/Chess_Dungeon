@@ -9,6 +9,7 @@ public class TurnManager : MonoBehaviour
     public DeckManager deckManager; // 引用DeckManager
     public Button endTurnButton; // 引用EndTurn按钮
     public List<Button> allButtons; // 引用所有的按钮
+    private EndTurnButtonRotation endTurnRotation; // 引用旋转脚本
 
     public Text actionText;
 
@@ -42,6 +43,7 @@ public class TurnManager : MonoBehaviour
         if (endTurnButton != null)
         {
             endTurnButton.onClick.AddListener(AdvanceTurn);
+            endTurnRotation = endTurnButton.GetComponent<EndTurnButtonRotation>();
         }
 
         // 初始化所有按钮列表
@@ -113,6 +115,12 @@ public class TurnManager : MonoBehaviour
         monsterManager.isLevelCompleted = false; // 标记关卡完成
         EnableAllButtons(); // 启用所有按钮
         UpdateActionText();
+        
+        // 玩家回合开始时旋转按钮回来
+        if (endTurnRotation != null)
+        {
+            endTurnRotation.OnPlayerTurnStart();
+        }
 
         ResetCursor();
     }
