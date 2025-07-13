@@ -75,22 +75,25 @@ public class Tidewyrm_oil_candle : Card
         // 获取目标周围的4个相邻格子
         // 检测是否为合法地图位置，例如有越界或障碍物
         List<Vector2Int> adjacentPositions = new List<Vector2Int>();
-        if (IsValidPosition(pos + Vector2Int.up))
+        if (IsValidPosition(pos + new Vector2Int(1, 0)))
         {
-            adjacentPositions.Add(pos + Vector2Int.up);
+            adjacentPositions.Add(pos + new Vector2Int(1, 0));
         }
-        if (IsValidPosition(pos + Vector2Int.down))
+        if (IsValidPosition(pos + new Vector2Int(-1, 0)))
         {
-            adjacentPositions.Add(pos + Vector2Int.down);
+            adjacentPositions.Add(pos + new Vector2Int(-1, 0));
         }
-        if (IsValidPosition(pos + Vector2Int.left))
+        if (IsValidPosition(pos + new Vector2Int(0, 1)))
         {
-            adjacentPositions.Add(pos + Vector2Int.left);
+            adjacentPositions.Add(pos + new Vector2Int(0, 1));
         }
-        if (IsValidPosition(pos + Vector2Int.right))
+        if (IsValidPosition(pos + new Vector2Int(0, -1)))
         {
-            adjacentPositions.Add(pos + Vector2Int.right);
+            adjacentPositions.Add(pos + new Vector2Int(0, -1));
         }
+
+
+        Debug.Log("adjacentPositions: " + adjacentPositions.Count);
 
         // 随机选择最多3个位置
         int count = Mathf.Min(3, adjacentPositions.Count);
@@ -105,17 +108,15 @@ public class Tidewyrm_oil_candle : Card
 
     /// <summary>
     /// 获取攻击目标格子，取决于你的战斗系统
-    /// 例如，这里假设 player 已经保存了本次攻击的目标位置
+    /// 例如，这里假设 player 已经保存了本次攻击的目标位置 ?
     /// </summary>
     private Vector2Int GetAttackTargetPosition()
     {
-        return player.targetAttackPosition;
+        // return player.lastAttackSnapshot;
+        return Player.Instance.targetAttackPosition;
+
     }
 
-    private Vector2Int GetPlayerPosition()
-    {
-        return player.position;
-    }
 
     // firePoint effect 是不是也放到 KeyWordEffects.cs 比较好
 
@@ -129,7 +130,15 @@ public class Tidewyrm_oil_candle : Card
 
     private bool IsValidPosition(Vector2Int position)
     {
-        return position.x >= 0 && position.x < player.boardSize && position.y >= 0 && position.y < player.boardSize;
+            bool valid = position.x >= 0 && position.x < player.boardSize &&
+                 position.y >= 0 && position.y < player.boardSize;
+
+    if (!valid)
+    {
+        Debug.Log($"越界格子被排除: {position}");
+    }
+
+    return valid;
     }
 }
 

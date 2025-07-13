@@ -267,7 +267,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 8282674863276368061, guid: fa9fbd4f2c6b4ed41b8ed90a33af0b35, type: 3}
+  m_Sprite: {fileID: 2546547454811345773, guid: fa9fbd4f2c6b4ed41b8ed90a33af0b35, type: 3}
   m_Type: 0
   m_PreserveAspect: 1
   m_FillCenter: 1
@@ -290,3 +290,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   monsterManager: {fileID: 0}
+  hoverScale: 2
+  animationSpeed: 8

@@ -118,13 +118,13 @@ public class Oil : Card
     /// </summary>
     private Vector2Int GetAttackTargetPosition()
     {
-        return player.targetAttackPosition;
+        // return player.lastAttackSnapshot;
+        
+        // 不适用instance直接调用偶尔会出现坐标错误问题，原因目前位置
+        return Player.Instance.targetAttackPosition;
+
     }
 
-    private Vector2Int GetPlayerPosition()
-    {
-        return player.position;
-    }
 
     private void PlaceFirePointAt(Vector2Int gridPosition)
     {

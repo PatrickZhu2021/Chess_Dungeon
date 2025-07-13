@@ -103,10 +103,10 @@ TextureImporter:
       name: flameberge_card_0
       rect:
         serializedVersion: 2
-        x: 303
+        x: 0
         y: 0
-        width: 687
-        height: 1187
+        width: 1048
+        height: 1815
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -134,8 +134,7 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable:
-      flameberge_card_0: 484477239062193438
+    nameFileIdTable: {}
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
