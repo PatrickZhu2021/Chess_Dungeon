@@ -134,7 +134,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      flameberge_card_0: 484477239062193438
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
