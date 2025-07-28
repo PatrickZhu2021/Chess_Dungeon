@@ -166,7 +166,7 @@ GameObject:
   - component: {fileID: 5280022575110587628}
   - component: {fileID: 6513719207245129944}
   - component: {fileID: 4531463353146810934}
-  - component: {fileID: -5760460843689040238}
+  - component: {fileID: 8147098236813838791}
   m_Layer: 5
   m_Name: BA03
   m_TagString: Untagged
@@ -277,7 +277,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &-5760460843689040238
+--- !u!114 &8147098236813838791
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -286,7 +286,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 7865966843562598253}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e5b5215a77b1e5346bbdd1ac7f0f9adc, type: 3}
+  m_Script: {fileID: 11500000, guid: c7b9ce37881364c42b6c1747d0508d83, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   monsterManager: {fileID: 0}
