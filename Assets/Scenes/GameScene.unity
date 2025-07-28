@@ -42,7 +42,8 @@ RenderSettings:
 --- !u!157 &3
 LightmapSettings:
   m_ObjectHideFlags: 0
-  serializedVersion: 12
+  serializedVersion: 13
+  m_BakeOnSceneLoad: 0
   m_GISettings:
     serializedVersion: 2
     m_BounceScale: 1
@@ -2552,7 +2553,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -21.1, y: -442.20007}
+  m_AnchoredPosition: {x: -21.1, y: -500}
   m_SizeDelta: {x: 1104.85, y: 200}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &513411015
@@ -7695,6 +7696,9 @@ MonoBehaviour:
     isQuick: 0
     isEnergy: 0
     isMadness: 0
+    isExhaust: 0
+    isLingering: 0
+    isForethought: 0
     upgradeFrom: 
     hoardingValue: 0
     isPartner: 0
