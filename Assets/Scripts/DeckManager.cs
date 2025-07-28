@@ -52,7 +52,9 @@ public class DeckManager : MonoBehaviour
         if (!SaveSystem.GameSaveExists())
         {
             InitializeDeck();
-            DrawCards(handSize);
+            DrawCards(handSize, () => {
+                DrawForethoughtCards(); // 在普通手牌抓取完成后抓取谋定卡牌
+            });
         }
         InitializeCardEditor();
         UpdateDeckCountText(); // 初始化时更新牌堆数量显示
@@ -181,6 +183,7 @@ public class DeckManager : MonoBehaviour
         allCards.Add(new BA02());
         allCards.Add(new BA03());
         allCards.Add(new BA04());
+        allCards.Add(new BA05());
         UpdateCardEditorPanel();
     }
 
@@ -830,7 +833,9 @@ public class DeckManager : MonoBehaviour
         hand.Clear();
         deck = new List<Card>(newDeck);
         UpdateDeckPanel(); // 更新 UI
-        DrawCards(handSize);
+        DrawCards(handSize, () => {
+            DrawForethoughtCards(); // 在普通手牌抓取完成后抓取谋定卡牌
+        });
     }
 
     //未完成
@@ -856,6 +861,51 @@ public class DeckManager : MonoBehaviour
             card.player = player;
             card.monsterManager = monsterManager;
             Debug.Log($"✅ 已刷新卡牌 {card.Id} 的引用");
+        }
+    }
+
+    public void DrawForethoughtCards()
+    {
+        StartCoroutine(DrawForethoughtCardsCoroutine());
+    }
+
+    private IEnumerator DrawForethoughtCardsCoroutine()
+    {
+        // 找到所有谋定卡牌
+        List<Card> forethoughtCards = new List<Card>();
+        
+        for (int i = deck.Count - 1; i >= 0; i--)
+        {
+            if (deck[i].isForethought)
+            {
+                forethoughtCards.Add(deck[i]);
+                deck.RemoveAt(i);
+            }
+        }
+        
+        GridLayoutGroup gridLayout = cardPanel.GetComponent<GridLayoutGroup>();
+        
+        foreach (Card card in forethoughtCards)
+        {
+            hand.Add(card);
+            
+            // 创建卡牌按钮并添加到CardPanel中
+            GameObject cardButton = Instantiate(card.GetPrefab(), cardPanel);
+            CardButton cardButtonScript = cardButton.GetComponent<CardButton>();
+
+            if (cardButtonScript != null)
+            {
+                cardButtonScript.Initialize(card, this);
+                cardButtons.Add(cardButton);
+            }
+            
+            AdjustCardSpacing(gridLayout);
+            yield return new WaitForSeconds(0.1f); // 与普通抓牌相同的延迟
+        }
+        
+        if (forethoughtCards.Count > 0)
+        {
+            UpdateDeckCountText();
         }
     }
 }
