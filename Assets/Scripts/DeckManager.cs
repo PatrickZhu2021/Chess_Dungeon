@@ -189,8 +189,10 @@ public class DeckManager : MonoBehaviour
         allCards.Add(new BA08());
         allCards.Add(new BA09());
         allCards.Add(new BA10());
-        allCards.Add(new BA12());
         allCards.Add(new BA11());
+        allCards.Add(new BA12());
+        allCards.Add(new BA13());
+        allCards.Add(new BA14());
         UpdateCardEditorPanel();
     }
 
@@ -277,13 +279,6 @@ public class DeckManager : MonoBehaviour
     {
         GridLayoutGroup gridLayout = cardPanel.GetComponent<GridLayoutGroup>();
 
-        if (!deck.Contains(specificCard))
-        {
-            Debug.Log("Specific card not found in deck.");
-            yield break;
-        }
-
-        deck.Remove(specificCard);
         hand.Add(specificCard);
 
         // 创建卡牌按钮并添加到 CardPanel 中

@@ -49,8 +49,9 @@ public static class CardPoolManager
             new Fan(),
             new BA09(),
             new BA10(),
+            new BA11(),
             new BA12(),
-            new BA11()
+            new BA14()
         };
 
         // Epic 卡池
@@ -62,7 +63,8 @@ public static class CardPoolManager
             new MadnessEcho(),
             new Vine(),
             new BookOfPawn(),
-            new FlameBow()
+            new FlameBow(),
+            new BA13()
         };
 
         // Legendary 卡池
