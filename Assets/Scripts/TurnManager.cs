@@ -106,6 +106,9 @@ public class TurnManager : MonoBehaviour
             // 处理卡牌的回合结束效果
             deckManager.HandleEndOfTurnEffects();
 
+            // 重置第一次抓牌标记
+            deckManager.ResetFirstDrawFlag();
+            
             // 回合结束抓新的手牌
             deckManager.DrawCards(deckManager.handSize - deckManager.hand.Count);
         }

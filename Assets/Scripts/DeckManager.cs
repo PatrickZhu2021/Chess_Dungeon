@@ -36,6 +36,7 @@ public class DeckManager : MonoBehaviour
     public Button discardDisplayButton; // DiscardDisplayButton 引用
     public Button cardEditorButton;
     public List<Card> allCards = new List<Card>();
+    private bool isFirstDrawOfTurn = true; // 记录是否为本回合第一次抓牌
     void Awake()
     {
         player = FindObjectOfType<Player>();
@@ -184,6 +185,7 @@ public class DeckManager : MonoBehaviour
         allCards.Add(new BA03());
         allCards.Add(new BA04());
         allCards.Add(new BA05());
+        allCards.Add(new BA07());
         UpdateCardEditorPanel();
     }
 
@@ -222,6 +224,13 @@ public class DeckManager : MonoBehaviour
                 UpdateDiscardPanel();
                 Card card = deck[0];
                 deck.RemoveAt(0);
+                
+                // 如果是BA07且不是第一次抓牌，标记为额外抓取
+                if (card is BA07 ba07 && !isFirstDrawOfTurn)
+                {
+                    ba07.wasDrawnExtra = true;
+                }
+                
                 hand.Add(card);
 
                 // 创建卡牌按钮并添加到CardPanel中
@@ -249,6 +258,8 @@ public class DeckManager : MonoBehaviour
 
             yield return new WaitForSeconds(0.1f); // 每次抽牌后等待0.1秒
         }
+        // 第一次抓牌结束后设置标记
+        isFirstDrawOfTurn = false;
         onComplete?.Invoke();
     }
 
@@ -353,6 +364,13 @@ public class DeckManager : MonoBehaviour
         {
             Card drawnCard = deck[index];
             deck.RemoveAt(index);
+            
+            // 如果是BA07且不是第一次抓牌，标记为额外抓取
+            if (drawnCard is BA07 ba07 && !isFirstDrawOfTurn)
+            {
+                ba07.wasDrawnExtra = true;
+            }
+            
             hand.Add(drawnCard);
             UpdateHandDisplay();
             UpdateDeckCountText(); // 每次抽牌后更新牌库剩余数量显示
@@ -907,5 +925,10 @@ public class DeckManager : MonoBehaviour
         {
             UpdateDeckCountText();
         }
+    }
+
+    public void ResetFirstDrawFlag()
+    {
+        isFirstDrawOfTurn = true;
     }
 }
