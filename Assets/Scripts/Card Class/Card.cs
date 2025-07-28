@@ -20,13 +20,14 @@ public class Card
     public bool isEnergy; // 新增 energy 变量
     public bool isMadness;
     public bool isExhaust; // 消耗属性
+    public bool isLingering; // 长驻属性
     public string upgradeFrom; // 升级来源
     public int hoardingValue; // 囤积值
     public bool isPartner;
     public bool isTemporary;
 
     public Card(CardType type, string Id = "tbd", int cost = 10, string upgradeFrom = null, bool isQuick = false, int hoardingValue = 0, bool isPartner = false, bool isEnergy = false,
-    bool isMadness = false, bool isTemporary = false, bool isExhaust = false)
+    bool isMadness = false, bool isTemporary = false, bool isExhaust = false, bool isLingering = false)
     {
         cardType = type;
         this.Id = Id;
@@ -39,6 +40,7 @@ public class Card
         this.isPartner = isPartner;
         this.isTemporary = isTemporary;
         this.isExhaust = isExhaust;
+        this.isLingering = isLingering;
 
         this.player = GameObject.FindObjectOfType<Player>();
         this.monsterManager = GameObject.FindObjectOfType<MonsterManager>();

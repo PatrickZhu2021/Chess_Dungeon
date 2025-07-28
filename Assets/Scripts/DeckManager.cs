@@ -180,6 +180,7 @@ public class DeckManager : MonoBehaviour
         allCards.Add(new BA01());
         allCards.Add(new BA02());
         allCards.Add(new BA03());
+        allCards.Add(new BA04());
         UpdateCardEditorPanel();
     }
 
@@ -435,7 +436,11 @@ public class DeckManager : MonoBehaviour
     {
         for (int i = hand.Count - 1; i >= 0; i--)
         {
-            DiscardCard(i); // Use DiscardCard method to discard each card
+            // 检查是否为长驻卡牌，如果是则不弃掉
+            if (!hand[i].isLingering)
+            {
+                DiscardCard(i); // Use DiscardCard method to discard each card
+            }
         }
     }
 
