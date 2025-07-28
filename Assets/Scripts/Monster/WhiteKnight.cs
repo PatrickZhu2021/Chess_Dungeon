@@ -28,7 +28,7 @@ public class WhiteKnight : Monster
         base.Die();
     }
 
-    public override void MoveTowardsPlayer()
+    public override void PerformMovement()
     {
         if (player == null) return;
         Vector2Int oldPos = position;

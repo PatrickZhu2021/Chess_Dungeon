@@ -33,7 +33,7 @@ public class SlimeKing : Monster
         };
     }
 
-    public override void MoveTowardsPlayer()
+    public override void PerformMovement()
     {
         if (player == null) return;
 

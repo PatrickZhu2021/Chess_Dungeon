@@ -394,12 +394,17 @@ public class MonsterManager : MonoBehaviour
             if (monster != null)
             {
                 monster.MoveTowardsPlayer();
-                yield return new WaitForSeconds(0.1f); // 延迟0.5秒
+                yield return new WaitForSeconds(0.1f);
             }
         }
-        //yield return new WaitForSeconds(0.5f); // 在所有怪物移动后延迟0.5秒
-        //生成新的怪物
-        
+        // 怪物回合结束时减少眩晕层数
+        foreach (Monster monster in monsters)
+        {
+            if (monster != null && monster.stunnedStacks > 0)
+            {
+                monster.ReduceStun(1);
+            }
+        }
     }
 
     // Moves the given monster to the target grid position.

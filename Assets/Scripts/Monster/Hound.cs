@@ -24,7 +24,7 @@ public class Hound : Monster
         base.Die();
     }
 
-    public override void MoveTowardsPlayer()
+    public override void PerformMovement()
     {
         if (player == null) return;
 

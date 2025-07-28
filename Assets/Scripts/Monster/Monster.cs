@@ -32,6 +32,7 @@ public class Monster : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 
     private bool isDying = false;
     public Vector2Int lastRelativePosition;
+    public int stunnedStacks = 0; // 眩晕层数
 
     public MonsterInfoManager infoManager;
     private List<GameObject> highlightInstances = new List<GameObject>();
@@ -137,7 +138,18 @@ public class Monster : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 
     public virtual void MoveTowardsPlayer()
     {
-        // Monster movement logic
+        if (IsStunned())
+        {
+            Debug.Log($"{monsterName} is stunned and cannot move");
+            return;
+        }
+        
+        PerformMovement();
+    }
+    
+    public virtual void PerformMovement()
+    {
+        // Default empty implementation, override in subclasses
     }
 
     public bool IsPositionOccupied(Vector2Int checkPosition)
@@ -241,7 +253,23 @@ public class Monster : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     {
         // 动画结束后执行的逻辑
         Destroy(gameObject);  // 销毁怪物
-    }   
-
+    }
+    
+    public void AddStun(int stacks)
+    {
+        stunnedStacks += stacks;
+        Debug.Log($"{monsterName} stunned for {stacks} stacks. Total: {stunnedStacks}");
+    }
+    
+    public void ReduceStun(int stacks)
+    {
+        stunnedStacks = Mathf.Max(0, stunnedStacks - stacks);
+        Debug.Log($"{monsterName} stun reduced by {stacks}. Remaining: {stunnedStacks}");
+    }
+    
+    public bool IsStunned()
+    {
+        return stunnedStacks > 0;
+    }
 
 }

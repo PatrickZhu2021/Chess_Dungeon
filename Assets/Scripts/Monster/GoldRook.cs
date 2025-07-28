@@ -41,7 +41,7 @@ public class GoldRook : Monster
     /// 3. 当两个候选位置评分非常接近时，会优先选择距离玩家更远的那个（更安全）。
     /// 4. 同时排除那些会阻挡其他直线攻击怪物（例如 Rook 或 Bishop）的候选位置。
     /// </summary>
-    public override void MoveTowardsPlayer()
+    public override void PerformMovement()
     {
         if (player == null) return;
 
