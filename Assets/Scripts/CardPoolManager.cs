@@ -24,6 +24,11 @@ public static class CardPoolManager
             new FlameSword(),
             new BA01(),
             new BA02(),
+            new BA03(),
+            new BA04(),
+            new BA05(),
+            new BA07(),
+            new BA08(),
         };
 
         // Uncommon 卡池
