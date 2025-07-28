@@ -461,12 +461,28 @@ public class DeckManager : MonoBehaviour
 
     public void RestartHand()
     {
-        List<Card> allCards = new List<Card>(discardPile);
-        allCards.AddRange(hand);
+        List<Card> allCards = new List<Card>();
+        
+        // 只添加非临时卡到牌库
+        foreach (Card card in discardPile)
+        {
+            if (!card.isTemporary)
+            {
+                allCards.Add(card);
+            }
+        }
+        
+        foreach (Card card in hand)
+        {
+            if (!card.isTemporary)
+            {
+                allCards.Add(card);
+            }
+        }
     
         deck.AddRange(allCards);
 
-        Debug.Log($"After adding: deck={deck.Count}, hand={hand.Count}, discard={discardPile.Count}");
+        Debug.Log($"After adding (filtered temporary cards): deck={deck.Count}, hand={hand.Count}, discard={discardPile.Count}");
 
         discardPile.Clear();
         hand.Clear();
