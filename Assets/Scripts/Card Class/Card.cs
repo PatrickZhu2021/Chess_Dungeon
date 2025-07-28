@@ -134,68 +134,6 @@ public class Card
 
 }
 
-public class KnightCard : Card
-{
-    public KnightCard() : base(CardType.Move, "M02", 20) { }
-
-    public override GameObject GetPrefab()
-    {
-        return Resources.Load<GameObject>("Prefabs/Card/Move/knight_card");
-    }
-    public override Sprite GetSprite()
-    {
-        return Resources.Load<Sprite>("Sprites/Card/Move/knight_card");
-    }
-    public override string GetDescription()
-    {
-        return "K移动";
-    }
-
-    public override Type GetScriptType()
-    {
-        return typeof(knight_card);
-    }
-
-}
-
-public class BishopCard : Card
-{
-    public BishopCard() : base(CardType.Move, "M03", 30) { }
-
-    public override GameObject GetPrefab()
-    {
-        return Resources.Load<GameObject>("Prefabs/Card/Move/bishop_card");
-    }
-    public override Sprite GetSprite()
-    {
-        return Resources.Load<Sprite>("Sprites/Card/Move/bishop_card");
-    }
-    public override string GetDescription()
-    {
-        return "B移动";
-    }
-}
-
-public class RookCard : Card
-{
-    public RookCard() : base(CardType.Move, "M04", 50) { }
-
-    public override GameObject GetPrefab()
-    {
-        return Resources.Load<GameObject>("Prefabs/Card/Move/rook_card");
-    }
-    public override Sprite GetSprite()
-    {
-        return Resources.Load<Sprite>("Sprites/Card/Move/rook_card");
-    }
-    public override string GetDescription()
-    {
-        return "R移动";
-    }
-}
-
-
-
 public class BladeCard : Card
 {
     public BladeCard() : base(CardType.Attack, "A02", 10) { }

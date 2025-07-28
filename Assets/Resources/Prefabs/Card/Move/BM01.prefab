@@ -168,7 +168,7 @@ GameObject:
   - component: {fileID: 4531463353146810934}
   - component: {fileID: -2986654485812239777}
   m_Layer: 5
-  m_Name: pawn_card
+  m_Name: BM01
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -267,7 +267,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -3171948276931754324, guid: 3dc205a8beb8b6346890598b1661976c, type: 3}
+  m_Sprite: {fileID: 3244209941187049823, guid: 472f618251a40e6428d36ec5241f7457, type: 3}
   m_Type: 0
   m_PreserveAspect: 1
   m_FillCenter: 1

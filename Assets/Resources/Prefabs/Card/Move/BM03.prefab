@@ -93,7 +93,7 @@ GameObject:
   - component: {fileID: 4531463353146810934}
   - component: {fileID: -7460820965303570659}
   m_Layer: 5
-  m_Name: knight_card
+  m_Name: BM03
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -159,7 +159,7 @@ MonoBehaviour:
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
   m_Interactable: 1
-  m_TargetGraphic: {fileID: 0}
+  m_TargetGraphic: {fileID: 4531463353146810934}
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
@@ -191,7 +191,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 7754955960526056612, guid: a7461aa63716f4e40ac01077b5905720, type: 3}
+  m_Sprite: {fileID: -6352418326946608994, guid: 676417bb45db29348bdcac4ae2fd36d6, type: 3}
   m_Type: 0
   m_PreserveAspect: 1
   m_FillCenter: 1

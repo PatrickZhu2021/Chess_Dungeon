@@ -91,9 +91,9 @@ GameObject:
   - component: {fileID: 5280022575110587628}
   - component: {fileID: 6513719207245129944}
   - component: {fileID: 4531463353146810934}
-  - component: {fileID: -7445116168821386965}
+  - component: {fileID: -7025795044786986741}
   m_Layer: 5
-  m_Name: bishop_card
+  m_Name: BM04
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -191,7 +191,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -6511646410063771371, guid: bd18eabeb5c51a147bc779b75503a40a, type: 3}
+  m_Sprite: {fileID: 3244209941187049823, guid: 472f618251a40e6428d36ec5241f7457, type: 3}
   m_Type: 0
   m_PreserveAspect: 1
   m_FillCenter: 1
@@ -201,7 +201,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &-7445116168821386965
+--- !u!114 &-7025795044786986741
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -210,7 +210,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 7865966843562598253}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 606a61db78cdeee4aabbfc3c2381059d, type: 3}
+  m_Script: {fileID: 11500000, guid: 8484783483be87a408c00ec284454f6f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   monsterManager: {fileID: 0}

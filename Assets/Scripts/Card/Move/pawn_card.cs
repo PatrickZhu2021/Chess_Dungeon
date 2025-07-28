@@ -73,11 +73,11 @@ public class PawnCard : Card
 
     public override GameObject GetPrefab()
     {
-        return Resources.Load<GameObject>("Prefabs/Card/Move/pawn_card");
+        return Resources.Load<GameObject>("Prefabs/Card/Move/BM01");
     }
     public override Sprite GetSprite()
     {
-        return Resources.Load<Sprite>("Sprites/Card/Move/pawn_card");
+        return Resources.Load<Sprite>("Sprites/Card/Move/BM01");
     }
      public override string GetDescription()
     {

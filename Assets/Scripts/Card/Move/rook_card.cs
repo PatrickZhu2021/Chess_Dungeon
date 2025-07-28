@@ -30,3 +30,21 @@ public class rook_card : CardButtonBase
         }
     }
 }
+
+public class RookCard : Card
+{
+    public RookCard() : base(CardType.Move, "M04", 50) { }
+
+    public override GameObject GetPrefab()
+    {
+        return Resources.Load<GameObject>("Prefabs/Card/Move/BM04");
+    }
+    public override Sprite GetSprite()
+    {
+        return Resources.Load<Sprite>("Sprites/Card/Move/BM04");
+    }
+    public override string GetDescription()
+    {
+        return "R移动";
+    }
+}

@@ -29,3 +29,22 @@ public class knight_card : CardButtonBase
         }
     }
 }
+
+public class KnightCard : Card
+{
+    public KnightCard() : base(CardType.Move, "M02", 20) { }
+
+    public override GameObject GetPrefab()
+    {
+        return Resources.Load<GameObject>("Prefabs/Card/Move/BM03");
+    }
+    public override Sprite GetSprite()
+    {
+        return Resources.Load<Sprite>("Sprites/Card/Move/BM03");
+    }
+    public override string GetDescription()
+    {
+        return "K移动";
+    }
+
+}

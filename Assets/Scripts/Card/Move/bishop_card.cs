@@ -30,3 +30,21 @@ public class bishop_card : CardButtonBase
         }
     }
 }
+
+public class BishopCard : Card
+{
+    public BishopCard() : base(CardType.Move, "M03", 30) { }
+
+    public override GameObject GetPrefab()
+    {
+        return Resources.Load<GameObject>("Prefabs/Card/Move/BM05");
+    }
+    public override Sprite GetSprite()
+    {
+        return Resources.Load<Sprite>("Sprites/Card/Move/BM05");
+    }
+    public override string GetDescription()
+    {
+        return "B移动";
+    }
+}
