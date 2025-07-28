@@ -21,7 +21,8 @@ public static class CardPoolManager
             new BishopCard(),
             new SwordCard(),
             new RitualDagger(),
-            new FlameSword()
+            new FlameSword(),
+            new BA01()
         };
 
         // Uncommon 卡池
