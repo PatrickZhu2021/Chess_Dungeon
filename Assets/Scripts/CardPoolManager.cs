@@ -49,6 +49,7 @@ public static class CardPoolManager
             new Fan(),
             new BA09(),
             new BA10(),
+            new BA12(),
             new BA11()
         };
 
