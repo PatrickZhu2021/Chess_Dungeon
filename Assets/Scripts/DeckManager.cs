@@ -189,6 +189,7 @@ public class DeckManager : MonoBehaviour
         allCards.Add(new BA08());
         allCards.Add(new BA09());
         allCards.Add(new BA10());
+        allCards.Add(new BA11());
         UpdateCardEditorPanel();
     }
 
@@ -772,6 +773,24 @@ public class DeckManager : MonoBehaviour
                 player.AddGold(card.hoardingValue);
                 Debug.Log($"{card.Id} card's hoarding effect: +{card.hoardingValue} gold");
             }
+        }
+        
+        // 处理凯旋卡牌：从弃牌堆中找到凯旋卡牌并添加到下回合手牌
+        List<Card> triumphCards = new List<Card>();
+        for (int i = discardPile.Count - 1; i >= 0; i--)
+        {
+            if (discardPile[i].isTriumph)
+            {
+                triumphCards.Add(discardPile[i]);
+                discardPile.RemoveAt(i);
+            }
+        }
+        
+        // 将凯旋卡牌添加到牌库顶部，下回合优先抓到
+        foreach (Card triumphCard in triumphCards)
+        {
+            deck.Insert(0, triumphCard);
+            Debug.Log($"Triumph card {triumphCard.Id} returned to top of deck");
         }
     }
     

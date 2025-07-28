@@ -4,7 +4,7 @@ using UnityEngine.EventSystems;
 using Effects;
 using System.Collections.Generic;
 
-public class BA10_card: CardButtonBase
+public class BA11_card: CardButtonBase
 {
     Vector2Int[] allDirections = { 
         new Vector2Int(1, 0), new Vector2Int(-1, 0), 
@@ -40,31 +40,30 @@ public class BA10_card: CardButtonBase
         }
         else
         {
-            Debug.LogError("Card is null in BA10_card.OnClick");
+            Debug.LogError("Card is null in BA11_card.OnClick");
         }
     }
 }
 
-public class BA10: Card
+public class BA11: Card
 {
-    public BA10() : base(CardType.Attack, "BA10", 0) 
+    public BA11() : base(CardType.Attack, "BA11", 0, isQuick: true, isTriumph: true) 
     { 
-        isQuick = true;
     }
 
     public override GameObject GetPrefab()
     {
-        return Resources.Load<GameObject>("Prefabs/Card/Attack/BA10");
+        return Resources.Load<GameObject>("Prefabs/Card/Attack/BA11");
     }
 
     public override Sprite GetSprite()
     {
-        return Resources.Load<Sprite>("Sprites/Card/Attack/BA10");
+        return Resources.Load<Sprite>("Sprites/Card/Attack/BA11");
     }
 
     public override string GetDescription()
     {
-        return "钉头锤 快速，眩晕 0 全方向I级 快速，造成1点伤害，施加1层【眩晕】。每回合手牌区内首次不存在移动牌时，将此牌置入手牌区(未完成)";
+        return "铲子 快速，凯旋，拒障 0 全方向I级 快速，凯旋；创造耐久为4的地形拒障";
     }
 
     public override int GetDamageAmount()
@@ -74,16 +73,12 @@ public class BA10: Card
 
     public override void OnCardExecuted(Vector2Int attackPos)
     {
-        // 对攻击位置的怪物施加眩晕
-        GameObject[] monsters = GameObject.FindGameObjectsWithTag("Monster");
-        foreach (GameObject monsterObject in monsters)
+        // 在攻击位置创建拒障
+        LocationManager locationManager = GameObject.FindObjectOfType<LocationManager>();
+        if (locationManager != null)
         {
-            Monster monster = monsterObject.GetComponent<Monster>();
-            if (monster != null && monster.IsPartOfMonster(attackPos))
-            {
-                monster.AddStun(1);
-                Debug.Log($"BA10 stunned {monster.monsterName} for 1 turn");
-            }
+            locationManager.CreateBarrier(attackPos, 4);
+            Debug.Log($"BA11 created barrier at {attackPos} with durability 4");
         }
     }
 }

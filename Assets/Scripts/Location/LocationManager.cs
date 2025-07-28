@@ -11,6 +11,7 @@ public class LocationManager : MonoBehaviour
 
     public List<FirePoint> activeFirePoints = new List<FirePoint>();
     public List<FireZone> activeFireZones = new List<FireZone>(); // 火域列表
+    public List<BarrierLocation> activeBarriers = new List<BarrierLocation>(); // 拒障列表
     private Player player;
     private List<TerrainConfig> terrainConfigs = new List<TerrainConfig>();
 
@@ -539,5 +540,58 @@ public class LocationManager : MonoBehaviour
         activeFireZones.Add(fireZone);
 
         Debug.Log($"Created FireZone with {points.Count} vertices.");
+    }
+    
+    public void CreateBarrier(Vector2Int position, int durability = 4)
+    {
+        GameObject barrierPrefab = Resources.Load<GameObject>("Prefabs/Location/Barrier");
+        if (barrierPrefab == null)
+        {
+            Debug.LogError("Barrier prefab not found");
+            return;
+        }
+        
+        GameObject barrierObject = Instantiate(barrierPrefab);
+        barrierObject.transform.position = player.CalculateWorldPosition(position);
+        
+        BarrierLocation barrier = barrierObject.GetComponent<BarrierLocation>();
+        if (barrier == null)
+        {
+            // 如果没有BarrierLocation组件，添加一个
+            barrier = barrierObject.AddComponent<BarrierLocation>();
+        }
+        
+        barrier.InitializeBarrier(position, durability);
+        nonEnterablePositions.Add(position);
+        spawnedLocations.Add(barrierObject);
+        activeBarriers.Add(barrier);
+        Debug.Log($"Barrier created at {position} with durability {durability}, nonEnterable positions count: {nonEnterablePositions.Count}");
+    }
+    
+    public void RemoveLocation(Location location)
+    {
+        if (location is BarrierLocation barrier)
+        {
+            activeBarriers.Remove(barrier);
+            nonEnterablePositions.Remove(barrier.position);
+        }
+        
+        GameObject locationObject = location.gameObject;
+        if (spawnedLocations.Contains(locationObject))
+        {
+            spawnedLocations.Remove(locationObject);
+        }
+    }
+    
+    public void OnTurnStart()
+    {
+        // 每回合开始时减少所有拒障的耐久度
+        for (int i = activeBarriers.Count - 1; i >= 0; i--)
+        {
+            if (activeBarriers[i] != null)
+            {
+                activeBarriers[i].ReduceDurability();
+            }
+        }
     }
 }

@@ -28,7 +28,7 @@ public static class CardPoolManager
             new BA04(),
             new BA05(),
             new BA07(),
-            new BA08(),
+            new BA08()
         };
 
         // Uncommon 卡池
@@ -48,7 +48,8 @@ public static class CardPoolManager
             new Book(),
             new Fan(),
             new BA09(),
-            new BA10()
+            new BA10(),
+            new BA11()
         };
 
         // Epic 卡池

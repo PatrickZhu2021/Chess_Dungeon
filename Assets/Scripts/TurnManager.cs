@@ -132,6 +132,13 @@ public class TurnManager : MonoBehaviour
         }
 
         ResetCursor();
+        
+        // 处理拒障耐久度
+        LocationManager locationManager = FindObjectOfType<LocationManager>();
+        if (locationManager != null)
+        {
+            locationManager.OnTurnStart();
+        }
     }
 
     public void MoveCursor()

@@ -178,6 +178,7 @@ public class Monster : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
         // 检查位置是否是不可进入的区域
         if (locationManager != null && locationManager.IsNonEnterablePosition(position))
         {
+            Debug.Log($"{monsterName} cannot move to {position} - blocked by location");
             return false;
         }
 
