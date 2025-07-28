@@ -748,10 +748,11 @@ public class Player : MonoBehaviour
         damageModifierThisTurn = furyStacks; // 将愤怒层数应用为伤害修正
     }
     
-    public void AddFury(int stacks)
+    public void AddFuryAndApply(int stacks)
     {
         furyStacks += stacks;
-        Debug.Log($"Added {stacks} fury stacks. Total: {furyStacks}");
+        damageModifierThisTurn = furyStacks; // 立即应用愤怒伤害加成
+        Debug.Log($"Added {stacks} fury stacks. Total: {furyStacks}, damage modifier: {damageModifierThisTurn}");
     }
     
     public void ReduceFury(int stacks)

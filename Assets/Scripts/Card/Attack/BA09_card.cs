@@ -71,10 +71,7 @@ public class BA09: Card
 
     public override void OnCardExecuted(Vector2Int attackPos)
     {
-        // 获得1层愤怒
-        player.AddFury(1);
-        // 立即应用愤怒伤害加成
-        player.ApplyFuryDamage();
-        Debug.Log($"BA09 executed: fury stacks = {player.furyStacks}, damage modifier = {player.damageModifierThisTurn}");
+        // 获得1层愤怒并立即应用
+        player.AddFuryAndApply(1);
     }
 }
