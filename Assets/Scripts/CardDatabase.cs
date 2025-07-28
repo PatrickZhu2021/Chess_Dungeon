@@ -60,6 +60,7 @@ public class CardDatabase : MonoBehaviour
         AddCard(new FlameBow());
         AddCard(new RitualDagger());
         AddCard(new BA01());
+        AddCard(new BA02());
     }
 
     private void AddCard(Card card)

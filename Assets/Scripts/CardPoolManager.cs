@@ -22,7 +22,8 @@ public static class CardPoolManager
             new SwordCard(),
             new RitualDagger(),
             new FlameSword(),
-            new BA01()
+            new BA01(),
+            new BA02(),
         };
 
         // Uncommon 卡池

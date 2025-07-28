@@ -3,7 +3,7 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using Effects;
 
-public class BA01_card: CardButtonBase
+public class BA02_card: CardButtonBase
 {
     Vector2Int[] swordDirections = { Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right };
 
@@ -34,37 +34,37 @@ public class BA01_card: CardButtonBase
         }
         else
         {
-            Debug.LogError("Card is null in BA01_card.OnClick");
+            Debug.LogError("Card is null in BA02_card.OnClick");
         }
     }
 }
 
-public class BA01: Card
+public class BA02: Card
 {
-    public BA01() : base(CardType.Attack, "BA01", 10) { }
+    public BA02() : base(CardType.Attack, "BA02", 10) { }
 
     public override GameObject GetPrefab()
     {
-        return Resources.Load<GameObject>("Prefabs/Card/Attack/BA01");
+        return Resources.Load<GameObject>("Prefabs/Card/Attack/BA02");
     }
 
     public override Sprite GetSprite()
     {
-        return Resources.Load<Sprite>("Sprites/Card/Attack/BA01");
+        return Resources.Load<Sprite>("Sprites/Card/Attack/BA02");
     }
 
     public override string GetDescription()
     {
-        return "上下左右攻击，造成2点伤害";
+        return "上下左右攻击，造成1点伤害，击退目标1次";
     }
 
     public override int GetDamageAmount()
     {
-        return 2;
+        return 1;
     }
 
-    // public override void OnCardExecuted(Vector2Int attackPos)
-    // {
-    //     KeywordEffects.AttackWithKnockback(player, attackPos);
-    // }
+    public override void OnCardExecuted(Vector2Int attackPos)
+    {
+        KeywordEffects.AttackWithKnockback(player, attackPos);
+    }
 }
