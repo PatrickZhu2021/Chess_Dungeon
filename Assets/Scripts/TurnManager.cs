@@ -85,6 +85,12 @@ public class TurnManager : MonoBehaviour
         yield return new WaitForSeconds(0.3f);
         player.ClearMoveHighlights();
         player.actions = 3;
+        // 回合开始时先减少愤怒层数，再应用伤害加成
+        if (player.furyStacks > 0)
+        {
+            player.ReduceFury(1);
+        }
+        player.ApplyFuryDamage();
         turnCount++;
         monsterManager.OnTurnEnd(turnCount);
         Debug.Log("Turn end");

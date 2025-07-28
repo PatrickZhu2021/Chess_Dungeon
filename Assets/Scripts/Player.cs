@@ -19,6 +19,7 @@ public class Player : MonoBehaviour
     public List<Relic> relics;
     public int damage = 1; //默认伤害
     public int damageModifierThisTurn = 0;
+    public int furyStacks = 0; // 愤怒层数
     public Vector2Int lastAttackDirection { get; set; }
 
     public int cardsUsedThisTurn = 0; //本回合使用的卡牌数量
@@ -740,6 +741,23 @@ public class Player : MonoBehaviour
         vineEffectActive = false; // Reset the vine effect after the turn
         cardsUsedThisTurn = 0;
         damageModifierThisTurn = 0;
+    }
+    
+    public void ApplyFuryDamage()
+    {
+        damageModifierThisTurn = furyStacks; // 将愤怒层数应用为伤害修正
+    }
+    
+    public void AddFury(int stacks)
+    {
+        furyStacks += stacks;
+        Debug.Log($"Added {stacks} fury stacks. Total: {furyStacks}");
+    }
+    
+    public void ReduceFury(int stacks)
+    {
+        furyStacks = Mathf.Max(0, furyStacks - stacks);
+        Debug.Log($"Reduced {stacks} fury stacks. Remaining: {furyStacks}");
     }
 
     public void OnCardUsed(Card currentCard)

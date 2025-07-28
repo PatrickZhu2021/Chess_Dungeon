@@ -46,7 +46,8 @@ public static class CardPoolManager
             new TwoBladeCard(),
             new FloatSword(),
             new Book(),
-            new Fan()
+            new Fan(),
+            new BA09()
         };
 
         // Epic 卡池
