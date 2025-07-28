@@ -35,13 +35,39 @@ public class BA11_card: CardButtonBase
             {
                 int damage = card.GetDamageAmount(); 
                 player.damage = damage;
-                player.ShowAttackOptions(allDirections, card);
+                
+                // 过滤掉有怪物的位置
+                List<Vector2Int> validDirections = new List<Vector2Int>();
+                foreach (Vector2Int direction in allDirections)
+                {
+                    Vector2Int targetPos = player.position + direction;
+                    if (player.IsValidPosition(targetPos) && !IsPositionOccupiedByMonster(targetPos))
+                    {
+                        validDirections.Add(direction);
+                    }
+                }
+                
+                player.ShowAttackOptions(validDirections.ToArray(), card);
             }
         }
         else
         {
             Debug.LogError("Card is null in BA11_card.OnClick");
         }
+    }
+    
+    private bool IsPositionOccupiedByMonster(Vector2Int position)
+    {
+        GameObject[] monsters = GameObject.FindGameObjectsWithTag("Monster");
+        foreach (GameObject monsterObject in monsters)
+        {
+            Monster monster = monsterObject.GetComponent<Monster>();
+            if (monster != null && monster.IsPartOfMonster(position))
+            {
+                return true;
+            }
+        }
+        return false;
     }
 }
 
@@ -68,7 +94,7 @@ public class BA11: Card
 
     public override int GetDamageAmount()
     {
-        return 1;
+        return 0;
     }
 
     public override void OnCardExecuted(Vector2Int attackPos)
