@@ -36,6 +36,8 @@ public class Monster : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     public int stunnedStacks = 0; // 眩晕层数
     public int lureStacks = 0; // 瞩目层数
     public static Monster currentLureTarget = null; // 当前瞩目目标
+    public Monster karmaLinkedMonster = null; // 业力连接的怪物
+    public static List<Monster> karmaLinkedPair = new List<Monster>(); // 业力连接对
 
     public MonsterInfoManager infoManager;
     private List<GameObject> highlightInstances = new List<GameObject>();
@@ -98,7 +100,26 @@ public class Monster : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
         {
             //animator.SetTrigger("TakeDamage");
         }
+        
+        // 业力连接伤害共享
+        if (karmaLinkedMonster != null && karmaLinkedMonster.health > 0)
+        {
+            karmaLinkedMonster.TakeDamageDirectly(damage);
+            Debug.Log($"Karma link: {karmaLinkedMonster.monsterName} also takes {damage} damage");
+        }
 
+        if (health <= 0)
+        {
+            Die();
+        }
+    }
+    
+    public virtual void TakeDamageDirectly(int damage)
+    {
+        // 直接受伤，不触发业力连接
+        health -= damage;
+        UpdateHealthBar();
+        
         if (health <= 0)
         {
             Die();
@@ -345,6 +366,40 @@ public class Monster : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
         {
             Debug.Log($"{monsterName} cannot move towards lure target - path blocked");
         }
+    }
+    
+    public static void CreateKarmaLink(Monster monster1, Monster monster2)
+    {
+        // 清除之前的连接
+        ClearKarmaLinks();
+        
+        // 建立新连接
+        monster1.karmaLinkedMonster = monster2;
+        monster2.karmaLinkedMonster = monster1;
+        
+        karmaLinkedPair.Clear();
+        karmaLinkedPair.Add(monster1);
+        karmaLinkedPair.Add(monster2);
+        
+        Debug.Log($"Karma link created between {monster1.monsterName} and {monster2.monsterName}");
+    }
+    
+    public static void ClearKarmaLinks()
+    {
+        foreach (Monster monster in karmaLinkedPair)
+        {
+            if (monster != null)
+            {
+                monster.karmaLinkedMonster = null;
+            }
+        }
+        karmaLinkedPair.Clear();
+        Debug.Log("Karma links cleared");
+    }
+    
+    public bool HasKarmaLink()
+    {
+        return karmaLinkedMonster != null;
     }
 
 }
