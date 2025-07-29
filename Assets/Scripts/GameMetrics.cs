@@ -46,6 +46,28 @@ public class SessionMetrics
     public int totalTilesMoved;
 }
 
+[System.Serializable]
+public class SessionSummary
+{
+    public string sessionId;
+    public DateTime endTime;
+    public bool levelCompleted;
+    public int totalTurns;
+    public float avgMoveUtilRate;
+    public float avgCardPlayRate;
+    public float avgDamagePerTurn;
+    public float avgDamagePerMove;
+    public int totalDamageDealt;
+    public int totalDamageTaken;
+    public int totalTilesMoved;
+}
+
+[System.Serializable]
+public class GameMetricsSummary
+{
+    public List<SessionSummary> sessions = new List<SessionSummary>();
+}
+
 public class GameMetrics : MonoBehaviour
 {
     public static GameMetrics Instance { get; private set; }
@@ -202,6 +224,7 @@ public class GameMetrics : MonoBehaviour
     
     private void SaveSessionData()
     {
+        // 保存详细的session数据
         string json = JsonUtility.ToJson(currentSession, true);
         string fileName = $"GameMetrics_{currentSession.sessionId}_{DateTime.Now:yyyyMMdd_HHmmss}.json";
         string filePath = Path.Combine(Application.persistentDataPath, fileName);
@@ -210,11 +233,79 @@ public class GameMetrics : MonoBehaviour
         {
             File.WriteAllText(filePath, json);
             Debug.Log($"Game metrics saved to: {filePath}");
-            Debug.Log($"Data directory: {Application.persistentDataPath}");
+            
+            // 更新主文档
+            UpdateSummaryFile();
         }
         catch (Exception e)
         {
             Debug.LogError($"Failed to save metrics: {e.Message}");
+        }
+    }
+    
+    private void UpdateSummaryFile()
+    {
+        string summaryPath = Path.Combine(Application.persistentDataPath, "GameMetricsSummary.json");
+        GameMetricsSummary summary;
+        
+        // 读取现有的主文档
+        if (File.Exists(summaryPath))
+        {
+            try
+            {
+                string existingJson = File.ReadAllText(summaryPath);
+                summary = JsonUtility.FromJson<GameMetricsSummary>(existingJson);
+            }
+            catch
+            {
+                summary = new GameMetricsSummary();
+            }
+        }
+        else
+        {
+            summary = new GameMetricsSummary();
+        }
+        
+        // 检查是否已存在该session，如果存在则更新，否则添加
+        SessionSummary existingSession = summary.sessions.Find(s => s.sessionId == currentSession.sessionId);
+        
+        SessionSummary sessionSummary = new SessionSummary
+        {
+            sessionId = currentSession.sessionId,
+            endTime = currentSession.endTime,
+            levelCompleted = currentSession.levelCompleted,
+            totalTurns = currentSession.totalTurns,
+            avgMoveUtilRate = currentSession.avgMoveUtilRate,
+            avgCardPlayRate = currentSession.avgCardPlayRate,
+            avgDamagePerTurn = currentSession.avgDamagePerTurn,
+            avgDamagePerMove = currentSession.avgDamagePerMove,
+            totalDamageDealt = currentSession.totalDamageDealt,
+            totalDamageTaken = currentSession.totalDamageTaken,
+            totalTilesMoved = currentSession.totalTilesMoved
+        };
+        
+        if (existingSession != null)
+        {
+            // 更新现有记录
+            int index = summary.sessions.IndexOf(existingSession);
+            summary.sessions[index] = sessionSummary;
+        }
+        else
+        {
+            // 添加新记录
+            summary.sessions.Add(sessionSummary);
+        }
+        
+        // 保存更新后的主文档
+        try
+        {
+            string summaryJson = JsonUtility.ToJson(summary, true);
+            File.WriteAllText(summaryPath, summaryJson);
+            Debug.Log($"Summary updated: {summaryPath}");
+        }
+        catch (Exception e)
+        {
+            Debug.LogError($"Failed to update summary: {e.Message}");
         }
     }
     
