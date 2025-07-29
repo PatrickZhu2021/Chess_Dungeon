@@ -236,6 +236,12 @@ public class Player : MonoBehaviour
 
     public void TakeDamage(int damage)
     {
+        // 记录受到伤害指标
+        if (GameMetrics.Instance != null)
+        {
+            GameMetrics.Instance.RecordDamageTaken(damage);
+        }
+        
         int remainingDamage = damage;
 
         // 如果有护甲，先用护甲抵消一部分伤害
@@ -483,9 +489,17 @@ public class Player : MonoBehaviour
 
     public void Move(Vector2Int newPosition)
     {
+        Vector2Int oldPosition = position;
         position = newPosition;
         UpdatePosition();
         ClearMoveHighlights();
+        
+        // 记录移动指标
+        if (GameMetrics.Instance != null)
+        {
+            int distance = Mathf.Abs(newPosition.x - oldPosition.x) + Mathf.Abs(newPosition.y - oldPosition.y);
+            GameMetrics.Instance.RecordMovement(distance);
+        }
 
         // 调用新方法来检查并处理 ActivatePoint 和 DeactivatePoint
         CheckAndHandlePoints(newPosition);

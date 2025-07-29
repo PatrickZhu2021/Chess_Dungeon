@@ -97,6 +97,12 @@ public class Monster : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 
     public virtual void TakeDamage(int damage)
     {
+        // 记录造成伤害指标
+        if (GameMetrics.Instance != null && damage > 0)
+        {
+            GameMetrics.Instance.RecordDamageDealt(damage, 1);
+        }
+        
         health -= damage;
         UpdateHealthBar();
 

@@ -78,6 +78,12 @@ public class TurnManager : MonoBehaviour
 
     private IEnumerator HandleTurnEnd()
     {
+        // 结束当前回合的指标记录
+        if (GameMetrics.Instance != null)
+        {
+            GameMetrics.Instance.EndTurn();
+        }
+        
         DisableAllButtons(); // 禁用所有按钮
         // 回合结束弃牌 
         deckManager.DiscardHand();
@@ -92,6 +98,13 @@ public class TurnManager : MonoBehaviour
         }
         player.ApplyFuryDamage();
         turnCount++;
+        
+        // 开始新回合的指标记录
+        if (GameMetrics.Instance != null)
+        {
+            GameMetrics.Instance.StartTurn(turnCount);
+        }
+        
         monsterManager.OnTurnEnd(turnCount);
         Debug.Log("Turn end");
 
