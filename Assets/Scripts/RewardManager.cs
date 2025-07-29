@@ -85,6 +85,7 @@ public class RewardManager : MonoBehaviour
     {
         img.sprite = card.GetSprite();
         txt.text = card.GetDescription();
+        txt.fontSize = 20; // 调整字体大小
         Button btn = img.GetComponent<Button>();
         btn.onClick.RemoveAllListeners();
         btn.onClick.AddListener(() => OnCardSelected(card));
