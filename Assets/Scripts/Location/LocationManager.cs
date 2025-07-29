@@ -374,7 +374,7 @@ public class LocationManager : MonoBehaviour
     }
 
     /// <summary>
-    /// 检查所有燃点，寻找连通区域，并生成火域；火域不会消除燃点（按照新要求）。
+    /// 检查所有燃点，将它们连接成一个最大面积的火域。
     /// 当有新的燃点时，先清除已有火域，再重新连接所有燃点。
     /// </summary>
     public void CheckAndFormFireZone()
@@ -382,81 +382,45 @@ public class LocationManager : MonoBehaviour
         // 先清除现有火域
         ClearFireZones();
         
-        List<FirePoint> processed = new List<FirePoint>();
-        foreach (FirePoint fp in new List<FirePoint>(activeFirePoints))
+        if (activeFirePoints.Count >= 2)
         {
-            if (!processed.Contains(fp))
+            // 将所有FirePoint连接成一个最大面积的火域
+            List<Vector3> polygonPoints = new List<Vector3>();
+            
+            if (activeFirePoints.Count == 2)
             {
-                List<FirePoint> cluster = GetConnectedFirePoints(fp);
-                processed.AddRange(cluster);
-                if (cluster.Count >= 2)
-                {
-                    // 根据 cluster 计算连接图形
-                    List<Vector3> polygonPoints = new List<Vector3>();
-                    if (cluster.Count == 2)
-                    {
-                        // 只有两个点，直接连线
-                        Vector3 p1 = player.CalculateWorldPosition(cluster[0].gridPosition);
-                        Vector3 p2 = player.CalculateWorldPosition(cluster[1].gridPosition);
-                        polygonPoints.Add(p1);
-                        polygonPoints.Add(p2);
-                        // 为闭合方便，重复第一个点
-                        polygonPoints.Add(p1);
-                    }
-                    else
-                    {
-                        // 三个或以上，计算凸包
-                        polygonPoints = ComputeConvexHull(cluster);
-                        // 确保闭合
-                        if (polygonPoints.Count > 0 && polygonPoints[0] != polygonPoints[polygonPoints.Count - 1])
-                            polygonPoints.Add(polygonPoints[0]);
-                        
-                    }
-                    
-                    if (polygonPoints.Count >= 2)
-                    {
-                        CreateFireZoneUsingPoints(polygonPoints);
-                    }
-                }
+                // 只有两个点，直接连线
+                Vector3 p1 = player.CalculateWorldPosition(activeFirePoints[0].gridPosition);
+                Vector3 p2 = player.CalculateWorldPosition(activeFirePoints[1].gridPosition);
+                polygonPoints.Add(p1);
+                polygonPoints.Add(p2);
+                polygonPoints.Add(p1); // 闭合
+            }
+            else
+            {
+                // 3个或以上点，计算凸包形成最大面积
+                polygonPoints = ComputeConvexHull(activeFirePoints);
+                // 确保闭合
+                if (polygonPoints.Count > 0 && polygonPoints[0] != polygonPoints[polygonPoints.Count - 1])
+                    polygonPoints.Add(polygonPoints[0]);
+            }
+            
+            if (polygonPoints.Count >= 2)
+            {
+                CreateFireZoneUsingPoints(polygonPoints);
             }
         }
     }
     
-    private List<FirePoint> GetConnectedFirePoints(FirePoint start)
-    {
-        List<FirePoint> cluster = new List<FirePoint>();
-        Queue<FirePoint> queue = new Queue<FirePoint>();
-        queue.Enqueue(start);
-        cluster.Add(start);
 
-        while (queue.Count > 0)
-        {
-            FirePoint current = queue.Dequeue();
-            foreach (FirePoint fp in activeFirePoints)
-            {
-                //if (!cluster.Contains(fp) && IsAdjacent(current.gridPosition, fp.gridPosition))
-                if (!cluster.Contains(fp))
-                {
-                    cluster.Add(fp);
-                    queue.Enqueue(fp);
-                }
-            }
-        }
-        return cluster;
-    }
-    
-    private bool IsAdjacent(Vector2Int a, Vector2Int b)
-    {
-        return Mathf.Abs(a.x - b.x) <= 1 && Mathf.Abs(a.y - b.y) <= 1;
-    }
 
     /// <summary>
     /// 使用 Graham scan 算法计算凸包（返回世界坐标点）
     /// </summary>
-    private List<Vector3> ComputeConvexHull(List<FirePoint> cluster)
+    private List<Vector3> ComputeConvexHull(List<FirePoint> firePoints)
     {
         List<Vector2> points = new List<Vector2>();
-        foreach (FirePoint fp in cluster)
+        foreach (FirePoint fp in firePoints)
         {
             // 将 gridPosition 转为 Vector2，假设 CalculateWorldPosition 直接对应每格 1 单位
             points.Add(new Vector2(fp.gridPosition.x, fp.gridPosition.y));
@@ -477,21 +441,18 @@ public class LocationManager : MonoBehaviour
         points.Sort((a, b) =>
         {
             float angleA = Mathf.Atan2(a.y - pivot.y, a.x - pivot.x);
-            if(angleA>180)
-                angleA -= 180;
             float angleB = Mathf.Atan2(b.y - pivot.y, b.x - pivot.x);
-            if (angleB > 180)
-                angleB -= 180;
+            
             if (!Mathf.Approximately(angleA, angleB))
-                return angleA.CompareTo(angleB);          // 角度不同，按角度排
+                return angleA.CompareTo(angleB);
             else
-                return Dist2(a).CompareTo(Dist2(b));      // 角度相同，按距离排，近的在前，远的在后
+                return Dist2(a).CompareTo(Dist2(b));
         });
         
         List<Vector2> hull = new List<Vector2>();
         foreach (Vector2 p in points)
         {
-            while (hull.Count >= 2 && Cross(hull[hull.Count - 2], hull[hull.Count - 1], p) <0)
+            while (hull.Count >= 2 && Cross(hull[hull.Count - 2], hull[hull.Count - 1], p) <= 0)
             {
                 hull.RemoveAt(hull.Count - 1);
             }
@@ -513,6 +474,8 @@ public class LocationManager : MonoBehaviour
     {
         return (a.x - o.x) * (b.y - o.y) - (a.y - o.y) * (b.x - o.x);
     }
+    
+
 
     /// <summary>
     /// 根据计算得到的多边形顶点创建火域视觉
