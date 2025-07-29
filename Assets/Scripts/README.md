@@ -38,6 +38,13 @@ Chess Dungeon is a Unity-based tactical card game that combines chess-like movem
   - `energy_core.cs` - Energy system activation
   - `vine_card.cs` - Movement with damage effects
   - `book_*.cs` - Various spell-like effects
+  - **BS Series** - Advanced special effects:
+    - `BS01_card.cs` - 刃祝: Damage highest health enemy X times
+    - `BS02_card.cs` - 罗盘: Draw cards until move card found
+    - `BS05_card.cs` - 战舞: Gain action point + Grace (draw card)
+    - `BS06_card.cs` - 狮鹫势: Next weapon card used twice
+    - `BS07_card.cs` - 卷轴匣: Next card returns to deck top
+    - `BS08_card.cs` - 盐袋: Gain armor for each enemy death
 
 #### Card Management
 - **DeckManager.cs** - Handles deck, hand, discard pile operations
@@ -239,10 +246,20 @@ Player.ShowMoveOptions() / ShowAttackOptions()     // Display valid targets
 
 #### **KeywordEffects** - Shared Combat Effects
 ```csharp
+// Combat Effects
 KeywordEffects.AttackWithKnockback()    // Knockback on attack
+
+// Ritual System
 KeywordEffects.StartBasicRitual()       // Ritual counter system
 KeywordEffects.IncrementBasicRitual()   // Progress ritual
 KeywordEffects.StopBasicRitual()        // Complete/reset ritual
+
+// BS Series Card Effects
+KeywordEffects.ActivateGriffinStance()  // BS06: Next weapon used twice
+KeywordEffects.ActivateScrollCase()     // BS07: Next card returns to deck top
+KeywordEffects.ActivateSaltBag()        // BS08: Gain armor on enemy death
+KeywordEffects.TriggerSaltBagOnEnemyDeath() // Handle salt bag effect
+KeywordEffects.ResetBSEffects()         // Reset BS effects at turn end
 ```
 
 #### **Energy System** - Global State Management
@@ -266,6 +283,15 @@ isMadness              // Discard effects (ritual spear)
 isPartner              // Draw partner cards when played
 isQuick                // No action point cost
 isTemporary            // Removed after battle
+isExhaust              // Removed from game after use
+isGrace                // Draw 1 card when played
+isLingering            // Stays in hand at turn end
+isTriumph              // Returns to deck top from discard
+
+// BS Series State Effects
+nextWeaponCardDoubleUse    // BS06: Next attack card used twice
+nextCardReturnToDeckTop    // BS07: Next card returns to deck
+saltBagEffectActive        // BS08: Gain armor on enemy death
 ```
 
 #### **Card Upgrade System**
@@ -286,6 +312,9 @@ card.AddUpgrade()      // Apply upgrade effects
 | **Energy** | Player/DeckManager | High - Global system |
 | **Vine** | Player state | Low - Single card effect |
 | **Madness** | Card base class | Medium - Discard triggers |
+| **BS Effects** | KeywordEffects | High - Modular special states |
+| **Grace** | Card base class | High - Draw card keyword |
+| **Exhaust** | DeckManager | High - Permanent removal |
 
 ### 🔄 **Design Patterns Used**
 - **Strategy Pattern**: Different `OnCardExecuted()` implementations

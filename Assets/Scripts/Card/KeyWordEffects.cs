@@ -196,6 +196,52 @@ namespace Effects
         }
         
         /// <summary>
+        /// BS09某种草药效果：当失去所有行动点时，从牌库或弃牌堆回到手牌
+        /// </summary>
+        public static void TriggerHerbOnNoActions(Player player)
+        {
+            if (player == null) return;
+            
+            DeckManager deckManager = GameObject.FindObjectOfType<DeckManager>();
+            if (deckManager == null) return;
+            
+            // 先从牌库中寻找BS09
+            Card herbCard = null;
+            for (int i = 0; i < deckManager.deck.Count; i++)
+            {
+                if (deckManager.deck[i].Id == "BS09")
+                {
+                    herbCard = deckManager.deck[i];
+                    deckManager.deck.RemoveAt(i);
+                    Debug.Log("BS09: Found herb in deck, moving to hand");
+                    break;
+                }
+            }
+            
+            // 如果牌库没有，从弃牌堆寻找
+            if (herbCard == null)
+            {
+                for (int i = 0; i < deckManager.discardPile.Count; i++)
+                {
+                    if (deckManager.discardPile[i].Id == "BS09")
+                    {
+                        herbCard = deckManager.discardPile[i];
+                        deckManager.discardPile.RemoveAt(i);
+                        Debug.Log("BS09: Found herb in discard pile, moving to hand");
+                        break;
+                    }
+                }
+            }
+            
+            // 如果找到了，添加到手牌
+            if (herbCard != null)
+            {
+                deckManager.DrawSpecificCard(herbCard);
+                Debug.Log("BS09: Herb card returned to hand due to no actions");
+            }
+        }
+        
+        /// <summary>
         /// 重置所有BS系列效果（回合结束时调用）
         /// </summary>
         public static void ResetBSEffects(Player player)

@@ -767,6 +767,9 @@ public class Player : MonoBehaviour
                 FindObjectOfType<TurnManager>().UpdateActionText();   
                 DisableNonQuickCardButtons();
                 //添加回合条变成红色特效
+                
+                // BS09某种草药效果：当失去所有行动点时触发
+                KeywordEffects.TriggerHerbOnNoActions(this);
             }
         }
     }
