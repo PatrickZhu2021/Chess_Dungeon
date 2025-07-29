@@ -216,4 +216,5 @@ MonoBehaviour:
   monsterManager: {fileID: 0}
   hoverScale: 1.5
   animationSpeed: 8
+  applyDefaultScale: 1
   hintManager: {fileID: 0}

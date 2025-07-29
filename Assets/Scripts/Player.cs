@@ -699,6 +699,11 @@ public class Player : MonoBehaviour
                 }
             }
             
+            if (currentCard.cardType == CardType.Special)
+            {
+                currentCard.OnCardExecuted();
+            }
+            
 
             if (!currentCard.isQuick)
             {
