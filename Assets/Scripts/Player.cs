@@ -943,29 +943,7 @@ public class Player : MonoBehaviour
     
     public void ShowDamageText(int damage, bool isHeal = false)
     {
-        StartCoroutine(ShowDamageTextCoroutine(damage, isHeal));
-    }
-    
-    private IEnumerator ShowDamageTextCoroutine(int damage, bool isHeal)
-    {
-        if (damageTextPrefab != null)
-        {
-            Vector3 basePos = CalculateWorldPosition(position) + Vector3.up * 0.5f;
-            Vector3 randomOffset = new Vector3(
-                Random.Range(-0.3f, 0.3f),
-                Random.Range(-0.2f, 0.2f),
-                0
-            );
-            Vector3 worldPos = basePos + randomOffset;
-            
-            GameObject damageObj = Instantiate(damageTextPrefab, worldPos, Quaternion.identity);
-            DamageText damageScript = damageObj.GetComponent<DamageText>();
-            if (damageScript != null)
-            {
-                damageScript.SetDamage(damage, isHeal);
-            }
-            
-            yield return new WaitForSeconds(0.5f);
-        }
+        Vector3 worldPos = CalculateWorldPosition(position) + Vector3.up * 0.5f;
+        DamageTextManager.ShowDamageText(this, damage, worldPos, damageTextPrefab, isHeal);
     }
 }
