@@ -77,7 +77,8 @@ public static class CardPoolManager
             new BA13(),
             new FA02(),
             new FA05(),
-            new FA08()
+            new FA08(),
+            new FS01()
         };
 
         // Legendary 卡池
