@@ -45,7 +45,7 @@ public class EndTurnButtonRotation : MonoBehaviour
         
         float startRotation = buttonRect.eulerAngles.z;
         float endRotation = startRotation + targetRotation;
-        float duration = 0.3f;
+        float duration = 0.5f;
         float elapsed = 0f;
         
         while (elapsed < duration)
