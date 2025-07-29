@@ -53,10 +53,9 @@ public class DeckManager : MonoBehaviour
         if (!SaveSystem.GameSaveExists())
         {
             InitializeDeck();
-            DrawCards(handSize, () => {
-                DrawForethoughtCards(); // 在普通手牌抓取完成后抓取谋定卡牌
-            });
         }
+        //避免时间问题导致的遗漏抓牌
+        StartCoroutine(DelayedDrawCards());
         InitializeCardEditor();
         UpdateDeckCountText(); // 初始化时更新牌堆数量显示
         UpdateDiscardPileCountText(); // 初始化时更新弃牌堆数量显示
@@ -922,9 +921,9 @@ public class DeckManager : MonoBehaviour
         hand.Clear();
         deck = new List<Card>(newDeck);
         UpdateDeckPanel(); // 更新 UI
-        DrawCards(handSize, () => {
-            DrawForethoughtCards(); // 在普通手牌抓取完成后抓取谋定卡牌
-        });
+        // DrawCards(handSize, () => {
+        //     DrawForethoughtCards(); // 在普通手牌抓取完成后抓取谋定卡牌
+        // });
     }
 
     //未完成
@@ -1001,5 +1000,13 @@ public class DeckManager : MonoBehaviour
     public void ResetFirstDrawFlag()
     {
         isFirstDrawOfTurn = true;
+    }
+    
+    private IEnumerator DelayedDrawCards()
+    {
+        yield return new WaitForSeconds(0.1f);
+        DrawCards(handSize, () => {
+            DrawForethoughtCards();
+        });
     }
 }
