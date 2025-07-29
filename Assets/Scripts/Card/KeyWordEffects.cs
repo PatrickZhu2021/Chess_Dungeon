@@ -142,5 +142,71 @@ namespace Effects
             ritualCount  = 0;
             Debug.Log("Basic ritual stopped and reset.");
         }
+        
+        // -------------------------------------
+        // BS系列卡牌特殊效果 (BS Card Special Effects)
+        // -------------------------------------
+        
+        /// <summary>
+        /// BS06狮鹫势效果：使下一张武器牌使用2次
+        /// </summary>
+        public static void ActivateGriffinStance(Player player)
+        {
+            if (player != null)
+            {
+                player.nextWeaponCardDoubleUse = true;
+                Debug.Log("BS06 Griffin Stance: Next weapon card will be used twice");
+            }
+        }
+        
+        /// <summary>
+        /// BS07卷轴匣效果：使下一张卡牌回到牌库顶部
+        /// </summary>
+        public static void ActivateScrollCase(Player player)
+        {
+            if (player != null)
+            {
+                player.nextCardReturnToDeckTop = true;
+                Debug.Log("BS07 Scroll Case: Next card will return to deck top");
+            }
+        }
+        
+        /// <summary>
+        /// BS08盐袋效果：激活每个敌人死亡获得护甲的效果
+        /// </summary>
+        public static void ActivateSaltBag(Player player)
+        {
+            if (player != null)
+            {
+                player.saltBagEffectActive = true;
+                Debug.Log("BS08 Salt Bag: Will gain armor for each enemy death");
+            }
+        }
+        
+        /// <summary>
+        /// 处理敌人死亡时的盐袋效果
+        /// </summary>
+        public static void TriggerSaltBagOnEnemyDeath(Player player, string enemyName)
+        {
+            if (player != null && player.saltBagEffectActive)
+            {
+                player.AddArmor(1);
+                Debug.Log($"BS08 Salt Bag effect: Gained 1 armor from {enemyName} death");
+            }
+        }
+        
+        /// <summary>
+        /// 重置所有BS系列效果（回合结束时调用）
+        /// </summary>
+        public static void ResetBSEffects(Player player)
+        {
+            if (player != null)
+            {
+                player.nextWeaponCardDoubleUse = false;
+                player.nextCardReturnToDeckTop = false;
+                // 注意：盐袋效果不在回合结束时重置，因为它是整个战斗持续的
+                Debug.Log("BS Effects reset (except Salt Bag which persists through battle)");
+            }
+        }
     }
 }

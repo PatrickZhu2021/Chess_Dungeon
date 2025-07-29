@@ -62,12 +62,6 @@ public class BS07: Card
     public override void OnCardExecuted()
     {
         Debug.Log("BS07 OnCardExecuted called");
-        
-        // 设置下一张卡牌回到牌库顶部的标记
-        if (player != null)
-        {
-            player.nextCardReturnToDeckTop = true;
-            Debug.Log("BS07: Next card will return to deck top");
-        }
+        KeywordEffects.ActivateScrollCase(player);
     }
 }

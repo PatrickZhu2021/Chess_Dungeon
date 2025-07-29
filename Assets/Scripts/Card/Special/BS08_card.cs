@@ -4,7 +4,7 @@ using UnityEngine.EventSystems;
 using Effects;
 using System.Collections.Generic;
 
-public class BS06_card: CardButtonBase
+public class BS08_card: CardButtonBase
 {
     public override void Initialize(Card card, DeckManager deckManager)
     {
@@ -28,40 +28,40 @@ public class BS06_card: CardButtonBase
             {
                 player.currentCard = card;
                 player.ExecuteCurrentCard();
-                Debug.Log("BS06 card used: next weapon card will be used twice");
+                Debug.Log("BS08 card used: will gain armor for each enemy death");
             }
         }
         else
         {
-            Debug.LogError("Card is null in BS06_card.OnClick");
+            Debug.LogError("Card is null in BS08_card.OnClick");
         }
     }
 }
 
-public class BS06: Card
+public class BS08: Card
 {
-    public BS06() : base(CardType.Special, "BS06", 1) 
+    public BS08() : base(CardType.Special, "BS08", 1, isExhaust: true) 
     { 
     }
 
     public override GameObject GetPrefab()
     {
-        return Resources.Load<GameObject>("Prefabs/Card/Special/BS06");
+        return Resources.Load<GameObject>("Prefabs/Card/Special/BS08");
     }
 
     public override Sprite GetSprite()
     {
-        return Resources.Load<Sprite>("Sprites/Card/Special/BS06");
+        return Resources.Load<Sprite>("Sprites/Card/Special/BS08");
     }
 
     public override string GetDescription()
     {
-        return "狮鹫势  1 / 使本回合下1张使用的武器牌在目标处使用2次";
+        return "盐袋  1 / 消耗，本次战斗内，每个死亡的敌方棋子使你获得1点虚血。";
     }
 
     public override void OnCardExecuted()
     {
-        Debug.Log("BS06 OnCardExecuted called");
-        KeywordEffects.ActivateGriffinStance(player);
+        Debug.Log("BS08 OnCardExecuted called");
+        KeywordEffects.ActivateSaltBag(player);
     }
 }

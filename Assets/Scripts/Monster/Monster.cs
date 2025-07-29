@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems; 
 using System.Collections.Generic;
+using Effects;
 public enum MonsterType
 {
     Pawn,
@@ -119,6 +120,9 @@ public class Monster : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
         if (player != null)
         {
             player.AddGold(10);
+            
+            // BS08盐袋效果：每个死亡的敌人获得1点护甲
+            KeywordEffects.TriggerSaltBagOnEnemyDeath(player, monsterName);
         }
          if (monsterManager != null)
         {

@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
+using Effects;
 
 public class Player : MonoBehaviour
 {
@@ -59,6 +60,7 @@ public class Player : MonoBehaviour
     public LayerMask moveHighlightLayer;
     public bool nextWeaponCardDoubleUse = false; // BS06狮鹫势效果
     public bool nextCardReturnToDeckTop = false; // BS07卷轴匣效果
+    public bool saltBagEffectActive = false; // BS08盐袋效果
 
     private Animator animator;
     public GameObject attackEffectPrefab;
@@ -774,8 +776,7 @@ public class Player : MonoBehaviour
         vineEffectActive = false; // Reset the vine effect after the turn
         cardsUsedThisTurn = 0;
         damageModifierThisTurn = 0;
-        nextWeaponCardDoubleUse = false; // 重置BS06效果
-        nextCardReturnToDeckTop = false; // 重置BS07效果
+        KeywordEffects.ResetBSEffects(this); // 重置BS系列效果
     }
     
     public void ApplyFuryDamage()
