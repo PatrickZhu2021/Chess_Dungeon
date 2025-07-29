@@ -56,7 +56,7 @@ public class FS04: Card
 
     public override string GetDescription()
     {
-        return "耀火引信 燃点，火域，瞩目 1 在1名随机敌方棋子处创造地形燃点；若火域内存在敌方棋子，再对1名火域内的随机敌方棋子施加3层【瞩目】";
+        return "耀火引信 燃点，火域，瞩目 1 在1名随机敌方棋子处创造地形燃点；若火域内存在敌方棋子，再对1名火域内的随机敌方棋子施加5层【瞩目】";
     }
 
     public override void OnCardExecuted()
@@ -113,8 +113,8 @@ public class FS04: Card
         int randomIndex = Random.Range(0, enemiesInFireZone.Count);
         Monster targetEnemy = enemiesInFireZone[randomIndex];
         
-        targetEnemy.AddLure(3);
-        Debug.Log($"FS04: Applied 3 lure stacks to {targetEnemy.monsterName} at {targetEnemy.position}");
+        targetEnemy.AddLure(5);
+        Debug.Log($"FS04: Applied 5 lure stacks to {targetEnemy.monsterName} at {targetEnemy.position}");
     }
     
     private Monster GetRandomEnemy()

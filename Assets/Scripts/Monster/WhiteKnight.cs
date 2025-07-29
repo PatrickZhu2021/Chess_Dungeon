@@ -31,9 +31,10 @@ public class WhiteKnight : Monster
     public override void PerformMovement()
     {
         if (player == null) return;
+        Vector2Int targetPos = GetTargetPosition();
         Vector2Int oldPos = position;
         Vector2Int bestMove = position;
-        float closestDistance = Vector2Int.Distance(position, player.position);
+        float closestDistance = Vector2Int.Distance(position, targetPos);
 
         // 遍历所有可能的马跳跃位置
         foreach (Vector2Int move in knightMoves)
@@ -41,11 +42,11 @@ public class WhiteKnight : Monster
             Vector2Int potentialPosition = position + move;
             if (IsValidPosition(potentialPosition) && !IsPositionOccupied(potentialPosition))
             {
-                float distanceToPlayer = Vector2Int.Distance(potentialPosition, player.position);
-                if (distanceToPlayer < closestDistance)
+                float distanceToTarget = Vector2Int.Distance(potentialPosition, targetPos);
+                if (distanceToTarget < closestDistance)
                 {
                     bestMove = potentialPosition;
-                    closestDistance = distanceToPlayer;
+                    closestDistance = distanceToTarget;
                 }
             }
         }
@@ -54,11 +55,11 @@ public class WhiteKnight : Monster
         position = bestMove;
         UpdatePosition();
 
-        // 检测是否接触到玩家
-        if (position == player.position)
+        // 检测是否接触到目标
+        if (position == targetPos)
         {
             lastRelativePosition = ComputeKnightPushDirection(knightMove);;
-            Debug.Log("Knight attacked the player. lastRelativePosition set to knight move vector: " + lastRelativePosition);
+            Debug.Log("Knight reached target. lastRelativePosition set to knight move vector: " + lastRelativePosition);
         }
         else
         {

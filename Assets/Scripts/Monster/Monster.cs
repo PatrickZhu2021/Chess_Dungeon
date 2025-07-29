@@ -144,6 +144,13 @@ public class Monster : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
             Debug.Log($"{monsterName} died, karma link cleared");
         }
         
+        // 清除瞩目状态
+        if (currentLureTarget == this)
+        {
+            currentLureTarget = null;
+            Debug.Log($"{monsterName} died, lure target cleared");
+        }
+        
         if (player != null)
         {
             player.AddGold(10);
@@ -175,20 +182,35 @@ public class Monster : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
             return;
         }
         
-        // 检查是否有瞩目目标
-        if (currentLureTarget != null && currentLureTarget.HasLure())
-        {
-            MoveTowardsLureTarget();
-        }
-        else
-        {
-            PerformMovement();
-        }
+        PerformMovement();
     }
     
     public virtual void PerformMovement()
     {
+        Vector2Int targetPos;
+        
+        // 检查是否有瞩目目标（不能是自己）
+        if (currentLureTarget != null && currentLureTarget != this && currentLureTarget.HasLure())
+        {
+            targetPos = currentLureTarget.position;
+            Debug.Log($"{monsterName} targeting lure at {targetPos}");
+            
+            // 每影响一名敌方棋子则减少1层瞩目
+            currentLureTarget.ReduceLure(1);
+        }
+        else
+        {
+            targetPos = player.position;
+            Debug.Log($"{monsterName} targeting player at {targetPos}");
+        }
+        
+        PerformMovement(targetPos);
+    }
+    
+    public virtual void PerformMovement(Vector2Int targetPosition)
+    {
         // Default empty implementation, override in subclasses
+        Debug.Log($"{monsterName} performing movement towards {targetPosition} (base implementation)");
     }
 
     public bool IsPositionOccupied(Vector2Int checkPosition)
@@ -339,6 +361,24 @@ public class Monster : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     public bool HasLure()
     {
         return lureStacks > 0;
+    }
+    
+    protected Vector2Int GetTargetPosition()
+    {
+        // 检查是否有瞩目目标（不能是自己）
+        if (currentLureTarget != null && currentLureTarget != this && currentLureTarget.HasLure())
+        {
+            Vector2Int lurePos = currentLureTarget.position;
+            // 每影响一名敌方棋子则减少1层瞩目
+            currentLureTarget.ReduceLure(1);
+            Debug.Log($"{monsterName} targeting lure at {lurePos}");
+            return lurePos;
+        }
+        else
+        {
+            Debug.Log($"{monsterName} targeting player at {player.position}");
+            return player.position;
+        }
     }
     
     private void MoveTowardsLureTarget()

@@ -35,9 +35,10 @@ public class WhiteKing : Monster
     public override void PerformMovement()
     {
         if (player == null) return;
+        Vector2Int targetPos = GetTargetPosition();
 
         Vector2Int bestMove = position;
-        float closestDistance = Vector2Int.Distance(position, player.position);
+        float closestDistance = Vector2Int.Distance(position, targetPos);
         Vector2Int chosenDirection = Vector2Int.zero; 
         // 遍历所有可能的国王移动方向（每次只能移动一格）
         foreach (Vector2Int direction in kingDirections)
@@ -46,11 +47,11 @@ public class WhiteKing : Monster
 
             if (IsValidPosition(potentialPosition) && !IsPositionOccupied(potentialPosition))
             {
-                float distanceToPlayer = Vector2Int.Distance(potentialPosition, player.position);
-                if (distanceToPlayer < closestDistance)
+                float distanceToTarget = Vector2Int.Distance(potentialPosition, targetPos);
+                if (distanceToTarget < closestDistance)
                 {
                     bestMove = potentialPosition;
-                    closestDistance = distanceToPlayer;
+                    closestDistance = distanceToTarget;
                     chosenDirection = direction; 
                 }
             }
@@ -59,8 +60,8 @@ public class WhiteKing : Monster
         position = bestMove;
         UpdatePosition();
 
-        // 检测是否接触到玩家
-        if (position == player.position)
+        // 检测是否接触到目标
+        if (position == targetPos)
         {
             lastRelativePosition = -chosenDirection;
         }
