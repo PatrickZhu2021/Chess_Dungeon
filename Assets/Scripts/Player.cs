@@ -58,6 +58,7 @@ public class Player : MonoBehaviour
     public LayerMask attackHighlightLayer;
     public LayerMask moveHighlightLayer;
     public bool nextWeaponCardDoubleUse = false; // BS06狮鹫势效果
+    public bool nextCardReturnToDeckTop = false; // BS07卷轴匣效果
 
     private Animator animator;
     public GameObject attackEffectPrefab;
@@ -774,6 +775,7 @@ public class Player : MonoBehaviour
         cardsUsedThisTurn = 0;
         damageModifierThisTurn = 0;
         nextWeaponCardDoubleUse = false; // 重置BS06效果
+        nextCardReturnToDeckTop = false; // 重置BS07效果
     }
     
     public void ApplyFuryDamage()

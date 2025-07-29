@@ -197,6 +197,7 @@ public class DeckManager : MonoBehaviour
         allCards.Add(new BS02());
         allCards.Add(new BS05());
         allCards.Add(new BS06());
+        allCards.Add(new BS07());
         UpdateCardEditorPanel();
     }
 
@@ -229,8 +230,8 @@ public class DeckManager : MonoBehaviour
 
             if (deck.Count > 0)
             {
-                // 随机抓牌
-                ShuffleDeck();
+                // 抓牌
+                //ShuffleDeck();
                 UpdateDeckPanel();
                 UpdateDiscardPanel();
                 Card card = deck[0];
@@ -400,9 +401,19 @@ public class DeckManager : MonoBehaviour
         else
         {
             discardPile.Add(card);
+            
+            // 检查BS07效果：将卡牌从弃牌堆移到牌库顶部
+            if (player != null && player.nextCardReturnToDeckTop)
+            {
+                discardPile.Remove(card); // 从弃牌堆移除
+                deck.Insert(0, card); // 放到牌库顶部
+                player.nextCardReturnToDeckTop = false; // 清除标记
+                Debug.Log($"BS07 effect: Card {card.Id} returned to deck top");
+            }
         }
         
         UpdateDiscardPileCountText(); // 更新弃牌堆数量显示
+        UpdateDeckCountText(); // 更新牌库数量显示
 
         // 找到并销毁已使用的卡牌按钮
         for (int i = cardButtons.Count - 1; i >= 0; i--)

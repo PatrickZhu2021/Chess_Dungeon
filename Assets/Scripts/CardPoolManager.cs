@@ -30,7 +30,8 @@ public static class CardPoolManager
             new BA07(),
             new BA08(),
             new BS02(),
-            new BS05()
+            new BS05(),
+            new BS07()
         };
 
         // Uncommon 卡池
