@@ -208,6 +208,7 @@ public class DeckManager : MonoBehaviour
         allCards.Add(new FA05a());
         allCards.Add(new FA06());
         allCards.Add(new FA07());
+        allCards.Add(new FA08());
         UpdateCardEditorPanel();
     }
 
@@ -499,6 +500,17 @@ public class DeckManager : MonoBehaviour
                 DiscardCard(i); // Use DiscardCard method to discard each card
             }
         }
+    }
+    
+    public int DiscardAllCards()
+    {
+        int discardedCount = 0;
+        for (int i = hand.Count - 1; i >= 0; i--)
+        {
+            DiscardCard(i);
+            discardedCount++;
+        }
+        return discardedCount;
     }
 
     public void ReshuffleDeck()

@@ -55,6 +55,31 @@ public class FireZone : MonoBehaviour
         if (--remainingEnemyTurns <= 0)
             DestroySelf();
     }
+    
+    public void TriggerDamageOnly()
+    {
+        if (polygonPoints == null)
+        {
+            Debug.LogWarning("FireZone polygonPoints is null. Skipping damage.");
+            return;
+        }
+
+        foreach (Monster monster in FindObjectsOfType<Monster>())
+        {
+            Vector3 pos = monster.transform.position;
+            bool hit = IsPointInPolygon(pos, polygonPoints)
+                       || IsCellTouchedByPolygonEdges(pos, polygonPoints);
+            if (hit)
+            {
+                Player player = FindObjectOfType<Player>();
+                int baseDamage = 2;
+                int ferventBonus = player != null ? player.ferventStacks : 0;
+                int totalDamage = baseDamage + ferventBonus;
+                monster.TakeDamage(totalDamage);
+                Debug.Log($"FireZone damage only: {baseDamage} base + {ferventBonus} fervent = {totalDamage} total");
+            }
+        }
+    }
 
     private bool IsPointInPolygon(Vector3 point, List<Vector3> poly)
     {
