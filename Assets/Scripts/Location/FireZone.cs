@@ -42,7 +42,14 @@ public class FireZone : MonoBehaviour
             bool hit = IsPointInPolygon(pos, polygonPoints)
                        || IsCellTouchedByPolygonEdges(pos, polygonPoints);
             if (hit)
-                monster.TakeDamage(2);
+            {
+                Player player = FindObjectOfType<Player>();
+                int baseDamage = 2;
+                int ferventBonus = player != null ? player.ferventStacks : 0;
+                int totalDamage = baseDamage + ferventBonus;
+                monster.TakeDamage(totalDamage);
+                Debug.Log($"FireZone damage: {baseDamage} base + {ferventBonus} fervent = {totalDamage} total");
+            }
         }
 
         if (--remainingEnemyTurns <= 0)

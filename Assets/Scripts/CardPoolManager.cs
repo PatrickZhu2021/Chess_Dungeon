@@ -85,7 +85,8 @@ public static class CardPoolManager
             new BookOfKnight(),
             new BookOfBishop(),
             new BookOfRook(),
-            new BookOfQueen()
+            new BookOfQueen(),
+            new FA06()
         };
     }
 

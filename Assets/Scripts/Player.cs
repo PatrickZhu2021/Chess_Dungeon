@@ -21,6 +21,7 @@ public class Player : MonoBehaviour
     public int damage = 1; //默认伤害
     public int damageModifierThisTurn = 0;
     public int furyStacks = 0; // 愤怒层数
+    public int ferventStacks = 0; // 炙烈层数
     public Vector2Int lastAttackDirection { get; set; }
 
     public int cardsUsedThisTurn = 0; //本回合使用的卡牌数量
@@ -798,6 +799,12 @@ public class Player : MonoBehaviour
     {
         furyStacks = Mathf.Max(0, furyStacks - stacks);
         Debug.Log($"Reduced {stacks} fury stacks. Remaining: {furyStacks}");
+    }
+    
+    public void AddFervent(int stacks)
+    {
+        ferventStacks += stacks;
+        Debug.Log($"Added {stacks} fervent stacks. Total: {ferventStacks}");
     }
 
     public void OnCardUsed(Card currentCard)
