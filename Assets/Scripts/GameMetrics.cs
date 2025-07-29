@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
@@ -89,16 +90,17 @@ public class GameMetrics : MonoBehaviour
         currentTurn = new TurnMetrics
         {
             turnNumber = turnNumber,
-            movesAvailable = player != null ? player.actions : 3,
-            cardsInHand = GetHandSize()
+            movesAvailable = player != null ? player.actions : 3
         };
         turnStartTime = Time.time;
-        Debug.Log($"Turn {turnNumber} started - Actions: {currentTurn.movesAvailable}, Cards: {currentTurn.cardsInHand}");
     }
     
     public void EndTurn()
     {
         if (currentTurn == null) return;
+        
+        // 在弃牌前收集手牌数据
+        currentTurn.cardsInHand = GetHandSize();
         
         currentTurn.turnDuration = Time.time - turnStartTime;
         int currentActions = player != null ? player.actions : 0;
@@ -114,12 +116,13 @@ public class GameMetrics : MonoBehaviour
             currentTurn.avgCardCost = 0f;
         }
         
-        Debug.Log($"Turn ended - Used: {currentTurn.movesUsed}, Remaining: {currentActions}, Cards played: {currentTurn.cardsPlayed}, Avg cost: {currentTurn.avgCardCost}");
         currentTurn.playerPosition = player != null ? player.position : Vector2Int.zero;
         currentTurn.adjacentThreats = CountAdjacentThreats();
         
         currentSession.turns.Add(currentTurn);
         currentSession.totalTurns++;
+        
+        Debug.Log($"Turn ended - Cards in hand: {currentTurn.cardsInHand}, Used: {currentTurn.movesUsed}, Cards played: {currentTurn.cardsPlayed}");
         
         currentTurn = null;
     }
