@@ -57,6 +57,7 @@ public class Player : MonoBehaviour
     public bool vineEffectActive = false; 
     public LayerMask attackHighlightLayer;
     public LayerMask moveHighlightLayer;
+    public bool nextWeaponCardDoubleUse = false; // BS06狮鹫势效果
 
     private Animator animator;
     public GameObject attackEffectPrefab;
@@ -544,20 +545,35 @@ public class Player : MonoBehaviour
         lastAttackDirection = attackPosition - position;
         lastAttackSnapshot = attackPosition;
         targetAttackPosition = attackPosition;
-        Vector3 worldPosition = CalculateWorldPosition(attackPosition);
-        GameObject effectInstance = Instantiate(attackEffectPrefab, worldPosition, Quaternion.identity);
-        // 播放攻击动画
-        Destroy(effectInstance, 0.1f);
-        // 基于坐标检测 Monster 的存在
-        GameObject[] monsters = GameObject.FindGameObjectsWithTag("Monster");
-        foreach (GameObject monsterObject in monsters)
+        
+        // 执行攻击（可能执行两次）
+        int attackTimes = (currentCard != null && currentCard.cardType == CardType.Attack && nextWeaponCardDoubleUse) ? 2 : 1;
+        
+        for (int i = 0; i < attackTimes; i++)
         {
-            Monster monster = monsterObject.GetComponent<Monster>();
-            if (monster != null && monster.IsPartOfMonster(attackPosition))
+            Vector3 worldPosition = CalculateWorldPosition(attackPosition);
+            GameObject effectInstance = Instantiate(attackEffectPrefab, worldPosition, Quaternion.identity);
+            Destroy(effectInstance, 0.1f);
+            
+            // 基于坐标检测 Monster 的存在
+            GameObject[] monsters = GameObject.FindGameObjectsWithTag("Monster");
+            foreach (GameObject monsterObject in monsters)
             {
-                monster.TakeDamage(damage + damageModifierThisTurn);
+                Monster monster = monsterObject.GetComponent<Monster>();
+                if (monster != null && monster.IsPartOfMonster(attackPosition))
+                {
+                    monster.TakeDamage(damage + damageModifierThisTurn);
+                }
+            }
+            
+            if (i == 0 && attackTimes > 1)
+            {
+                Debug.Log($"BS06 effect: Attack {i + 1}/{attackTimes}");
             }
         }
+        
+        // BS06标记将在ExecuteCurrentCard中清除
+        
         damage = 1;
         ClearMoveHighlights();
         ExecuteCurrentCard();
@@ -686,8 +702,19 @@ public class Player : MonoBehaviour
             {
                 //Debug.Log("Executing OnAttackExecuted for: ");
                 Vector2Int snapshot = targetAttackPosition;
-                currentCard.OnCardExecuted(lastAttackSnapshot);   // 只触发攻击卡的特殊效果
-                targetAttackPosition = new Vector2Int(-1, -1); ;
+                
+                // 第一次执行OnCardExecuted
+                currentCard.OnCardExecuted(lastAttackSnapshot);
+                
+                // 如果有BS06效果，再次执行OnCardExecuted
+                if (nextWeaponCardDoubleUse)
+                {
+                    Debug.Log("BS06 effect: Executing OnCardExecuted twice");
+                    currentCard.OnCardExecuted(lastAttackSnapshot);
+                    nextWeaponCardDoubleUse = false; // 清除标记
+                }
+                
+                targetAttackPosition = new Vector2Int(-1, -1);
             }
 
             if (currentCard.cardType == CardType.Move) // Assuming MovementCard is a class for movement cards
@@ -746,6 +773,7 @@ public class Player : MonoBehaviour
         vineEffectActive = false; // Reset the vine effect after the turn
         cardsUsedThisTurn = 0;
         damageModifierThisTurn = 0;
+        nextWeaponCardDoubleUse = false; // 重置BS06效果
     }
     
     public void ApplyFuryDamage()

@@ -54,7 +54,8 @@ public static class CardPoolManager
             new BA11(),
             new BA12(),
             new BA14(),
-            new BS01()
+            new BS01(),
+            new BS06()
         };
 
         // Epic 卡池
