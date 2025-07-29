@@ -38,6 +38,7 @@ public class Monster : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     public static Monster currentLureTarget = null; // 当前瞩目目标
     public Monster karmaLinkedMonster = null; // 业力连接的怪物
     public static List<Monster> karmaLinkedPair = new List<Monster>(); // 业力连接对
+    public static GameObject karmaLinkLine = null; // 业力连接线
 
 
     public MonsterInfoManager infoManager;
@@ -73,6 +74,9 @@ public class Monster : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     public void UpdatePosition()
     {
         transform.position = player.CalculateWorldPosition(position);
+        
+        // 更新业力连接线位置
+        UpdateKarmaLinkLine();
     }
 
     public virtual List<Vector2Int> CalculatePossibleMoves()
@@ -102,8 +106,8 @@ public class Monster : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
             //animator.SetTrigger("TakeDamage");
         }
         
-        // 业力连接伤害共享（使用一次后消失）
-        if (karmaLinkedMonster != null && karmaLinkedMonster.health > 0)
+        // 业力连接伤害共享（只有受到大于0的伤害时才解除连接）
+        if (damage > 0 && karmaLinkedMonster != null && karmaLinkedMonster.health > 0)
         {
             Monster linkedMonster = karmaLinkedMonster;
             ClearKarmaLinks(); // 立即清除连接防止递归
@@ -381,6 +385,9 @@ public class Monster : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
         karmaLinkedPair.Add(monster1);
         karmaLinkedPair.Add(monster2);
         
+        // 创建蓝色连接线
+        CreateKarmaLinkLine(monster1, monster2);
+        
         Debug.Log($"Karma link created between {monster1.monsterName} and {monster2.monsterName}");
     }
     
@@ -394,12 +401,59 @@ public class Monster : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
             }
         }
         karmaLinkedPair.Clear();
+        
+        // 销毁连接线
+        if (karmaLinkLine != null)
+        {
+            Object.Destroy(karmaLinkLine);
+            karmaLinkLine = null;
+        }
+        
         Debug.Log("Karma links cleared");
     }
     
     public bool HasKarmaLink()
     {
         return karmaLinkedMonster != null;
+    }
+    
+    private static void CreateKarmaLinkLine(Monster monster1, Monster monster2)
+    {
+        // 创建连接线对象
+        karmaLinkLine = new GameObject("KarmaLinkLine");
+        
+        // 添加LineRenderer组件
+        LineRenderer lineRenderer = karmaLinkLine.AddComponent<LineRenderer>();
+        lineRenderer.positionCount = 2;
+        lineRenderer.SetPosition(0, monster1.transform.position);
+        lineRenderer.SetPosition(1, monster2.transform.position);
+        lineRenderer.startColor = lineRenderer.endColor = Color.blue;
+        lineRenderer.widthMultiplier = 0.1f;
+        lineRenderer.material = new Material(Shader.Find("Sprites/Default"));
+        lineRenderer.useWorldSpace = true;
+        lineRenderer.sortingLayerName = "UI";
+        lineRenderer.sortingOrder = 10;
+        
+        Debug.Log($"Karma link line created between {monster1.monsterName} and {monster2.monsterName}");
+    }
+    
+    private static void UpdateKarmaLinkLine()
+    {
+        if (karmaLinkLine != null && karmaLinkedPair.Count == 2)
+        {
+            Monster monster1 = karmaLinkedPair[0];
+            Monster monster2 = karmaLinkedPair[1];
+            
+            if (monster1 != null && monster2 != null)
+            {
+                LineRenderer lineRenderer = karmaLinkLine.GetComponent<LineRenderer>();
+                if (lineRenderer != null)
+                {
+                    lineRenderer.SetPosition(0, monster1.transform.position);
+                    lineRenderer.SetPosition(1, monster2.transform.position);
+                }
+            }
+        }
     }
 
 
