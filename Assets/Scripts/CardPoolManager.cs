@@ -75,7 +75,8 @@ public static class CardPoolManager
             new BookOfPawn(),
             new FlameBow(),
             new BA13(),
-            new FA02()
+            new FA02(),
+            new FA05()
         };
 
         // Legendary 卡池
