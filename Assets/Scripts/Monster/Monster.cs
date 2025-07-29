@@ -34,6 +34,8 @@ public class Monster : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     private bool isDying = false;
     public Vector2Int lastRelativePosition;
     public int stunnedStacks = 0; // 眩晕层数
+    public int lureStacks = 0; // 瞩目层数
+    public static Monster currentLureTarget = null; // 当前瞩目目标
 
     public MonsterInfoManager infoManager;
     private List<GameObject> highlightInstances = new List<GameObject>();
@@ -148,7 +150,15 @@ public class Monster : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
             return;
         }
         
-        PerformMovement();
+        // 检查是否有瞩目目标
+        if (currentLureTarget != null && currentLureTarget.HasLure())
+        {
+            MoveTowardsLureTarget();
+        }
+        else
+        {
+            PerformMovement();
+        }
     }
     
     public virtual void PerformMovement()
@@ -275,6 +285,66 @@ public class Monster : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     public bool IsStunned()
     {
         return stunnedStacks > 0;
+    }
+    
+    public void AddLure(int stacks)
+    {
+        // 同时仅能有1名敌方棋子持有瞩目
+        if (currentLureTarget != null && currentLureTarget != this)
+        {
+            currentLureTarget.lureStacks = 0;
+        }
+        
+        lureStacks = stacks;
+        currentLureTarget = this;
+        Debug.Log($"{monsterName} gained {stacks} lure stacks");
+    }
+    
+    public void ReduceLure(int stacks)
+    {
+        lureStacks = Mathf.Max(0, lureStacks - stacks);
+        Debug.Log($"{monsterName} lure reduced by {stacks}. Remaining: {lureStacks}");
+        
+        if (lureStacks <= 0 && currentLureTarget == this)
+        {
+            currentLureTarget = null;
+        }
+    }
+    
+    public bool HasLure()
+    {
+        return lureStacks > 0;
+    }
+    
+    private void MoveTowardsLureTarget()
+    {
+        if (currentLureTarget == null || !currentLureTarget.HasLure())
+        {
+            PerformMovement(); // 回退到正常移动
+            return;
+        }
+        
+        Vector2Int targetPos = currentLureTarget.position;
+        Vector2Int direction = new Vector2Int(
+            targetPos.x > position.x ? 1 : (targetPos.x < position.x ? -1 : 0),
+            targetPos.y > position.y ? 1 : (targetPos.y < position.y ? -1 : 0)
+        );
+        
+        Vector2Int newPosition = position + direction;
+        
+        if (IsValidPosition(newPosition) && !IsPositionOccupied(newPosition))
+        {
+            position = newPosition;
+            UpdatePosition();
+            
+            // 每影响一名敌方棋子则减少1层瞩目
+            currentLureTarget.ReduceLure(1);
+            Debug.Log($"{monsterName} moved towards lure target at {targetPos}");
+        }
+        else
+        {
+            Debug.Log($"{monsterName} cannot move towards lure target - path blocked");
+        }
     }
 
 }
