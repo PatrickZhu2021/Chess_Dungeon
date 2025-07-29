@@ -78,13 +78,14 @@ public class TurnManager : MonoBehaviour
 
     private IEnumerator HandleTurnEnd()
     {
-        // 结束当前回合的指标记录
+        DisableAllButtons(); // 禁用所有按钮
+        
+        // 在弃牌前结束当前回合的指标记录
         if (GameMetrics.Instance != null)
         {
             GameMetrics.Instance.EndTurn();
         }
         
-        DisableAllButtons(); // 禁用所有按钮
         // 回合结束弃牌 
         deckManager.DiscardHand();
         player.ResetEffectsAtEndOfTurn();

@@ -83,11 +83,11 @@ public class BA05: Card
 
     public override void OnCardExecuted(Vector2Int attackPos)
     {   
-        // 消耗效果：将卡牌移到消耗堆
-        DeckManager deckManager = GameObject.FindObjectOfType<DeckManager>();
-        if (deckManager != null)
-        {
-            deckManager.ExhaustCard(this);
-        }
+        // // 消耗效果：将卡牌移到消耗堆
+        // DeckManager deckManager = GameObject.FindObjectOfType<DeckManager>();
+        // if (deckManager != null)
+        // {
+        //     deckManager.ExhaustCard(this);
+        // }
     }
 }

@@ -103,7 +103,18 @@ public class GameMetrics : MonoBehaviour
         currentTurn.turnDuration = Time.time - turnStartTime;
         int currentActions = player != null ? player.actions : 0;
         currentTurn.movesUsed = currentTurn.movesAvailable - currentActions;
-        Debug.Log($"Turn ended - Used: {currentTurn.movesUsed}, Remaining: {currentActions}, Cards played: {currentTurn.cardsPlayed}");
+        
+        // 计算avgCardCost为使用的行动点数/使用的卡牌数
+        if (currentTurn.cardsPlayed > 0)
+        {
+            currentTurn.avgCardCost = (float)currentTurn.movesUsed / currentTurn.cardsPlayed;
+        }
+        else
+        {
+            currentTurn.avgCardCost = 0f;
+        }
+        
+        Debug.Log($"Turn ended - Used: {currentTurn.movesUsed}, Remaining: {currentActions}, Cards played: {currentTurn.cardsPlayed}, Avg cost: {currentTurn.avgCardCost}");
         currentTurn.playerPosition = player != null ? player.position : Vector2Int.zero;
         currentTurn.adjacentThreats = CountAdjacentThreats();
         
@@ -119,7 +130,8 @@ public class GameMetrics : MonoBehaviour
         
         currentTurn.cardsPlayed++;
         currentTurn.cardsPlayedThisTurn.Add(cardName);
-        currentTurn.avgCardCost = (currentTurn.avgCardCost * (currentTurn.cardsPlayed - 1) + cost) / currentTurn.cardsPlayed;
+        // avgCardCost现在表示使用的行动点数/使用的卡牌数
+        // 在EndTurn时计算
     }
     
     public void RecordDamageDealt(int damage, int enemiesHit = 1)
