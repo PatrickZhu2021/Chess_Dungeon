@@ -713,6 +713,12 @@ public class Player : MonoBehaviour
         }
         if (currentCard != null)
         {
+            // 记录卡牌使用指标
+            if (GameMetrics.Instance != null)
+            {
+                GameMetrics.Instance.RecordCardPlayed(currentCard.Id, currentCard.cost);
+            }
+            
             deckManager.UseCard(currentCard);
             
             // 如果是攻击卡，执行 OnAttackExecuted 方法

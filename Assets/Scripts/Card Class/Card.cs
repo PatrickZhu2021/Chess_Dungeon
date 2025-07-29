@@ -83,12 +83,7 @@ public class Card
 
     public virtual void OnCardExecuted()
     {
-        // 记录卡牌使用指标
-        if (GameMetrics.Instance != null)
-        {
-            string cardId = !string.IsNullOrEmpty(cardName) ? cardName : Id;
-            GameMetrics.Instance.RecordCardPlayed(cardId, cost);
-        }
+        
     }
 
     public virtual void OnCardExecuted(Vector2Int gridPosition)
