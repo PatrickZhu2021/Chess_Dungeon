@@ -4968,8 +4968,12 @@ MonoBehaviour:
   healthBarPrefab: {fileID: 0}
   player: {fileID: 0}
   lastRelativePosition: {x: 0, y: 0}
+  stunnedStacks: 0
+  lureStacks: 0
+  karmaLinkedMonster: {fileID: 0}
   infoManager: {fileID: 0}
   highlightPrefab: {fileID: 3397057089140146364, guid: a79931983b2a1d340a63fa6ae8d622b1, type: 3}
+  damageTextPrefab: {fileID: 1400744369818263092, guid: af4d799e57b38c5438a8b7170a041297, type: 3}
 --- !u!1 &1058265631
 GameObject:
   m_ObjectHideFlags: 0
@@ -7674,6 +7678,8 @@ MonoBehaviour:
   - {fileID: 0}
   damage: 1
   damageModifierThisTurn: 0
+  furyStacks: 0
+  ferventStacks: 0
   cardsUsedThisTurn: 0
   healthText: {fileID: 937926149}
   armorText: {fileID: 2140048935}
@@ -7703,6 +7709,8 @@ MonoBehaviour:
     hoardingValue: 0
     isPartner: 0
     isTemporary: 0
+    isTriumph: 0
+    isGrace: 0
   deckManager: {fileID: 0}
   monsterManager: {fileID: 0}
   locationManager: {fileID: 1980775606}
@@ -7714,7 +7722,11 @@ MonoBehaviour:
   moveHighlightLayer:
     serializedVersion: 2
     m_Bits: 6144
+  nextWeaponCardDoubleUse: 0
+  nextCardReturnToDeckTop: 0
+  saltBagEffectActive: 0
   attackEffectPrefab: {fileID: 3381790849320777569, guid: 17b42eb47516bc446aaa5e390ef6e6d6, type: 3}
+  damageTextPrefab: {fileID: 1400744369818263092, guid: af4d799e57b38c5438a8b7170a041297, type: 3}
   lastAttackSnapshot: {x: 0, y: 0}
 --- !u!61 &1399918235
 BoxCollider2D:
@@ -9277,6 +9289,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   activeFirePoints: []
   activeFireZones: []
+  activeBarriers: []
 --- !u!1 &2009071440
 GameObject:
   m_ObjectHideFlags: 0

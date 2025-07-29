@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.EventSystems; 
+using UnityEngine.EventSystems;
+using System.Collections;
 using System.Collections.Generic;
 using Effects;
 public enum MonsterType
@@ -44,6 +45,7 @@ public class Monster : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     public MonsterInfoManager infoManager;
     private List<GameObject> highlightInstances = new List<GameObject>();
     public GameObject highlightPrefab;  // 在 Inspector 中拖入 Highlight Prefab
+    public GameObject damageTextPrefab;  // 伤害数字预制体
 
     
     public virtual void Initialize(Vector2Int startPos)
@@ -67,6 +69,13 @@ public class Monster : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
         healthBarInstance.transform.localPosition = new Vector3(0, -0.0f, 0);  // 在底部稍微偏移
         healthFillRenderer = healthBarInstance.transform.Find("fill").GetComponent<SpriteRenderer>();
         UpdateHealthBar();
+        
+        // 加载伤害文本预制体
+        if (damageTextPrefab == null)
+        {
+            damageTextPrefab = Resources.Load<GameObject>("Prefabs/UI/DamageText");
+            Debug.Log($"Loaded damageTextPrefab from Resources: {(damageTextPrefab != null ? "Success" : "Failed")}");
+        }
 
         UpdatePosition();
     }
@@ -105,6 +114,9 @@ public class Monster : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
         
         health -= damage;
         UpdateHealthBar();
+        
+        // 显示伤害数字
+        ShowDamageText(damage, false);
 
         // 播放受伤动画
         if (animator != null)
@@ -481,6 +493,45 @@ public class Monster : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
         lineRenderer.sortingOrder = 10;
         
         Debug.Log($"Karma link line created between {monster1.monsterName} and {monster2.monsterName}");
+    }
+    
+    public void ShowDamageText(int damage, bool isHeal = false)
+    {
+        StartCoroutine(ShowDamageTextCoroutine(damage, isHeal));
+    }
+    
+    private IEnumerator ShowDamageTextCoroutine(int damage, bool isHeal)
+    {
+        if (player == null)
+        {
+            yield break;
+        }
+        
+        GameObject prefabToUse = damageTextPrefab;
+        if (prefabToUse == null && player != null)
+        {
+            prefabToUse = player.damageTextPrefab;
+        }
+        
+        if (prefabToUse != null)
+        {
+            Vector3 basePos = player.CalculateWorldPosition(position) + Vector3.up * 0.5f;
+            Vector3 randomOffset = new Vector3(
+                Random.Range(-0.3f, 0.3f),
+                Random.Range(-0.2f, 0.2f),
+                0
+            );
+            Vector3 worldPos = basePos + randomOffset;
+            
+            GameObject damageObj = Instantiate(prefabToUse, worldPos, Quaternion.identity);
+            DamageText damageScript = damageObj.GetComponent<DamageText>();
+            if (damageScript != null)
+            {
+                damageScript.SetDamage(damage, isHeal);
+            }
+            
+            yield return new WaitForSeconds(0.5f);
+        }
     }
     
     private static void UpdateKarmaLinkLine()

@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using System.Collections;
 using System.Collections.Generic;
 using Effects;
 
@@ -65,6 +66,7 @@ public class Player : MonoBehaviour
 
     private Animator animator;
     public GameObject attackEffectPrefab;
+    public GameObject damageTextPrefab;
     public Vector2Int targetAttackPosition { get; set; }
     public Vector2Int lastAttackSnapshot;
 
@@ -268,6 +270,10 @@ public class Player : MonoBehaviour
         }
         UpdateHealthText();
         UpdateArmorText();
+        
+        // 显示伤害数字
+        ShowDamageText(damage, false);
+        
         if (health <= 0)
         {
             //("Player has died.");
@@ -933,5 +939,33 @@ public class Player : MonoBehaviour
     public void SetGold(int newGold)
     {
         gold = newGold;
+    }
+    
+    public void ShowDamageText(int damage, bool isHeal = false)
+    {
+        StartCoroutine(ShowDamageTextCoroutine(damage, isHeal));
+    }
+    
+    private IEnumerator ShowDamageTextCoroutine(int damage, bool isHeal)
+    {
+        if (damageTextPrefab != null)
+        {
+            Vector3 basePos = CalculateWorldPosition(position) + Vector3.up * 0.5f;
+            Vector3 randomOffset = new Vector3(
+                Random.Range(-0.3f, 0.3f),
+                Random.Range(-0.2f, 0.2f),
+                0
+            );
+            Vector3 worldPos = basePos + randomOffset;
+            
+            GameObject damageObj = Instantiate(damageTextPrefab, worldPos, Quaternion.identity);
+            DamageText damageScript = damageObj.GetComponent<DamageText>();
+            if (damageScript != null)
+            {
+                damageScript.SetDamage(damage, isHeal);
+            }
+            
+            yield return new WaitForSeconds(0.5f);
+        }
     }
 }
