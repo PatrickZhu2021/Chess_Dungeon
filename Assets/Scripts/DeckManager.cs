@@ -194,6 +194,7 @@ public class DeckManager : MonoBehaviour
         allCards.Add(new BA13());
         allCards.Add(new BA14());
         allCards.Add(new BS01());
+        allCards.Add(new BS02());
         UpdateCardEditorPanel();
     }
 
@@ -387,7 +388,18 @@ public class DeckManager : MonoBehaviour
     public void UseCard(Card card)
     {
         hand.Remove(card);
-        discardPile.Add(card);
+        
+        // 检查是否为消耗卡牌
+        if (card.isExhaust)
+        {
+            exhaustPile.Add(card);
+            Debug.Log($"Card {card.Id} exhausted");
+        }
+        else
+        {
+            discardPile.Add(card);
+        }
+        
         UpdateDiscardPileCountText(); // 更新弃牌堆数量显示
 
         // 找到并销毁已使用的卡牌按钮
@@ -466,7 +478,7 @@ public class DeckManager : MonoBehaviour
         }
     }
 
-    void ReshuffleDeck()
+    public void ReshuffleDeck()
     {
         if (discardPile.Count > 0)
         {
