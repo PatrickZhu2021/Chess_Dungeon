@@ -130,7 +130,7 @@ public class TurnManager : MonoBehaviour
             deckManager.ResetFirstDrawFlag();
             
             // 回合结束抓新的手牌
-            deckManager.DrawCards(deckManager.handSize - deckManager.hand.Count);
+            deckManager.DrawCards(deckManager.handSize);
         }
         else {
             monsterManager.nextlevel = true;

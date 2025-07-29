@@ -834,11 +834,17 @@ public class DeckManager : MonoBehaviour
             }
         }
         
-        // 将凯旋卡牌添加到牌库顶部，下回合优先抓到
+        // 将凯旋卡牌直接添加到手牌
         foreach (Card triumphCard in triumphCards)
         {
-            deck.Insert(0, triumphCard);
-            Debug.Log($"Triumph card {triumphCard.Id} returned to top of deck");
+            hand.Add(triumphCard);
+            Debug.Log($"Triumph card {triumphCard.Id} returned to hand");
+        }
+        
+        // 如果有凯旋卡牌返回，更新手牌显示
+        if (triumphCards.Count > 0)
+        {
+            UpdateHandDisplay();
         }
     }
     
