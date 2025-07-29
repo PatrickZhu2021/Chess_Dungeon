@@ -39,6 +39,7 @@ public class Monster : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     public Monster karmaLinkedMonster = null; // 业力连接的怪物
     public static List<Monster> karmaLinkedPair = new List<Monster>(); // 业力连接对
 
+
     public MonsterInfoManager infoManager;
     private List<GameObject> highlightInstances = new List<GameObject>();
     public GameObject highlightPrefab;  // 在 Inspector 中拖入 Highlight Prefab
@@ -101,11 +102,14 @@ public class Monster : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
             //animator.SetTrigger("TakeDamage");
         }
         
-        // 业力连接伤害共享
+        // 业力连接伤害共享（使用一次后消失）
         if (karmaLinkedMonster != null && karmaLinkedMonster.health > 0)
         {
-            karmaLinkedMonster.TakeDamageDirectly(damage);
-            Debug.Log($"Karma link: {karmaLinkedMonster.monsterName} also takes {damage} damage");
+            Monster linkedMonster = karmaLinkedMonster;
+            ClearKarmaLinks(); // 立即清除连接防止递归
+            
+            linkedMonster.TakeDamage(damage);
+            Debug.Log($"Karma link: {linkedMonster.monsterName} also takes {damage} damage (link consumed)");
         }
 
         if (health <= 0)
@@ -113,18 +117,7 @@ public class Monster : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
             Die();
         }
     }
-    
-    public virtual void TakeDamageDirectly(int damage)
-    {
-        // 直接受伤，不触发业力连接
-        health -= damage;
-        UpdateHealthBar();
-        
-        if (health <= 0)
-        {
-            Die();
-        }
-    }
+
 
     private void UpdateHealthBar()
     {
@@ -140,6 +133,13 @@ public class Monster : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 
     public virtual void Die()
     {
+        // 清除业力连接（在死亡前清除以避免递归）
+        if (HasKarmaLink())
+        {
+            ClearKarmaLinks();
+            Debug.Log($"{monsterName} died, karma link cleared");
+        }
+        
         if (player != null)
         {
             player.AddGold(10);
@@ -401,5 +401,6 @@ public class Monster : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     {
         return karmaLinkedMonster != null;
     }
+
 
 }
