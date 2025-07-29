@@ -27,9 +27,10 @@ public class Card
     public bool isPartner;
     public bool isTemporary;
     public bool isTriumph; // 凯旋属性
+    public bool isGrace; // 恩赐属性
 
     public Card(CardType type, string Id = "tbd", int cost = 10, string upgradeFrom = null, bool isQuick = false, int hoardingValue = 0, bool isPartner = false, bool isEnergy = false,
-    bool isMadness = false, bool isTemporary = false, bool isExhaust = false, bool isLingering = false, bool isForethought = false, bool isTriumph = false)
+    bool isMadness = false, bool isTemporary = false, bool isExhaust = false, bool isLingering = false, bool isForethought = false, bool isTriumph = false, bool isGrace = false)
     {
         cardType = type;
         this.Id = Id;
@@ -45,6 +46,7 @@ public class Card
         this.isLingering = isLingering;
         this.isForethought = isForethought;
         this.isTriumph = isTriumph;
+        this.isGrace = isGrace;
 
         this.player = GameObject.FindObjectOfType<Player>();
         this.monsterManager = GameObject.FindObjectOfType<MonsterManager>();
