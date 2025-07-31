@@ -56,6 +56,9 @@ public class Player : MonoBehaviour
 
     public delegate void CardPlayed(Card card);
     public event CardPlayed OnCardPlayed;
+    
+    public delegate void MoveCardUsed(Card card);
+    public event MoveCardUsed OnMoveCardUsed;
 
 
     public bool vineEffectActive = false; 
@@ -754,6 +757,7 @@ public class Player : MonoBehaviour
             if (currentCard.cardType == CardType.Move) // Assuming MovementCard is a class for movement cards
             {
                 currentCard.OnCardExecuted();
+                OnMoveCardUsed?.Invoke(currentCard); // 触发移动牌使用事件
                 if (vineEffectActive)
                 {
                     TriggerVineEffect();
