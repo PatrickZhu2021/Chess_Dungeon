@@ -26,6 +26,7 @@ public class Player : MonoBehaviour
     public Vector2Int lastAttackDirection { get; set; }
 
     public int cardsUsedThisTurn = 0; //本回合使用的卡牌数量
+    public int movesThisTurn = 0; //本回合移动次数
     public Text healthText; 
     public Text armorText; 
     public bool isShieldActive = false;
@@ -500,6 +501,9 @@ public class Player : MonoBehaviour
         UpdatePosition();
         ClearMoveHighlights();
         
+        // 增加本回合移动次数
+        movesThisTurn++;
+        
         // 记录移动指标
         if (GameMetrics.Instance != null)
         {
@@ -805,6 +809,7 @@ public class Player : MonoBehaviour
     {
         vineEffectActive = false; // Reset the vine effect after the turn
         cardsUsedThisTurn = 0;
+        movesThisTurn = 0; // 重置移动次数
         damageModifierThisTurn = 0;
         KeywordEffects.ResetBSEffects(this); // 重置BS系列效果
     }
