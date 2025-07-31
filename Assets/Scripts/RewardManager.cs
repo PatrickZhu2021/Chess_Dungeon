@@ -176,7 +176,7 @@ public class RewardManager : MonoBehaviour
 
     private void CloseRelicPanel()
     {
-        relicPanel.SetActive(false);
+        // relicPanel.SetActive(false);
     }
     #endregion
 
