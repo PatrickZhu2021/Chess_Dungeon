@@ -224,6 +224,7 @@ public class DeckManager : MonoBehaviour
         allCards.Add(new WS02());
         allCards.Add(new WS03());
         allCards.Add(new WS04());
+        allCards.Add(new WS05());
         UpdateCardEditorPanel();
     }
 

@@ -293,6 +293,39 @@ namespace Effects
         }
         
         /// <summary>
+        /// 逐浪效果：移动后击退目标点3x3范围内随机敌人
+        /// </summary>
+        public static void TriggerWaveRiderEffect(Player player, Vector2Int targetPosition)
+        {
+            if (!player.waveRiderEffectActive) return;
+            
+            // 获取目标位置3x3范围内的敌人
+            List<Monster> nearbyMonsters = new List<Monster>();
+            for (int dx = -1; dx <= 1; dx++)
+            {
+                for (int dy = -1; dy <= 1; dy++)
+                {
+                    Vector2Int checkPos = targetPosition + new Vector2Int(dx, dy);
+                    Monster monster = GetMonsterAtPosition(checkPos);
+                    if (monster != null)
+                    {
+                        nearbyMonsters.Add(monster);
+                    }
+                }
+            }
+            
+            if (nearbyMonsters.Count > 0)
+            {
+                // 随机选择一个敌人进行击退
+                Monster target = nearbyMonsters[Random.Range(0, nearbyMonsters.Count)];
+                Vector2 direction = (target.transform.position - player.transform.position).normalized;
+                Vector2 cardinalDirection = RoundToCardinal(direction);
+                ApplyKnockback(target, cardinalDirection, player);
+                Debug.Log($"Wave Rider effect: Knocked back {target.monsterName}");
+            }
+        }
+        
+        /// <summary>
         /// 重置所有BS系列效果（回合结束时调用）
         /// </summary>
         public static void ResetBSEffects(Player player)
@@ -301,8 +334,8 @@ namespace Effects
             {
                 player.nextWeaponCardDoubleUse = false;
                 player.nextCardReturnToDeckTop = false;
-                // 注意：盐袋效果不在回合结束时重置，因为它是整个战斗持续的
-                Debug.Log("BS Effects reset (except Salt Bag which persists through battle)");
+                // 注意：盐袋效果和逐浪效果不在回合结束时重置，因为它们是整个战斗持续的
+                Debug.Log("BS Effects reset (except Salt Bag and Wave Rider which persist through battle)");
             }
         }
     }
