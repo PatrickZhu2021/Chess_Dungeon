@@ -70,6 +70,8 @@ public class TurnManager : MonoBehaviour
         UpdateActionText();
         EnableAllButtons();
     }
+    
+
 
     public void AdvanceTurn()
     {
@@ -91,7 +93,7 @@ public class TurnManager : MonoBehaviour
         player.ResetEffectsAtEndOfTurn();
         yield return new WaitForSeconds(0.3f);
         player.ClearMoveHighlights();
-        player.actions = 3;
+        player.actions = player.maxActions;
         // 回合开始时先减少愤怒层数，再应用伤害加成
         if (player.furyStacks > 0)
         {

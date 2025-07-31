@@ -15,6 +15,7 @@ public class Player : MonoBehaviour
     public Vector3 cellGap = new Vector3(0, 0, 0); // Cell Gap
     public int gold = 1000; // 金币数量
     public int actions = 3; //行动点
+    public int maxActions = 3; //最大行动点
     public int health = 3; // 玩家初始血量
     public int armor = 3;
     public List<string> deck;
@@ -816,6 +817,19 @@ public class Player : MonoBehaviour
         movesThisTurn = 0; // 重置移动次数
         damageModifierThisTurn = 0;
         KeywordEffects.ResetBSEffects(this); // 重置BS系列效果
+        
+        // 重置 WS01 回合触发标志
+        WS01_card[] ws01Cards = FindObjectsOfType<WS01_card>();
+        foreach (WS01_card ws01 in ws01Cards)
+        {
+            ws01.ResetTurnTrigger();
+        }
+    }
+    
+    public void IncreaseMaxActions(int amount)
+    {
+        maxActions += amount;
+        Debug.Log($"Max actions increased by {amount}. New max: {maxActions}");
     }
     
     public void ApplyFuryDamage()

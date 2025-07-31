@@ -6,6 +6,7 @@ using Effects;
 public class WS01_card : CardButtonBase
 {
     private bool isListening = false;
+    private bool hasTriggeredThisTurn = false;
     
     public override void Initialize(Card card, DeckManager deckManager)
     {
@@ -60,6 +61,12 @@ public class WS01_card : CardButtonBase
     
     private void OnMoveCardUsed(Card moveCard)
     {
+        // 检查是否已经在本回合触发过
+        if (hasTriggeredThisTurn)
+        {
+            return;
+        }
+        
         // 回响效果：在自身3x3范围内空格创造地形潮沼
         LocationManager locationManager = GameObject.FindObjectOfType<LocationManager>();
         if (locationManager != null && player != null)
@@ -79,8 +86,14 @@ public class WS01_card : CardButtonBase
                     }
                 }
             }
+            hasTriggeredThisTurn = true; // 标记为已触发
             Debug.Log("WS01: Echo effect - created mires in 3x3 area");
         }
+    }
+    
+    public void ResetTurnTrigger()
+    {
+        hasTriggeredThisTurn = false;
     }
 }
 
