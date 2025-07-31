@@ -13,6 +13,7 @@ public class LocationManager : MonoBehaviour
     public List<FireZone> activeFireZones = new List<FireZone>(); // 火域列表
     public List<BarrierLocation> activeBarriers = new List<BarrierLocation>(); // 拒障列表
     public AnchorLocation activeAnchor = null; // 当前锚点（同时只能存在1个）
+    public List<MireLocation> activeMires = new List<MireLocation>(); // 潮沼列表
     private Player player;
     private List<TerrainConfig> terrainConfigs = new List<TerrainConfig>();
 
@@ -544,6 +545,10 @@ public class LocationManager : MonoBehaviour
             if (activeAnchor == anchor)
                 activeAnchor = null;
         }
+        else if (location is MireLocation mire)
+        {
+            activeMires.Remove(mire);
+        }
         
         GameObject locationObject = location.gameObject;
         if (spawnedLocations.Contains(locationObject))
@@ -592,6 +597,35 @@ public class LocationManager : MonoBehaviour
         {
             activeAnchor.OnTurnEnd();
         }
+    }
+    
+    public void CreateMire(Vector2Int position)
+    {
+        GameObject mirePrefab = Resources.Load<GameObject>("Prefabs/Location/Mire");
+        if (mirePrefab == null)
+        {
+            // 如果没有专用的潮沼 prefab，使用 Forest prefab 作为临时替代
+            mirePrefab = locationPrefabs["Forest"];
+            if (mirePrefab == null)
+            {
+                Debug.LogError("No suitable prefab found for Mire");
+                return;
+            }
+        }
+        
+        GameObject mireObject = Instantiate(mirePrefab);
+        mireObject.transform.position = player.CalculateWorldPosition(position);
+        
+        MireLocation mire = mireObject.GetComponent<MireLocation>();
+        if (mire == null)
+        {
+            mire = mireObject.AddComponent<MireLocation>();
+        }
+        
+        mire.Initialize(position, "潮沼地形，终止敌人位移", true);
+        spawnedLocations.Add(mireObject);
+        activeMires.Add(mire);
+        Debug.Log($"Mire created at {position}");
     }
     
     public void OnTurnStart()
