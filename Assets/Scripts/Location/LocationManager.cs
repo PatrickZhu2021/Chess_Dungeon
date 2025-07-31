@@ -628,6 +628,41 @@ public class LocationManager : MonoBehaviour
         Debug.Log($"Mire created at {position}");
     }
     
+    /// <summary>
+    /// 检查怪物移动路径上是否有潮沼，如果有则阻止移动
+    /// </summary>
+    /// <param name="monster">移动的怪物</param>
+    /// <param name="targetPos">目标位置</param>
+    /// <returns>是否被潮沼阻止</returns>
+    public bool CheckMireInterception(Monster monster, Vector2Int targetPos)
+    {
+        Vector2Int currentPos = monster.position;
+        
+        // 检查移动路径上的每个位置
+        Vector2Int direction = new Vector2Int(
+            targetPos.x > currentPos.x ? 1 : (targetPos.x < currentPos.x ? -1 : 0),
+            targetPos.y > currentPos.y ? 1 : (targetPos.y < currentPos.y ? -1 : 0)
+        );
+        
+        Vector2Int checkPos = currentPos + direction;
+        
+        while (checkPos != targetPos && player.IsValidPosition(checkPos))
+        {
+            // 检查该位置是否有潮沼
+            foreach (MireLocation mire in activeMires)
+            {
+                if (mire != null && mire.position == checkPos)
+                {
+                    // 怪物被潮沼阻止
+                    return mire.TrapMonster(monster);
+                }
+            }
+            checkPos += direction;
+        }
+        
+        return false; // 没有被阻止
+    }
+    
     public void OnTurnStart()
     {
         // 每回合开始时减少所有拒障的耐久度

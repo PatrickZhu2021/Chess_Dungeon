@@ -70,10 +70,9 @@ public class WS01_card : CardButtonBase
                 {
                     Vector2Int checkPos = player.position + new Vector2Int(dx, dy);
                     
-                    // 检查位置是否有效且为空格
+                    // 检查位置是否有效且不是玩家位置
                     if (player.IsValidPosition(checkPos) && 
                         !locationManager.IsNonEnterablePosition(checkPos) &&
-                        KeywordEffects.GetMonsterAtPosition(checkPos) == null &&
                         checkPos != player.position)
                     {
                         locationManager.CreateMire(checkPos);

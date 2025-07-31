@@ -200,6 +200,32 @@ public class Monster : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
             return;
         }
         
+        // 检查脚下是否有潮沼，移除所有脚下的潮沼
+        bool trappedByMire = false;
+        if (locationManager != null)
+        {
+            for (int i = locationManager.activeMires.Count - 1; i >= 0; i--)
+            {
+                MireLocation mire = locationManager.activeMires[i];
+                if (mire != null && mire.position == position)
+                {
+                    Debug.Log($"Monster {monsterName} trapped by mire at {position}");
+                    
+                    // 移除潮沼
+                    locationManager.activeMires.RemoveAt(i);
+                    locationManager.RemoveLocation(mire);
+                    Destroy(mire.gameObject);
+                    
+                    trappedByMire = true;
+                }
+            }
+        }
+        
+        if (trappedByMire)
+        {
+            return; // 被潮沼阻止，不移动
+        }
+        
         PerformMovement();
     }
     
@@ -230,6 +256,8 @@ public class Monster : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
         // Default empty implementation, override in subclasses
         Debug.Log($"{monsterName} performing movement towards {targetPosition} (base implementation)");
     }
+    
+
 
     public bool IsPositionOccupied(Vector2Int checkPosition)
     {
