@@ -242,6 +242,19 @@ namespace Effects
         }
         
         /// <summary>
+        /// 恩赐效果：抽取1张卡牌
+        /// </summary>
+        public static void TriggerGraceEffect()
+        {
+            DeckManager deckManager = GameObject.FindObjectOfType<DeckManager>();
+            if (deckManager != null)
+            {
+                deckManager.DrawCards(1);
+                Debug.Log("Grace effect: Drew 1 card");
+            }
+        }
+        
+        /// <summary>
         /// 重置所有BS系列效果（回合结束时调用）
         /// </summary>
         public static void ResetBSEffects(Player player)

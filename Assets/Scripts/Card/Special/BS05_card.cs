@@ -61,6 +61,8 @@ public class BS05: Card
 
     public override void OnCardExecuted()
     {
+        base.OnCardExecuted(); // 触发恩赐效果
+        
         Debug.Log("BS05 OnCardExecuted called");
         
         // 获得1点行动点
@@ -69,17 +71,6 @@ public class BS05: Card
         {
             turnManager.AddAction();
             Debug.Log("BS05: Added 1 action point");
-        }
-        
-        // 恩赐效果：抽取1张卡牌
-        if (isGrace)
-        {
-            DeckManager deckManager = GameObject.FindObjectOfType<DeckManager>();
-            if (deckManager != null)
-            {
-                deckManager.DrawCards(1);
-                Debug.Log("BS05: Grace effect - drew 1 card");
-            }
         }
     }
 }

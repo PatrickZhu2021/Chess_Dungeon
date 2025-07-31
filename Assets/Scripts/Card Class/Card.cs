@@ -83,7 +83,11 @@ public class Card
 
     public virtual void OnCardExecuted()
     {
-        
+        // 恩赐效果的通用处理
+        if (isGrace)
+        {
+            Effects.KeywordEffects.TriggerGraceEffect();
+        }
     }
 
     public virtual void OnCardExecuted(Vector2Int gridPosition)
