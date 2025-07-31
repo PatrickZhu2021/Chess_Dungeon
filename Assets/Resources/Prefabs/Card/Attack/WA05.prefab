@@ -166,7 +166,7 @@ GameObject:
   - component: {fileID: 5280022575110587628}
   - component: {fileID: 6513719207245129944}
   - component: {fileID: 4531463353146810934}
-  - component: {fileID: 6366876878984528129}
+  - component: {fileID: -1443781504656232904}
   m_Layer: 5
   m_Name: WA05
   m_TagString: Untagged
@@ -277,7 +277,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &6366876878984528129
+--- !u!114 &-1443781504656232904
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -286,7 +286,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 7865966843562598253}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0e3fa71b12f1cd74ab4d245edfd0e850, type: 3}
+  m_Script: {fileID: 11500000, guid: 2839582e228fccd499020ddbc85bb707, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   monsterManager: {fileID: 0}

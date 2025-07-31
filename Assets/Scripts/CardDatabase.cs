@@ -97,6 +97,7 @@ public class CardDatabase : MonoBehaviour
         AddCard(new WA02());
         AddCard(new WA03());
         AddCard(new WA04());
+        AddCard(new WA05());
     }
 
     private void AddCard(Card card)
