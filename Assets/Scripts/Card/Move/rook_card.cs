@@ -33,7 +33,7 @@ public class rook_card : CardButtonBase
 
 public class RookCard : Card
 {
-    public RookCard() : base(CardType.Move, "M04", 50) { }
+    public RookCard() : base(CardType.Move, "M04", 50, isLingering: true) { }
 
     public override GameObject GetPrefab()
     {

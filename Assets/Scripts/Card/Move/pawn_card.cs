@@ -59,7 +59,7 @@ public class PawnCard : Card
 {
     public List<CardUpgrade> upgrades = new List<CardUpgrade>();
     public override List<CardUpgrade> UpgradeOptions { get; protected set; } = new List<CardUpgrade>();
-    public PawnCard() : base(CardType.Move, "M01", 5) 
+    public PawnCard() : base(CardType.Move, "M01", 5, isLingering: true) 
     {
         // 为移动牌配置个性化的升级选项
         UpgradeOptions = new List<CardUpgrade>
@@ -169,7 +169,7 @@ public class PawnCard : Card
 
 public class UpgradedPawnCard : Card
 {
-    public UpgradedPawnCard() : base(CardType.Move, "M01+", 5)
+    public UpgradedPawnCard() : base(CardType.Move, "M01+", 5, isLingering: true)
     {
         isQuick = true;
     }
