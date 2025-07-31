@@ -255,7 +255,7 @@ public class TurnManager : MonoBehaviour
     {
         if (actionText != null)
         {
-            actionText.text = "3/" + player.actions.ToString();
+            actionText.text = player.maxActions.ToString() + "/" + player.actions.ToString();
         }
     }
 }

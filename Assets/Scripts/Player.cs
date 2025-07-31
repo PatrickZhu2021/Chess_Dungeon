@@ -817,13 +817,6 @@ public class Player : MonoBehaviour
         movesThisTurn = 0; // 重置移动次数
         damageModifierThisTurn = 0;
         KeywordEffects.ResetBSEffects(this); // 重置BS系列效果
-        
-        // 重置 WS01 回合触发标志
-        WS01_card[] ws01Cards = FindObjectsOfType<WS01_card>();
-        foreach (WS01_card ws01 in ws01Cards)
-        {
-            ws01.ResetTurnTrigger();
-        }
     }
     
     public void IncreaseMaxActions(int amount)

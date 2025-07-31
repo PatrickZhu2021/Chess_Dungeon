@@ -6,7 +6,7 @@ using Effects;
 public class WS01_card : CardButtonBase
 {
     private bool isListening = false;
-    private bool hasTriggeredThisTurn = false;
+    private bool cardHasBeenUsed = false;
     
     public override void Initialize(Card card, DeckManager deckManager)
     {
@@ -16,9 +16,6 @@ public class WS01_card : CardButtonBase
     protected override void Start()
     {
         base.Start();
-        
-        // 在 Start 中开始监听，确保 player 已初始化
-        StartListening();
 
         if (card != null && card.IsUpgraded())
         {
@@ -40,6 +37,14 @@ public class WS01_card : CardButtonBase
             {
                 player.currentCard = card;
                 player.ExecuteCurrentCard();
+                
+                // 使用卡牌后开始监听
+                if (!cardHasBeenUsed)
+                {
+                    cardHasBeenUsed = true;
+                    StartListening();
+                }
+                
                 Debug.Log("WS01 card used");
             }
         }
@@ -61,8 +66,8 @@ public class WS01_card : CardButtonBase
     
     private void OnMoveCardUsed(Card moveCard)
     {
-        // 检查是否已经在本回合触发过
-        if (hasTriggeredThisTurn)
+        // 只有使用过 WS01 卡牌才执行
+        if (!cardHasBeenUsed)
         {
             return;
         }
@@ -86,15 +91,11 @@ public class WS01_card : CardButtonBase
                     }
                 }
             }
-            hasTriggeredThisTurn = true; // 标记为已触发
             Debug.Log("WS01: Echo effect - created mires in 3x3 area");
         }
     }
     
-    public void ResetTurnTrigger()
-    {
-        hasTriggeredThisTurn = false;
-    }
+
 }
 
 public class WS01 : Card
