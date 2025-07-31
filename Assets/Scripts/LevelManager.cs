@@ -126,7 +126,7 @@ public class LevelManager : MonoBehaviour
     // For example, shuffle the deck, check for energy cards, draw cards, etc.
 
     // Check if there are any energy cards in the deck after the reward is added
-        rewardManager.isRewardPanelOpen = false;
+        // rewardManager.isRewardPanelOpen = false;
         player.deckManager.RestartHand();
         bool hasEnergyCard = player.deckManager.deck.Exists(card => card.isEnergy);
 

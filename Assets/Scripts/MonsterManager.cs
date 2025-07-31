@@ -195,29 +195,13 @@ public class MonsterManager : MonoBehaviour
     // For example, shuffle the deck, check for energy cards, draw cards, etc.
 
     // Check if there are any energy cards in the deck after the reward is added
-        rewardManager.isRewardPanelOpen = false;
-        player.deckManager.RestartHand();
+        // rewardManager.isRewardPanelOpen = false;
         bool hasEnergyCard = player.deckManager.deck.Exists(card => card.isEnergy);
 
         PlayerPrefs.SetInt("HasEnergyCard", hasEnergyCard ? 1 : 0);
         PlayerPrefs.Save();
-        // If there are energy cards, spawn ActivatePoints
-        if (isLevelCompleted)
-        {
-            // 如果关卡完成，则重置手牌
-            player.deckManager.RestartHand();
-            // 如果有能量卡，则生成激活点
-            //if (hasEnergyCard)
-            //{
-                //SpawnActivatepointsForLevel();
-            //}
-
-            // 抓新手牌
-            //player.deckManager.DrawCards(player.deckManager.handSize);
-
-            // 重置关卡完成标记
-            isLevelCompleted = false;
-        }
+        
+        isLevelCompleted = false;
     }
     public void ClearAllMonsters()
     {

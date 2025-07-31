@@ -125,7 +125,7 @@ public class RewardManager : MonoBehaviour
 
     private void CloseRewardPanel()
     {
-        rewardPanel.SetActive(false);
+        // rewardPanel.SetActive(false);
     }
     #endregion
 
