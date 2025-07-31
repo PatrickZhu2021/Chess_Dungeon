@@ -213,6 +213,9 @@ public class DeckManager : MonoBehaviour
         allCards.Add(new FS03());
         allCards.Add(new FS04());
         allCards.Add(new FS05());
+        allCards.Add(new WA01());
+        allCards.Add(new WA02());
+        allCards.Add(new WA03());
         UpdateCardEditorPanel();
     }
 
@@ -1006,6 +1009,22 @@ public class DeckManager : MonoBehaviour
     public void ResetFirstDrawFlag()
     {
         isFirstDrawOfTurn = true;
+    }
+    
+    public void DrawCardOfType(CardType cardType, int count = 1)
+    {
+        for (int i = 0; i < count; i++)
+        {
+            // 在牌库中查找指定类型的卡牌
+            for (int j = 0; j < deck.Count; j++)
+            {
+                if (deck[j].cardType == cardType)
+                {
+                    DrawCardAt(j);
+                    break;
+                }
+            }
+        }
     }
     
     private IEnumerator DelayedDrawCards()

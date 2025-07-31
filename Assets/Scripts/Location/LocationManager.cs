@@ -12,6 +12,7 @@ public class LocationManager : MonoBehaviour
     public List<FirePoint> activeFirePoints = new List<FirePoint>();
     public List<FireZone> activeFireZones = new List<FireZone>(); // 火域列表
     public List<BarrierLocation> activeBarriers = new List<BarrierLocation>(); // 拒障列表
+    public AnchorLocation activeAnchor = null; // 当前锚点（同时只能存在1个）
     private Player player;
     private List<TerrainConfig> terrainConfigs = new List<TerrainConfig>();
 
@@ -538,11 +539,58 @@ public class LocationManager : MonoBehaviour
             activeBarriers.Remove(barrier);
             nonEnterablePositions.Remove(barrier.position);
         }
+        else if (location is AnchorLocation anchor)
+        {
+            if (activeAnchor == anchor)
+                activeAnchor = null;
+        }
         
         GameObject locationObject = location.gameObject;
         if (spawnedLocations.Contains(locationObject))
         {
             spawnedLocations.Remove(locationObject);
+        }
+    }
+    
+    public void CreateAnchor(Vector2Int position)
+    {
+        // 如果已经有锚点，先移除旧的
+        if (activeAnchor != null)
+        {
+            GameObject oldAnchorObject = activeAnchor.gameObject;
+            RemoveLocation(activeAnchor);
+            Destroy(oldAnchorObject);
+            activeAnchor = null;
+        }
+        
+        GameObject anchorPrefab = Resources.Load<GameObject>("Prefabs/Location/Anchor");
+        if (anchorPrefab == null)
+        {
+            Debug.LogError("Anchor prefab not found");
+            return;
+        }
+        
+        GameObject anchorObject = Instantiate(anchorPrefab);
+        anchorObject.transform.position = player.CalculateWorldPosition(position);
+        
+        AnchorLocation anchor = anchorObject.GetComponent<AnchorLocation>();
+        if (anchor == null)
+        {
+            anchor = anchorObject.AddComponent<AnchorLocation>();
+        }
+        
+        anchor.Initialize(position, "锚点地形，回合结束时拉取玩家", true);
+        spawnedLocations.Add(anchorObject);
+        activeAnchor = anchor;
+        Debug.Log($"Anchor created at {position}");
+    }
+    
+    public void OnTurnEnd()
+    {
+        // 回合结束时触发锚点效果
+        if (activeAnchor != null)
+        {
+            activeAnchor.OnTurnEnd();
         }
     }
     

@@ -147,11 +147,12 @@ public class TurnManager : MonoBehaviour
 
         ResetCursor();
         
-        // 处理拒障耐久度
+        // 处理拒障耐久度和锚点效果
         LocationManager locationManager = FindObjectOfType<LocationManager>();
         if (locationManager != null)
         {
-            locationManager.OnTurnStart();
+            locationManager.OnTurnEnd(); // 先处理回合结束效果（锚点）
+            locationManager.OnTurnStart(); // 再处理回合开始效果（拒障）
         }
     }
 

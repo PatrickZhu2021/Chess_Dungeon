@@ -25,7 +25,7 @@ public abstract class CardButtonBase : MonoBehaviour, CardButton, IPointerClickH
     private Transform upgradeEffectTransform;
     
     [Header("悬停放大设置")]
-    public float hoverScale = 1.3f;
+    public float hoverScale = 1.6f;
     public float animationSpeed = 8f;
     public bool applyDefaultScale = true; // 是否应用默认放大
     private Vector3 originalScale;
