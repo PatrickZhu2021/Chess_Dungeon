@@ -326,6 +326,32 @@ namespace Effects
         }
         
         /// <summary>
+        /// WS01回响效果：在玩家3x3范围内创造潮沼
+        /// </summary>
+        public static void TriggerWS01EchoEffect(Player player)
+        {
+            LocationManager locationManager = GameObject.FindObjectOfType<LocationManager>();
+            if (locationManager != null && player != null)
+            {
+                for (int dx = -1; dx <= 1; dx++)
+                {
+                    for (int dy = -1; dy <= 1; dy++)
+                    {
+                        Vector2Int checkPos = player.position + new Vector2Int(dx, dy);
+                        
+                        if (player.IsValidPosition(checkPos) && 
+                            !locationManager.IsNonEnterablePosition(checkPos) &&
+                            checkPos != player.position)
+                        {
+                            locationManager.CreateMire(checkPos);
+                        }
+                    }
+                }
+                Debug.Log("WS01: Echo effect - created mires in 3x3 area");
+            }
+        }
+        
+        /// <summary>
         /// 重置所有BS系列效果（回合结束时调用）
         /// </summary>
         public static void ResetBSEffects(Player player)

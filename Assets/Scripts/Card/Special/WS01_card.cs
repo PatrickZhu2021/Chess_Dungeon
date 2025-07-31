@@ -5,8 +5,7 @@ using Effects;
 
 public class WS01_card : CardButtonBase
 {
-    private bool isListening = false;
-    private bool cardHasBeenUsed = false;
+
     
     public override void Initialize(Card card, DeckManager deckManager)
     {
@@ -38,12 +37,8 @@ public class WS01_card : CardButtonBase
                 player.currentCard = card;
                 player.ExecuteCurrentCard();
                 
-                // 使用卡牌后开始监听
-                if (!cardHasBeenUsed)
-                {
-                    cardHasBeenUsed = true;
-                    StartListening();
-                }
+                // 激活 WS01 回响效果
+                player.ws01EchoActive = true;
                 
                 Debug.Log("WS01 card used");
             }
@@ -53,48 +48,7 @@ public class WS01_card : CardButtonBase
             Debug.LogError("Card is null in WS01_card.OnClick");
         }
     }
-    
-    private void StartListening()
-    {
-        if (!isListening && player != null)
-        {
-            player.OnMoveCardUsed += OnMoveCardUsed;
-            isListening = true;
-            Debug.Log("WS01: Started listening for move card usage");
-        }
-    }
-    
-    private void OnMoveCardUsed(Card moveCard)
-    {
-        // 只有使用过 WS01 卡牌才执行
-        if (!cardHasBeenUsed)
-        {
-            return;
-        }
-        
-        // 回响效果：在自身3x3范围内空格创造地形潮沼
-        LocationManager locationManager = GameObject.FindObjectOfType<LocationManager>();
-        if (locationManager != null && player != null)
-        {
-            for (int dx = -1; dx <= 1; dx++)
-            {
-                for (int dy = -1; dy <= 1; dy++)
-                {
-                    Vector2Int checkPos = player.position + new Vector2Int(dx, dy);
-                    
-                    // 检查位置是否有效且不是玩家位置
-                    if (player.IsValidPosition(checkPos) && 
-                        !locationManager.IsNonEnterablePosition(checkPos) &&
-                        checkPos != player.position)
-                    {
-                        locationManager.CreateMire(checkPos);
-                    }
-                }
-            }
-            Debug.Log("WS01: Echo effect - created mires in 3x3 area");
-        }
-    }
-    
+
 
 }
 

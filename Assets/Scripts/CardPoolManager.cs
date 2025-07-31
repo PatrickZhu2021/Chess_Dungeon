@@ -100,10 +100,10 @@ public static class CardPoolManager
         // Legendary 卡池
         rarityPools["Legendary"] = new List<Card>
         {
-            new BookOfKnight(),
-            new BookOfBishop(),
-            new BookOfRook(),
-            new BookOfQueen(),
+            // new BookOfKnight(),
+            // new BookOfBishop(),
+            // new BookOfRook(),
+            // new BookOfQueen(),
             new FA06(),
             new FA07()
         };

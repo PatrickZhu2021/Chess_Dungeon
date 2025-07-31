@@ -70,6 +70,7 @@ public class Player : MonoBehaviour
     public bool nextCardReturnToDeckTop = false; // BS07卷轴匣效果
     public bool saltBagEffectActive = false; // BS08盐袋效果
     public bool waveRiderEffectActive = false; // WS05逐浪效果
+    public bool ws01EchoActive = false; // WS01回响效果
 
     private Animator animator;
     public GameObject attackEffectPrefab;
@@ -774,6 +775,12 @@ public class Player : MonoBehaviour
                     KeywordEffects.TriggerWaveRiderEffect(this, position);
                 }
                 
+                // 触发 WS01 回响效果
+                if (ws01EchoActive)
+                {
+                    KeywordEffects.TriggerWS01EchoEffect(this);
+                }
+                
                 if (vineEffectActive)
                 {
                     TriggerVineEffect();
@@ -832,6 +839,9 @@ public class Player : MonoBehaviour
         movesThisTurn = 0; // 重置移动次数
         damageModifierThisTurn = 0;
         KeywordEffects.ResetBSEffects(this); // 重置BS系列效果
+        
+        // 重置 WS01 效果
+        ws01EchoActive = false;
     }
     
     public void IncreaseMaxActions(int amount)
