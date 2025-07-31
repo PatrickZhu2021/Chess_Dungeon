@@ -634,6 +634,27 @@ public class MonsterManager : MonoBehaviour
             monsters.Remove(monster);
         }
     }
+    
+    public void TriggerLevelComplete()
+    {
+        isLevelCompleted = true;
+        rewardManager.StartRewardProcess();
+        player.deckManager.RestoreExhaustedCards();
+        
+        // 清理火域
+        foreach (FireZone zone in locationManager.activeFireZones)
+        {
+            if (zone != null)
+            {
+                zone.DestroySelf();
+            }
+        }
+        
+        // 停止仪式
+        Effects.KeywordEffects.StopBasicRitual();
+        
+        Debug.Log("Level completed immediately after all enemies defeated!");
+    }
 
     public bool IsTileValid(Vector2Int tilePosition)
     {

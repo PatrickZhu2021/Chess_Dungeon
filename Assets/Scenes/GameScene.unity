@@ -237,8 +237,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0.52, y: 0.31}
-  m_SizeDelta: {x: 1961.59, y: 1101.81}
+  m_AnchoredPosition: {x: 9, y: 0.30999}
+  m_SizeDelta: {x: 2006.48, y: 1151.2}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &57594363
 CanvasRenderer:
@@ -7671,6 +7671,7 @@ MonoBehaviour:
   cellGap: {x: 0.5, y: 0.5, z: 0}
   gold: 1000
   actions: 3
+  maxActions: 3
   health: 3
   armor: 3
   deck: []
@@ -7680,7 +7681,9 @@ MonoBehaviour:
   damageModifierThisTurn: 0
   furyStacks: 0
   ferventStacks: 0
+  torrentStacks: 0
   cardsUsedThisTurn: 0
+  movesThisTurn: 0
   healthText: {fileID: 937926149}
   armorText: {fileID: 2140048935}
   isShieldActive: 0
@@ -7725,6 +7728,7 @@ MonoBehaviour:
   nextWeaponCardDoubleUse: 0
   nextCardReturnToDeckTop: 0
   saltBagEffectActive: 0
+  waveRiderEffectActive: 0
   attackEffectPrefab: {fileID: 3381790849320777569, guid: 17b42eb47516bc446aaa5e390ef6e6d6, type: 3}
   damageTextPrefab: {fileID: 1400744369818263092, guid: af4d799e57b38c5438a8b7170a041297, type: 3}
   lastAttackSnapshot: {x: 0, y: 0}
@@ -9290,6 +9294,8 @@ MonoBehaviour:
   activeFirePoints: []
   activeFireZones: []
   activeBarriers: []
+  activeAnchor: {fileID: 0}
+  activeMires: []
 --- !u!1 &2009071440
 GameObject:
   m_ObjectHideFlags: 0

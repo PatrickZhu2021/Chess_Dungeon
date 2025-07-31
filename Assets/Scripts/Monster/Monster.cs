@@ -179,6 +179,13 @@ public class Monster : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
          if (monsterManager != null)
         {
             monsterManager.RemoveMonster(this);
+            
+            // 检查是否所有敌人都被消灭
+            if (monsterManager.GetMonsterCount() == 0)
+            {
+                Debug.Log("All enemies defeated! Triggering reward selection.");
+                monsterManager.TriggerLevelComplete();
+            }
         }
 
         if (animator != null)
