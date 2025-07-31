@@ -100,6 +100,13 @@ public class TurnManager : MonoBehaviour
             player.ReduceFury(1);
         }
         player.ApplyFuryDamage();
+        
+        // 回合开始时减少涌潮层数
+        if (player.torrentStacks > 0)
+        {
+            player.torrentStacks--;
+            Debug.Log($"Torrent stacks reduced. Remaining: {player.torrentStacks}");
+        }
         turnCount++;
         
         // 开始新回合的指标记录

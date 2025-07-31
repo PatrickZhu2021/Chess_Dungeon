@@ -41,7 +41,8 @@ public static class CardPoolManager
             new WA03(),
             new WA06(),
             new WS01(),
-            new WS02()
+            new WS02(),
+            new WS03()
         };
 
         // Uncommon 卡池

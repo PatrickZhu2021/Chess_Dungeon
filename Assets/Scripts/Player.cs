@@ -24,6 +24,7 @@ public class Player : MonoBehaviour
     public int damageModifierThisTurn = 0;
     public int furyStacks = 0; // 愤怒层数
     public int ferventStacks = 0; // 炙烈层数
+    public int torrentStacks = 0; // 涌潮层数
     public Vector2Int lastAttackDirection { get; set; }
 
     public int cardsUsedThisTurn = 0; //本回合使用的卡牌数量
@@ -759,6 +760,13 @@ public class Player : MonoBehaviour
             {
                 currentCard.OnCardExecuted();
                 OnMoveCardUsed?.Invoke(currentCard); // 触发移动牌使用事件
+                
+                // 触发涌潮效果
+                if (torrentStacks > 0)
+                {
+                    KeywordEffects.TriggerTorrentEffect(this, position);
+                }
+                
                 if (vineEffectActive)
                 {
                     TriggerVineEffect();

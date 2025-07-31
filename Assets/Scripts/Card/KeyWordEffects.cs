@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 namespace Effects
 {
@@ -251,6 +252,43 @@ namespace Effects
             {
                 deckManager.DrawCards(1);
                 Debug.Log("Grace effect: Drew 1 card");
+            }
+        }
+        
+        /// <summary>
+        /// 涌潮效果：使用移动牌后对邻近敌人造成伤害
+        /// </summary>
+        public static void TriggerTorrentEffect(Player player, Vector2Int targetPosition)
+        {
+            if (player.torrentStacks <= 0) return;
+            
+            // 获取目标位置邻近的敌人
+            List<Monster> adjacentMonsters = new List<Monster>();
+            Vector2Int[] adjacentPositions = {
+                targetPosition + Vector2Int.up,
+                targetPosition + Vector2Int.down,
+                targetPosition + Vector2Int.left,
+                targetPosition + Vector2Int.right
+            };
+            
+            foreach (Vector2Int pos in adjacentPositions)
+            {
+                Monster monster = GetMonsterAtPosition(pos);
+                if (monster != null)
+                {
+                    adjacentMonsters.Add(monster);
+                }
+            }
+            
+            if (adjacentMonsters.Count > 0)
+            {
+                // 根据涌潮层数触发多次
+                for (int i = 0; i < player.torrentStacks; i++)
+                {
+                    Monster target = adjacentMonsters[Random.Range(0, adjacentMonsters.Count)];
+                    target.TakeDamage(1);
+                    Debug.Log($"Torrent effect {i + 1}/{player.torrentStacks}: Dealt 1 damage to {target.monsterName}");
+                }
             }
         }
         
