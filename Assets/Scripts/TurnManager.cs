@@ -82,6 +82,14 @@ public class TurnManager : MonoBehaviour
     {
         DisableAllButtons(); // 禁用所有按钮
         
+        // 确保 GameMetrics 被初始化
+        if (GameMetrics.Instance == null)
+        {
+            GameObject metricsObject = new GameObject("GameMetrics");
+            metricsObject.AddComponent<GameMetrics>();
+            DontDestroyOnLoad(metricsObject);
+        }
+        
         // 在弃牌前结束当前回合的指标记录
         if (GameMetrics.Instance != null)
         {

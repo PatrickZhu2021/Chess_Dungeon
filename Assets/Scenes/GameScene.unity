@@ -7729,6 +7729,7 @@ MonoBehaviour:
   nextCardReturnToDeckTop: 0
   saltBagEffectActive: 0
   waveRiderEffectActive: 0
+  ws01EchoActive: 0
   attackEffectPrefab: {fileID: 3381790849320777569, guid: 17b42eb47516bc446aaa5e390ef6e6d6, type: 3}
   damageTextPrefab: {fileID: 1400744369818263092, guid: af4d799e57b38c5438a8b7170a041297, type: 3}
   lastAttackSnapshot: {x: 0, y: 0}
@@ -9496,6 +9497,64 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2035745221}
   m_CullTransparentMesh: 1
+--- !u!1 &2036440446
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2036440447}
+  - component: {fileID: 2036440448}
+  - component: {fileID: 2036440449}
+  m_Layer: 0
+  m_Name: Gamemetrics
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2036440447
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2036440446}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 6.54902, y: 2.82958, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2036440448
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2036440446}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1fe2f402b022f8d48936f5e740c73d3e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &2036440449
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2036440446}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 306d5521bd8b44046958a13dbe7e0f4f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  autoInitialize: 1
 --- !u!1 &2045884953
 GameObject:
   m_ObjectHideFlags: 0
@@ -10387,3 +10446,4 @@ SceneRoots:
   - {fileID: 885674036}
   - {fileID: 510947989}
   - {fileID: 2113702447}
+  - {fileID: 2036440447}
