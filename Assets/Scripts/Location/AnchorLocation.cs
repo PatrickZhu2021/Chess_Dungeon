@@ -26,6 +26,13 @@ public class AnchorLocation : Location
             if (player != null)
             {
                 player.Move(position);
+                
+                // 触发涌潮效果
+                if (player.torrentStacks > 0)
+                {
+                    Effects.KeywordEffects.TriggerTorrentEffect(player, position);
+                }
+                
                 Debug.Log($"Anchor pulled player to position {position}");
             }
             
