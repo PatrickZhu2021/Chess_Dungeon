@@ -92,7 +92,8 @@ public static class CardPoolManager
             new FS01(),
             new FS02(),
             new FS05(),
-            new WA07()
+            new WA07(),
+            new WS04()
         };
 
         // Legendary 卡池

@@ -103,6 +103,7 @@ public class CardDatabase : MonoBehaviour
         AddCard(new WS01());
         AddCard(new WS02());
         AddCard(new WS03());
+        AddCard(new WS04());
     }
 
     private void AddCard(Card card)
@@ -115,7 +116,6 @@ public class CardDatabase : MonoBehaviour
 
     public Card GetCardById(string id)
     {
-        Debug.Log($"你iiii好");
         // ① 拆分 Id：M01+Quick+Draw1 → ["M01","Quick","Draw1"]
         string[] parts  = id.Split('+');
         string   baseId = parts[0];
@@ -130,7 +130,6 @@ public class CardDatabase : MonoBehaviour
         // ④ 把后缀解析回升级
         for (int i = 1; i < parts.Length; i++)
         {
-            Debug.Log($"你iiii好");
             if (System.Enum.TryParse(parts[i], out CardUpgrade up))
             
                 card.AddUpgrade(up);
