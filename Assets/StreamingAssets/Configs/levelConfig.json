@@ -52,8 +52,8 @@
         },
         {
             "levelNumber": 10,
-            "monsterTypes": ["B07","B07",  "B03", "B04"],
-            "terrainType": "Borderland"
+            "monsterTypes": ["A02", "A01"],
+            "terrainType": "RiverForest"
         }
     ],
 
@@ -86,6 +86,12 @@
             "name": "ForestMaze",
             "mapSize": 8,
             "openAreaSize": 8,
+            "borderObstacleType": "Forest"
+        },
+        {
+            "name": "RiverForest",
+            "mapSize": 8,
+            "openAreaSize": 6,
             "borderObstacleType": "Forest"
         }
     ]

@@ -14,6 +14,7 @@ public class LocationManager : MonoBehaviour
     public List<BarrierLocation> activeBarriers = new List<BarrierLocation>(); // 拒障列表
     public AnchorLocation activeAnchor = null; // 当前锚点（同时只能存在1个）
     public List<MireLocation> activeMires = new List<MireLocation>(); // 潮沼列表
+    private List<Vector2Int> waterPositions = new List<Vector2Int>(); // 水单元格位置
     private Player player;
     private List<TerrainConfig> terrainConfigs = new List<TerrainConfig>();
 
@@ -80,6 +81,10 @@ public class LocationManager : MonoBehaviour
         else if (terrainType == "ForestMaze")
         {
             GenerateForestMaze();
+        }
+        else if (terrainType == "RiverForest")
+        {
+            GenerateRiverForest();
         }
 
     }
@@ -217,6 +222,64 @@ public class LocationManager : MonoBehaviour
 
 
         Debug.Log("Generated ForestMaze layout with ASCII map.");
+    }
+
+    /// <summary>
+    /// "河流森林"：周围一圈是森林，中间有几条河流
+    /// ASCII map:
+    /// ########
+    /// #......#
+    /// #.~..~.#
+    /// #......#
+    /// #..~~..#
+    /// #......#
+    /// #.~..~.#
+    /// ########
+    /// </summary>
+    private void GenerateRiverForest()
+    {
+        // ASCII 关卡布局，# = 森林，~ = 河流，. = 空地
+        string[] rows = new string[]
+        {
+            "########",
+            "#......#",
+            "#.~..~.#",
+            "#......#",
+            "#..~~..#",
+            "#......#",
+            "#.~..~.#",
+            "########"
+        };
+
+        GameObject forestPrefab = locationPrefabs["Forest"];
+        int size = rows.Length;
+
+        for (int y = 0; y < size; y++)
+        {
+            // 把 y 翻转，0->7, 1->6, …, 7->0
+            int rowIndex = size - 1 - y;
+            string row = rows[rowIndex];
+
+            for (int x = 0; x < row.Length; x++)
+            {
+                char c = row[x];
+                Vector2Int pos = new Vector2Int(x, y);
+                
+                if (c == '#')
+                {
+                    // 创建森林
+                    CreateLocation(forestPrefab, pos);
+                }
+                else if (c == '~')
+                {
+                    // 创建河流
+                    CreateWater(pos);
+                }
+                // '.' 代表空地，不需要创建任何对象
+            }
+        }
+
+        Debug.Log("Generated RiverForest layout with rivers and forest border.");
     }
 
 
@@ -661,6 +724,29 @@ public class LocationManager : MonoBehaviour
         }
         
         return false; // 没有被阻止
+    }
+    
+    public void CreateWater(Vector2Int position)
+    {
+        GameObject waterPrefab = Resources.Load<GameObject>("Prefabs/Location/Water");
+        if (waterPrefab == null)
+        {
+            Debug.LogError("Water prefab not found");
+            return;
+        }
+        
+        GameObject waterObject = Instantiate(waterPrefab);
+        waterObject.transform.position = player.CalculateWorldPosition(position);
+        
+        waterPositions.Add(position);
+        nonEnterablePositions.Add(position); // 水对大部分单位是障碍物
+        spawnedLocations.Add(waterObject);
+        Debug.Log($"Water created at {position}");
+    }
+    
+    public bool IsWaterPosition(Vector2Int position)
+    {
+        return waterPositions.Contains(position);
     }
     
     public void OnTurnStart()

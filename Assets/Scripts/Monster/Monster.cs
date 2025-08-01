@@ -12,6 +12,7 @@ public enum MonsterType
     Bishop,
     Queen,
     King,
+    Beast,
     // 根据需要继续添加其他类型
 }
 
