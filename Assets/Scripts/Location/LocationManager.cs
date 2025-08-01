@@ -11,6 +11,9 @@ public class LocationManager : MonoBehaviour
 
     public List<FirePoint> activeFirePoints = new List<FirePoint>();
     public List<FireZone> activeFireZones = new List<FireZone>(); // 火域列表
+    public List<BarrierLocation> activeBarriers = new List<BarrierLocation>(); // 拒障列表
+    public AnchorLocation activeAnchor = null; // 当前锚点（同时只能存在1个）
+    public List<MireLocation> activeMires = new List<MireLocation>(); // 潮沼列表
     private Player player;
     private List<TerrainConfig> terrainConfigs = new List<TerrainConfig>();
 
@@ -373,7 +376,7 @@ public class LocationManager : MonoBehaviour
     }
 
     /// <summary>
-    /// 检查所有燃点，寻找连通区域，并生成火域；火域不会消除燃点（按照新要求）。
+    /// 检查所有燃点，将它们连接成一个最大面积的火域。
     /// 当有新的燃点时，先清除已有火域，再重新连接所有燃点。
     /// </summary>
     public void CheckAndFormFireZone()
@@ -381,81 +384,45 @@ public class LocationManager : MonoBehaviour
         // 先清除现有火域
         ClearFireZones();
         
-        List<FirePoint> processed = new List<FirePoint>();
-        foreach (FirePoint fp in new List<FirePoint>(activeFirePoints))
+        if (activeFirePoints.Count >= 2)
         {
-            if (!processed.Contains(fp))
+            // 将所有FirePoint连接成一个最大面积的火域
+            List<Vector3> polygonPoints = new List<Vector3>();
+            
+            if (activeFirePoints.Count == 2)
             {
-                List<FirePoint> cluster = GetConnectedFirePoints(fp);
-                processed.AddRange(cluster);
-                if (cluster.Count >= 2)
-                {
-                    // 根据 cluster 计算连接图形
-                    List<Vector3> polygonPoints = new List<Vector3>();
-                    if (cluster.Count == 2)
-                    {
-                        // 只有两个点，直接连线
-                        Vector3 p1 = player.CalculateWorldPosition(cluster[0].gridPosition);
-                        Vector3 p2 = player.CalculateWorldPosition(cluster[1].gridPosition);
-                        polygonPoints.Add(p1);
-                        polygonPoints.Add(p2);
-                        // 为闭合方便，重复第一个点
-                        polygonPoints.Add(p1);
-                    }
-                    else
-                    {
-                        // 三个或以上，计算凸包
-                        polygonPoints = ComputeConvexHull(cluster);
-                        // 确保闭合
-                        if (polygonPoints.Count > 0 && polygonPoints[0] != polygonPoints[polygonPoints.Count - 1])
-                            polygonPoints.Add(polygonPoints[0]);
-                        
-                    }
-                    
-                    if (polygonPoints.Count >= 2)
-                    {
-                        CreateFireZoneUsingPoints(polygonPoints);
-                    }
-                }
+                // 只有两个点，直接连线
+                Vector3 p1 = player.CalculateWorldPosition(activeFirePoints[0].gridPosition);
+                Vector3 p2 = player.CalculateWorldPosition(activeFirePoints[1].gridPosition);
+                polygonPoints.Add(p1);
+                polygonPoints.Add(p2);
+                polygonPoints.Add(p1); // 闭合
+            }
+            else
+            {
+                // 3个或以上点，计算凸包形成最大面积
+                polygonPoints = ComputeConvexHull(activeFirePoints);
+                // 确保闭合
+                if (polygonPoints.Count > 0 && polygonPoints[0] != polygonPoints[polygonPoints.Count - 1])
+                    polygonPoints.Add(polygonPoints[0]);
+            }
+            
+            if (polygonPoints.Count >= 2)
+            {
+                CreateFireZoneUsingPoints(polygonPoints);
             }
         }
     }
     
-    private List<FirePoint> GetConnectedFirePoints(FirePoint start)
-    {
-        List<FirePoint> cluster = new List<FirePoint>();
-        Queue<FirePoint> queue = new Queue<FirePoint>();
-        queue.Enqueue(start);
-        cluster.Add(start);
 
-        while (queue.Count > 0)
-        {
-            FirePoint current = queue.Dequeue();
-            foreach (FirePoint fp in activeFirePoints)
-            {
-                //if (!cluster.Contains(fp) && IsAdjacent(current.gridPosition, fp.gridPosition))
-                if (!cluster.Contains(fp))
-                {
-                    cluster.Add(fp);
-                    queue.Enqueue(fp);
-                }
-            }
-        }
-        return cluster;
-    }
-    
-    private bool IsAdjacent(Vector2Int a, Vector2Int b)
-    {
-        return Mathf.Abs(a.x - b.x) <= 1 && Mathf.Abs(a.y - b.y) <= 1;
-    }
 
     /// <summary>
     /// 使用 Graham scan 算法计算凸包（返回世界坐标点）
     /// </summary>
-    private List<Vector3> ComputeConvexHull(List<FirePoint> cluster)
+    private List<Vector3> ComputeConvexHull(List<FirePoint> firePoints)
     {
         List<Vector2> points = new List<Vector2>();
-        foreach (FirePoint fp in cluster)
+        foreach (FirePoint fp in firePoints)
         {
             // 将 gridPosition 转为 Vector2，假设 CalculateWorldPosition 直接对应每格 1 单位
             points.Add(new Vector2(fp.gridPosition.x, fp.gridPosition.y));
@@ -476,21 +443,18 @@ public class LocationManager : MonoBehaviour
         points.Sort((a, b) =>
         {
             float angleA = Mathf.Atan2(a.y - pivot.y, a.x - pivot.x);
-            if(angleA>180)
-                angleA -= 180;
             float angleB = Mathf.Atan2(b.y - pivot.y, b.x - pivot.x);
-            if (angleB > 180)
-                angleB -= 180;
+            
             if (!Mathf.Approximately(angleA, angleB))
-                return angleA.CompareTo(angleB);          // 角度不同，按角度排
+                return angleA.CompareTo(angleB);
             else
-                return Dist2(a).CompareTo(Dist2(b));      // 角度相同，按距离排，近的在前，远的在后
+                return Dist2(a).CompareTo(Dist2(b));
         });
         
         List<Vector2> hull = new List<Vector2>();
         foreach (Vector2 p in points)
         {
-            while (hull.Count >= 2 && Cross(hull[hull.Count - 2], hull[hull.Count - 1], p) <0)
+            while (hull.Count >= 2 && Cross(hull[hull.Count - 2], hull[hull.Count - 1], p) <= 0)
             {
                 hull.RemoveAt(hull.Count - 1);
             }
@@ -512,6 +476,8 @@ public class LocationManager : MonoBehaviour
     {
         return (a.x - o.x) * (b.y - o.y) - (a.y - o.y) * (b.x - o.x);
     }
+    
+
 
     /// <summary>
     /// 根据计算得到的多边形顶点创建火域视觉
@@ -539,5 +505,173 @@ public class LocationManager : MonoBehaviour
         activeFireZones.Add(fireZone);
 
         Debug.Log($"Created FireZone with {points.Count} vertices.");
+    }
+    
+    public void CreateBarrier(Vector2Int position, int durability = 4)
+    {
+        GameObject barrierPrefab = Resources.Load<GameObject>("Prefabs/Location/Barrier");
+        if (barrierPrefab == null)
+        {
+            Debug.LogError("Barrier prefab not found");
+            return;
+        }
+        
+        GameObject barrierObject = Instantiate(barrierPrefab);
+        barrierObject.transform.position = player.CalculateWorldPosition(position);
+        
+        BarrierLocation barrier = barrierObject.GetComponent<BarrierLocation>();
+        if (barrier == null)
+        {
+            // 如果没有BarrierLocation组件，添加一个
+            barrier = barrierObject.AddComponent<BarrierLocation>();
+        }
+        
+        barrier.InitializeBarrier(position, durability);
+        nonEnterablePositions.Add(position);
+        spawnedLocations.Add(barrierObject);
+        activeBarriers.Add(barrier);
+        Debug.Log($"Barrier created at {position} with durability {durability}, nonEnterable positions count: {nonEnterablePositions.Count}");
+    }
+    
+    public void RemoveLocation(Location location)
+    {
+        if (location is BarrierLocation barrier)
+        {
+            activeBarriers.Remove(barrier);
+            nonEnterablePositions.Remove(barrier.position);
+        }
+        else if (location is AnchorLocation anchor)
+        {
+            if (activeAnchor == anchor)
+                activeAnchor = null;
+        }
+        else if (location is MireLocation mire)
+        {
+            activeMires.Remove(mire);
+        }
+        
+        GameObject locationObject = location.gameObject;
+        if (spawnedLocations.Contains(locationObject))
+        {
+            spawnedLocations.Remove(locationObject);
+        }
+    }
+    
+    public void CreateAnchor(Vector2Int position)
+    {
+        // 如果已经有锚点，先移除旧的
+        if (activeAnchor != null)
+        {
+            GameObject oldAnchorObject = activeAnchor.gameObject;
+            RemoveLocation(activeAnchor);
+            Destroy(oldAnchorObject);
+            activeAnchor = null;
+        }
+        
+        GameObject anchorPrefab = Resources.Load<GameObject>("Prefabs/Location/Anchor");
+        if (anchorPrefab == null)
+        {
+            Debug.LogError("Anchor prefab not found");
+            return;
+        }
+        
+        GameObject anchorObject = Instantiate(anchorPrefab);
+        anchorObject.transform.position = player.CalculateWorldPosition(position);
+        
+        AnchorLocation anchor = anchorObject.GetComponent<AnchorLocation>();
+        if (anchor == null)
+        {
+            anchor = anchorObject.AddComponent<AnchorLocation>();
+        }
+        
+        anchor.Initialize(position, "锚点地形，回合结束时拉取玩家", true);
+        spawnedLocations.Add(anchorObject);
+        activeAnchor = anchor;
+        Debug.Log($"Anchor created at {position}");
+    }
+    
+    public void OnTurnEnd()
+    {
+        // 回合结束时触发锚点效果
+        if (activeAnchor != null)
+        {
+            activeAnchor.OnTurnEnd();
+        }
+    }
+    
+    public void CreateMire(Vector2Int position)
+    {
+        GameObject mirePrefab = Resources.Load<GameObject>("Prefabs/Location/Mire");
+        if (mirePrefab == null)
+        {
+            // 如果没有专用的潮沼 prefab，使用 Forest prefab 作为临时替代
+            mirePrefab = locationPrefabs["Forest"];
+            if (mirePrefab == null)
+            {
+                Debug.LogError("No suitable prefab found for Mire");
+                return;
+            }
+        }
+        
+        GameObject mireObject = Instantiate(mirePrefab);
+        mireObject.transform.position = player.CalculateWorldPosition(position);
+        
+        MireLocation mire = mireObject.GetComponent<MireLocation>();
+        if (mire == null)
+        {
+            mire = mireObject.AddComponent<MireLocation>();
+        }
+        
+        mire.Initialize(position, "潮沼地形，终止敌人位移", true);
+        spawnedLocations.Add(mireObject);
+        activeMires.Add(mire);
+        Debug.Log($"Mire created at {position}");
+    }
+    
+    /// <summary>
+    /// 检查怪物移动路径上是否有潮沼，如果有则阻止移动
+    /// </summary>
+    /// <param name="monster">移动的怪物</param>
+    /// <param name="targetPos">目标位置</param>
+    /// <returns>是否被潮沼阻止</returns>
+    public bool CheckMireInterception(Monster monster, Vector2Int targetPos)
+    {
+        Vector2Int currentPos = monster.position;
+        
+        // 检查移动路径上的每个位置
+        Vector2Int direction = new Vector2Int(
+            targetPos.x > currentPos.x ? 1 : (targetPos.x < currentPos.x ? -1 : 0),
+            targetPos.y > currentPos.y ? 1 : (targetPos.y < currentPos.y ? -1 : 0)
+        );
+        
+        Vector2Int checkPos = currentPos + direction;
+        
+        while (checkPos != targetPos && player.IsValidPosition(checkPos))
+        {
+            // 检查该位置是否有潮沼
+            foreach (MireLocation mire in activeMires)
+            {
+                if (mire != null && mire.position == checkPos)
+                {
+                    // 怪物被潮沼阻止
+                    return mire.TrapMonster(monster);
+                }
+            }
+            checkPos += direction;
+        }
+        
+        return false; // 没有被阻止
+    }
+    
+    public void OnTurnStart()
+    {
+        // 每回合开始时减少所有拒障的耐久度
+        for (int i = activeBarriers.Count - 1; i >= 0; i--)
+        {
+            if (activeBarriers[i] != null)
+            {
+                activeBarriers[i].ReduceDurability();
+            }
+        }
     }
 }

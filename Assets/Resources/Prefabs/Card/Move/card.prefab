@@ -259,5 +259,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   monsterManager: {fileID: 0}
-  hoverScale: 2
+  hoverScale: 1.6
   animationSpeed: 8
+  applyDefaultScale: 1

@@ -42,7 +42,8 @@ RenderSettings:
 --- !u!157 &3
 LightmapSettings:
   m_ObjectHideFlags: 0
-  serializedVersion: 12
+  serializedVersion: 13
+  m_BakeOnSceneLoad: 0
   m_GISettings:
     serializedVersion: 2
     m_BounceScale: 1
@@ -236,8 +237,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0.52, y: 0.31}
-  m_SizeDelta: {x: 1961.59, y: 1101.81}
+  m_AnchoredPosition: {x: 9, y: 0.30999}
+  m_SizeDelta: {x: 2006.48, y: 1151.2}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &57594363
 CanvasRenderer:
@@ -2552,7 +2553,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -21.1, y: -442.20007}
+  m_AnchoredPosition: {x: -21.1, y: -500}
   m_SizeDelta: {x: 1104.85, y: 200}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &513411015
@@ -4967,8 +4968,12 @@ MonoBehaviour:
   healthBarPrefab: {fileID: 0}
   player: {fileID: 0}
   lastRelativePosition: {x: 0, y: 0}
+  stunnedStacks: 0
+  lureStacks: 0
+  karmaLinkedMonster: {fileID: 0}
   infoManager: {fileID: 0}
   highlightPrefab: {fileID: 3397057089140146364, guid: a79931983b2a1d340a63fa6ae8d622b1, type: 3}
+  damageTextPrefab: {fileID: 1400744369818263092, guid: af4d799e57b38c5438a8b7170a041297, type: 3}
 --- !u!1 &1058265631
 GameObject:
   m_ObjectHideFlags: 0
@@ -7666,6 +7671,7 @@ MonoBehaviour:
   cellGap: {x: 0.5, y: 0.5, z: 0}
   gold: 1000
   actions: 3
+  maxActions: 3
   health: 3
   armor: 3
   deck: []
@@ -7673,7 +7679,11 @@ MonoBehaviour:
   - {fileID: 0}
   damage: 1
   damageModifierThisTurn: 0
+  furyStacks: 0
+  ferventStacks: 0
+  torrentStacks: 0
   cardsUsedThisTurn: 0
+  movesThisTurn: 0
   healthText: {fileID: 937926149}
   armorText: {fileID: 2140048935}
   isShieldActive: 0
@@ -7695,10 +7705,15 @@ MonoBehaviour:
     isQuick: 0
     isEnergy: 0
     isMadness: 0
+    isExhaust: 0
+    isLingering: 0
+    isForethought: 0
     upgradeFrom: 
     hoardingValue: 0
     isPartner: 0
     isTemporary: 0
+    isTriumph: 0
+    isGrace: 0
   deckManager: {fileID: 0}
   monsterManager: {fileID: 0}
   locationManager: {fileID: 1980775606}
@@ -7710,7 +7725,13 @@ MonoBehaviour:
   moveHighlightLayer:
     serializedVersion: 2
     m_Bits: 6144
+  nextWeaponCardDoubleUse: 0
+  nextCardReturnToDeckTop: 0
+  saltBagEffectActive: 0
+  waveRiderEffectActive: 0
+  ws01EchoActive: 0
   attackEffectPrefab: {fileID: 3381790849320777569, guid: 17b42eb47516bc446aaa5e390ef6e6d6, type: 3}
+  damageTextPrefab: {fileID: 1400744369818263092, guid: af4d799e57b38c5438a8b7170a041297, type: 3}
   lastAttackSnapshot: {x: 0, y: 0}
 --- !u!61 &1399918235
 BoxCollider2D:
@@ -9273,6 +9294,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   activeFirePoints: []
   activeFireZones: []
+  activeBarriers: []
+  activeAnchor: {fileID: 0}
+  activeMires: []
 --- !u!1 &2009071440
 GameObject:
   m_ObjectHideFlags: 0
@@ -9473,6 +9497,64 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2035745221}
   m_CullTransparentMesh: 1
+--- !u!1 &2036440446
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2036440447}
+  - component: {fileID: 2036440448}
+  - component: {fileID: 2036440449}
+  m_Layer: 0
+  m_Name: Gamemetrics
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2036440447
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2036440446}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 6.54902, y: 2.82958, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2036440448
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2036440446}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1fe2f402b022f8d48936f5e740c73d3e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &2036440449
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2036440446}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 306d5521bd8b44046958a13dbe7e0f4f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  autoInitialize: 1
 --- !u!1 &2045884953
 GameObject:
   m_ObjectHideFlags: 0
@@ -10364,3 +10446,4 @@ SceneRoots:
   - {fileID: 885674036}
   - {fileID: 510947989}
   - {fileID: 2113702447}
+  - {fileID: 2036440447}

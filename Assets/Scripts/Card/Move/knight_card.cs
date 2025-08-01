@@ -32,7 +32,7 @@ public class knight_card : CardButtonBase
 
 public class KnightCard : Card
 {
-    public KnightCard() : base(CardType.Move, "M02", 20) { }
+    public KnightCard() : base(CardType.Move, "M02", 20, isLingering: true) { }
 
     public override GameObject GetPrefab()
     {

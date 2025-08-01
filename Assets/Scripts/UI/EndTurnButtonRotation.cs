@@ -7,6 +7,7 @@ public class EndTurnButtonRotation : MonoBehaviour
     private Button endTurnButton;
     private RectTransform buttonRect;
     private bool isRotated = false;
+    private bool isRotating = false;
     
     void Start()
     {
@@ -21,7 +22,7 @@ public class EndTurnButtonRotation : MonoBehaviour
     
     void OnEndTurnClicked()
     {
-        if (!isRotated)
+        if (!isRotated && !isRotating)
         {
             StartCoroutine(RotateButton(180f));
             isRotated = true;
@@ -30,7 +31,7 @@ public class EndTurnButtonRotation : MonoBehaviour
     
     public void OnPlayerTurnStart()
     {
-        if (isRotated)
+        if (isRotated && !isRotating)
         {
             StartCoroutine(RotateButton(180f));
             isRotated = false;
@@ -39,9 +40,12 @@ public class EndTurnButtonRotation : MonoBehaviour
     
     private IEnumerator RotateButton(float targetRotation)
     {
+        isRotating = true;
+        endTurnButton.interactable = false;
+        
         float startRotation = buttonRect.eulerAngles.z;
         float endRotation = startRotation + targetRotation;
-        float duration = 0.3f;
+        float duration = 0.5f;
         float elapsed = 0f;
         
         while (elapsed < duration)
@@ -53,5 +57,12 @@ public class EndTurnButtonRotation : MonoBehaviour
         }
         
         buttonRect.rotation = Quaternion.Euler(0, 0, endRotation);
+        isRotating = false;
+        
+        // 只有在按钮回到原位时才重新启用交互
+        if (!isRotated)
+        {
+            endTurnButton.interactable = true;
+        }
     }
 }

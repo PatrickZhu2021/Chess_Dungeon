@@ -38,6 +38,13 @@ Chess Dungeon is a Unity-based tactical card game that combines chess-like movem
   - `energy_core.cs` - Energy system activation
   - `vine_card.cs` - Movement with damage effects
   - `book_*.cs` - Various spell-like effects
+  - **BS Series** - Advanced special effects:
+    - `BS01_card.cs` - 刃祝: Damage highest health enemy X times
+    - `BS02_card.cs` - 罗盘: Draw cards until move card found
+    - `BS05_card.cs` - 战舞: Gain action point + Grace (draw card)
+    - `BS06_card.cs` - 狮鹫势: Next weapon card used twice
+    - `BS07_card.cs` - 卷轴匣: Next card returns to deck top
+    - `BS08_card.cs` - 盐袋: Gain armor for each enemy death
 
 #### Card Management
 - **DeckManager.cs** - Handles deck, hand, discard pile operations
@@ -239,10 +246,20 @@ Player.ShowMoveOptions() / ShowAttackOptions()     // Display valid targets
 
 #### **KeywordEffects** - Shared Combat Effects
 ```csharp
+// Combat Effects
 KeywordEffects.AttackWithKnockback()    // Knockback on attack
+
+// Ritual System
 KeywordEffects.StartBasicRitual()       // Ritual counter system
 KeywordEffects.IncrementBasicRitual()   // Progress ritual
 KeywordEffects.StopBasicRitual()        // Complete/reset ritual
+
+// BS Series Card Effects
+KeywordEffects.ActivateGriffinStance()  // BS06: Next weapon used twice
+KeywordEffects.ActivateScrollCase()     // BS07: Next card returns to deck top
+KeywordEffects.ActivateSaltBag()        // BS08: Gain armor on enemy death
+KeywordEffects.TriggerSaltBagOnEnemyDeath() // Handle salt bag effect
+KeywordEffects.ResetBSEffects()         // Reset BS effects at turn end
 ```
 
 #### **Energy System** - Global State Management
@@ -266,6 +283,15 @@ isMadness              // Discard effects (ritual spear)
 isPartner              // Draw partner cards when played
 isQuick                // No action point cost
 isTemporary            // Removed after battle
+isExhaust              // Removed from game after use
+isGrace                // Draw 1 card when played
+isLingering            // Stays in hand at turn end
+isTriumph              // Returns to deck top from discard
+
+// BS Series State Effects
+nextWeaponCardDoubleUse    // BS06: Next attack card used twice
+nextCardReturnToDeckTop    // BS07: Next card returns to deck
+saltBagEffectActive        // BS08: Gain armor on enemy death
 ```
 
 #### **Card Upgrade System**
@@ -286,6 +312,9 @@ card.AddUpgrade()      // Apply upgrade effects
 | **Energy** | Player/DeckManager | High - Global system |
 | **Vine** | Player state | Low - Single card effect |
 | **Madness** | Card base class | Medium - Discard triggers |
+| **BS Effects** | KeywordEffects | High - Modular special states |
+| **Grace** | Card base class | High - Draw card keyword |
+| **Exhaust** | DeckManager | High - Permanent removal |
 
 ### 🔄 **Design Patterns Used**
 - **Strategy Pattern**: Different `OnCardExecuted()` implementations
@@ -294,3 +323,97 @@ card.AddUpgrade()      // Apply upgrade effects
 - **Composite Pattern**: Multi-upgrade card system
 
 **Architecture Benefit**: New cards can easily combine existing special effects through the modular effect system.
+
+## FA系列卡牌实现流程 (Fire/Flame Series Implementation)
+
+### 🔥 **FA01 灼锋 (Searing Edge)**
+**实现流程：**
+1. 创建FA01_card.cs - Attack类型，十字I级攻击模式
+2. 实现GetDamageAmount()返回1点伤害
+3. OnCardExecuted中调用PlaceFirePointAt()在目标位置创造燃点
+4. 添加到Uncommon卡池
+
+### 🏹 **FA02 烈矢 (Blazing Arrow)**
+**实现流程：**
+1. 创建FA02_card.cs - Attack类型，全场攻击模式
+2. 使用allBoardDirections数组覆盖8x8棋盘所有位置
+3. GetDamageAmount()返回1点伤害
+4. OnCardExecuted中创造燃点
+5. 添加到Epic卡池（稀有）
+
+### 🕯️ **FA03 蛟油蜡烛 (Tidewyrm-Oil Candle)**
+**实现流程：**
+1. 创建FA03_card.cs - Attack类型（0伤害），十字I级
+2. GetDamageAmount()返回0（不造成直接伤害）
+3. OnCardExecuted中调用CreateRandomFirePoints()在目标周围随机创造3处燃点
+4. 获取目标点周围9个位置，随机选择3个有效位置
+5. 添加到Uncommon卡池
+
+### 🛢️ **FA04 焚化油 (Incineration Oil)**
+**实现流程：**
+1. 创建FA04_card.cs - Attack类型（0伤害），全方向II级
+2. 属性：快速（isQuick）、消耗（isExhaust）
+3. OnClick中检查IsPlayerInFireZone()，只能在火域上使用
+4. OnCardExecuted中在目标十字相邻格创造燃点
+5. 添加到Common卡池
+
+### ⚔️ **FA05 炽炬-熄灭 (Torch-Extinguish)**
+**实现流程：**
+1. 创建FA05_card.cs - Attack类型，十字II级，1点伤害
+2. OnCardExecuted中检查IsTargetOnFirePointOrZone()
+3. 若目标在燃点/火域上，创建FA05a衍生卡牌并添加到手牌
+4. FA05a设置为临时卡牌（isTemporary）
+5. 添加到Epic卡池
+
+### 🔥 **FA05a 炽炬-点燃 (Torch-Ignite)**
+**实现流程：**
+1. 创建FA05a_card.cs - Attack类型，十字II级
+2. 属性：快速（isQuick）、衍生（isTemporary）
+3. GetDamageAmount()返回场上燃点数量（动态伤害）
+4. 仅作为衍生卡牌，不添加到卡池
+
+### 🐉 **FA06 蛇龙之涎 (Drakon's Froth)**
+**实现流程：**
+1. 创建FA06_card.cs - Attack类型，十字无限攻击
+2. OnClick中检查IsPlayerInFireZone()，只能在火域上使用
+3. OnCardExecuted中实现AttackInDirection()沿方向攻击所有敌人
+4. 统计命中敌人数量，≥2时调用player.AddFervent(1)
+5. 添加到Legendary卡池（史诗）
+
+### ⚔️ **FA07 灼骨之刃 (Bone-Searing Blade)**
+**实现流程：**
+1. 创建FA07_card.cs - Attack类型，斜向I级，1点伤害
+2. 使用diagonalDirections数组定义四个对角线方向
+3. OnCardExecuted中检查目标怪物血量是否≤0（参考BA13实现）
+4. 击杀成功时调用player.AddFervent(1)
+5. 添加到Legendary卡池
+
+### 🗡️ **FA08 焰形剑 (Flamberge)**
+**实现流程：**
+1. 创建FA08_card.cs - Attack类型，十字I级，2点伤害
+2. 在DeckManager中添加DiscardAllCards()方法返回丢弃数量
+3. OnCardExecuted中丢弃所有手牌，获得丢弃数量
+4. 实现TriggerFireZoneDamage()触发火域伤害X次
+5. 在FireZone中添加TriggerDamageOnly()方法（只造成伤害不减少持续时间）
+6. 添加到Epic卡池
+
+### 🔥 **炽烈机制 (Fervent System)**
+**实现流程：**
+1. 在Player类中添加ferventStacks变量和AddFervent()方法
+2. 修改FireZone.OnEnemyTurnStart()，火域伤害 = 2 + 炽烈层数
+3. 炽烈层数只在关卡结束时清零，不会每回合减少
+4. 与愤怒系统类似但持续时间更长
+
+### 🏗️ **通用实现模式**
+1. **创建卡牌文件** - 在对应文件夹创建XXX_card.cs
+2. **定义攻击模式** - 使用方向数组定义攻击范围
+3. **实现核心效果** - 在OnCardExecuted中实现特殊效果
+4. **添加到管理器** - 更新CardPoolManager、DeckManager、CardDatabase
+5. **测试验证** - 确保效果正确触发
+
+### 🔧 **关键技术点**
+- **火域检测**: 通过LocationManager.activeFireZones检查
+- **燃点创造**: 使用LocationManager.CreateFirePoint()
+- **击杀检测**: 参考BA13，检查monster.health <= 0
+- **衍生卡牌**: 设置isTemporary属性，战斗结束后自动移除
+- **条件使用**: 在OnClick中添加使用条件检查

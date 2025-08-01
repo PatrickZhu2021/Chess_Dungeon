@@ -143,6 +143,11 @@ public class GameManager : MonoBehaviour
             Debug.LogWarning("等待 MonsterManager 初始化...");
             yield return null;
         }
+        while (Player.Instance.deckManager == null)
+        {
+            Debug.LogWarning("等待 deckManager 初始化...");
+            yield return null;
+        }
         // 确保 MonsterManager 存在 
         // 恢复玩家状态
         Player.Instance.SetHealth(gameData.playerHealth);

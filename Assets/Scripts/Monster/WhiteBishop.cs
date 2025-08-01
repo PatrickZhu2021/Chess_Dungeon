@@ -27,12 +27,13 @@ public class WhiteBishop : Monster
         base.Die();
     }
 
-    public override void MoveTowardsPlayer()
+    public override void PerformMovement()
     {
         if (player == null) return;
+        Vector2Int targetPos = GetTargetPosition();
 
         Vector2Int bestMove = position;
-        float closestDistance = Vector2Int.Distance(position, player.position);
+        float closestDistance = Vector2Int.Distance(position, targetPos);
         Vector2Int chosenDirection = Vector2Int.zero;
         // 遍历所有可能的对角线方向
         foreach (Vector2Int direction in bishopDirections)
@@ -47,11 +48,11 @@ public class WhiteBishop : Monster
                 if (!IsValidPosition(potentialPosition) || IsPositionOccupied(potentialPosition))
                     break;
 
-                float distanceToPlayer = Vector2Int.Distance(potentialPosition, player.position);
-                if (distanceToPlayer < closestDistance)
+                float distanceToTarget = Vector2Int.Distance(potentialPosition, targetPos);
+                if (distanceToTarget < closestDistance)
                 {
                     bestMove = potentialPosition;
-                    closestDistance = distanceToPlayer;
+                    closestDistance = distanceToTarget;
                     chosenDirection = direction; 
                 }
             }
@@ -60,8 +61,8 @@ public class WhiteBishop : Monster
         position = bestMove;
         UpdatePosition();
 
-        // 检测是否接触到玩家
-        if (position == player.position)
+        // 检测是否接触到目标
+        if (position == targetPos)
         {
             lastRelativePosition = -chosenDirection;
         }

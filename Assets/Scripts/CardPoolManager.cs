@@ -16,12 +16,12 @@ public static class CardPoolManager
         // Common 卡池
         rarityPools["Common"] = new List<Card>
         {
-            new UpgradedPawnCard(),
+            // new UpgradedPawnCard(),
             new KnightCard(),
             new BishopCard(),
-            new SwordCard(),
-            new RitualDagger(),
-            new FlameSword(),
+            // new SwordCard(),
+            // new RitualDagger(),
+            // new FlameSword(),
             new BA01(),
             new BA02(),
             new BA03(),
@@ -29,45 +29,83 @@ public static class CardPoolManager
             new BA05(),
             new BA07(),
             new BA08(),
+            new BS02(),
+            new BS05(),
+            new BS07(),
+            new BS09(),
+            new FA04(),
+            new FS03(),
+            new FS04(),
+            new WA01(),
+            new WA02(),
+            new WA03(),
+            new WA06(),
+            new WS01(),
+            new WS02(),
+            new WS03(),
+            new WS05()
         };
 
         // Uncommon 卡池
         rarityPools["Uncommon"] = new List<Card>
         {
-            new UpgradedSwordCard(),
+            // new UpgradedSwordCard(),
             new RookCard(),
-            new SpearCard(),
-            new BowCard(),
-            new PotionCard(),
-            new EnergyCore(),
-            new SickleCard(),
-            new RitualSpear(),
-            new Assassin(),
-            new TwoBladeCard(),
-            new FloatSword(),
-            new Book(),
-            new Fan()
+            // new SpearCard(),
+            // new BowCard(),
+            // new PotionCard(),
+            // new EnergyCore(),
+            // new SickleCard(),
+            // new RitualSpear(),
+            // new Assassin(),
+            // new TwoBladeCard(),
+            // new FloatSword(),
+            // new Book(),
+            // new Fan(),
+            new BA09(),
+            new BA10(),
+            new BA11(),
+            new BA12(),
+            new BA14(),
+            new BS01(),
+            new BS06(),
+            new BS08(),
+            new FA01(),
+            new FA03(),
+            new WA04(),
+            new WA05()
         };
 
         // Epic 卡池
         rarityPools["Epic"] = new List<Card>
         {
-            new FlailCard(),
-            new FloatSword(),
-            new DarkEnergy(),
-            new MadnessEcho(),
-            new Vine(),
-            new BookOfPawn(),
-            new FlameBow()
+            // new FlailCard(),
+            // new FloatSword(),
+            // new DarkEnergy(),
+            // new MadnessEcho(),
+            // new Vine(),
+            // new BookOfPawn(),
+            // new FlameBow(),
+            new BA13(),
+            new FA02(),
+            new FA05(),
+            new FA08(),
+            new FS01(),
+            new FS02(),
+            new FS05(),
+            new WA07(),
+            new WS04()
         };
 
         // Legendary 卡池
         rarityPools["Legendary"] = new List<Card>
         {
-            new BookOfKnight(),
-            new BookOfBishop(),
-            new BookOfRook(),
-            new BookOfQueen()
+            // new BookOfKnight(),
+            // new BookOfBishop(),
+            // new BookOfRook(),
+            // new BookOfQueen(),
+            new FA06(),
+            new FA07()
         };
     }
 

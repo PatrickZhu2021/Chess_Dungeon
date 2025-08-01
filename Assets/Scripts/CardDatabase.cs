@@ -66,6 +66,45 @@ public class CardDatabase : MonoBehaviour
         AddCard(new BA05());
         AddCard(new BA07());
         AddCard(new BA08());
+        AddCard(new BA09());
+        AddCard(new BA10());
+        AddCard(new BA11());
+        AddCard(new BA12());
+        AddCard(new BA13());
+        AddCard(new BA14());
+        AddCard(new BS01());
+        AddCard(new BS02());
+        AddCard(new BS05());
+        AddCard(new BS06());
+        AddCard(new BS07());
+        AddCard(new BS08());
+        AddCard(new BS09());
+        AddCard(new FA01());
+        AddCard(new FA02());
+        AddCard(new FA03());
+        AddCard(new FA04());
+        AddCard(new FA05());
+        AddCard(new FA05a());
+        AddCard(new FA06());
+        AddCard(new FA07());
+        AddCard(new FA08());
+        AddCard(new FS01());
+        AddCard(new FS02());
+        AddCard(new FS03());
+        AddCard(new FS04());
+        AddCard(new FS05());
+        AddCard(new WA01());
+        AddCard(new WA02());
+        AddCard(new WA03());
+        AddCard(new WA04());
+        AddCard(new WA05());
+        AddCard(new WA06());
+        AddCard(new WA07());
+        AddCard(new WS01());
+        AddCard(new WS02());
+        AddCard(new WS03());
+        AddCard(new WS04());
+        AddCard(new WS05());
     }
 
     private void AddCard(Card card)
@@ -78,7 +117,6 @@ public class CardDatabase : MonoBehaviour
 
     public Card GetCardById(string id)
     {
-        Debug.Log($"你iiii好");
         // ① 拆分 Id：M01+Quick+Draw1 → ["M01","Quick","Draw1"]
         string[] parts  = id.Split('+');
         string   baseId = parts[0];
@@ -93,7 +131,6 @@ public class CardDatabase : MonoBehaviour
         // ④ 把后缀解析回升级
         for (int i = 1; i < parts.Length; i++)
         {
-            Debug.Log($"你iiii好");
             if (System.Enum.TryParse(parts[i], out CardUpgrade up))
             
                 card.AddUpgrade(up);

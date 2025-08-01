@@ -31,7 +31,7 @@ public class DarkRook : Monster
     /// <summary>
     /// 使用 MCTS 选取下一步。
     /// </summary>
-    public override void MoveTowardsPlayer()
+    public override void PerformMovement()
     {
         if (player == null) return;
 

@@ -195,29 +195,13 @@ public class MonsterManager : MonoBehaviour
     // For example, shuffle the deck, check for energy cards, draw cards, etc.
 
     // Check if there are any energy cards in the deck after the reward is added
-        rewardManager.isRewardPanelOpen = false;
-        player.deckManager.RestartHand();
+        // rewardManager.isRewardPanelOpen = false;
         bool hasEnergyCard = player.deckManager.deck.Exists(card => card.isEnergy);
 
         PlayerPrefs.SetInt("HasEnergyCard", hasEnergyCard ? 1 : 0);
         PlayerPrefs.Save();
-        // If there are energy cards, spawn ActivatePoints
-        if (isLevelCompleted)
-        {
-            // 如果关卡完成，则重置手牌
-            player.deckManager.RestartHand();
-            // 如果有能量卡，则生成激活点
-            //if (hasEnergyCard)
-            //{
-                //SpawnActivatepointsForLevel();
-            //}
-
-            // 抓新手牌
-            //player.deckManager.DrawCards(player.deckManager.handSize);
-
-            // 重置关卡完成标记
-            isLevelCompleted = false;
-        }
+        
+        isLevelCompleted = false;
     }
     public void ClearAllMonsters()
     {
@@ -394,12 +378,17 @@ public class MonsterManager : MonoBehaviour
             if (monster != null)
             {
                 monster.MoveTowardsPlayer();
-                yield return new WaitForSeconds(0.1f); // 延迟0.5秒
+                yield return new WaitForSeconds(0.1f);
             }
         }
-        //yield return new WaitForSeconds(0.5f); // 在所有怪物移动后延迟0.5秒
-        //生成新的怪物
-        
+        // 怪物回合结束时减少眩晕层数
+        foreach (Monster monster in monsters)
+        {
+            if (monster != null && monster.stunnedStacks > 0)
+            {
+                monster.ReduceStun(1);
+            }
+        }
     }
 
     // Moves the given monster to the target grid position.
@@ -628,6 +617,27 @@ public class MonsterManager : MonoBehaviour
         {
             monsters.Remove(monster);
         }
+    }
+    
+    public void TriggerLevelComplete()
+    {
+        isLevelCompleted = true;
+        rewardManager.StartRewardProcess();
+        player.deckManager.RestoreExhaustedCards();
+        
+        // 清理火域
+        foreach (FireZone zone in locationManager.activeFireZones)
+        {
+            if (zone != null)
+            {
+                zone.DestroySelf();
+            }
+        }
+        
+        // 停止仪式
+        Effects.KeywordEffects.StopBasicRitual();
+        
+        Debug.Log("Level completed immediately after all enemies defeated!");
     }
 
     public bool IsTileValid(Vector2Int tilePosition)

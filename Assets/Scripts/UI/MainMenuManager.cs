@@ -3,6 +3,17 @@ using UnityEngine.SceneManagement;
 
 public class MainMenuManager : MonoBehaviour
 {
+    private void Awake()
+    {
+        // 初始化 GameMetrics
+        if (GameMetrics.Instance == null)
+        {
+            GameObject metricsObject = new GameObject("GameMetrics");
+            metricsObject.AddComponent<GameMetrics>();
+            DontDestroyOnLoad(metricsObject);
+        }
+    }
+    
     public void StartGame()
     {
         ClearSaveData();

@@ -70,6 +70,8 @@ public class TurnManager : MonoBehaviour
         UpdateActionText();
         EnableAllButtons();
     }
+    
+
 
     public void AdvanceTurn()
     {
@@ -79,13 +81,48 @@ public class TurnManager : MonoBehaviour
     private IEnumerator HandleTurnEnd()
     {
         DisableAllButtons(); // 禁用所有按钮
+        
+        // 确保 GameMetrics 被初始化
+        if (GameMetrics.Instance == null)
+        {
+            GameObject metricsObject = new GameObject("GameMetrics");
+            metricsObject.AddComponent<GameMetrics>();
+            DontDestroyOnLoad(metricsObject);
+        }
+        
+        // 在弃牌前结束当前回合的指标记录
+        if (GameMetrics.Instance != null)
+        {
+            GameMetrics.Instance.EndTurn();
+        }
+        
         // 回合结束弃牌 
         deckManager.DiscardHand();
         player.ResetEffectsAtEndOfTurn();
         yield return new WaitForSeconds(0.3f);
         player.ClearMoveHighlights();
-        player.actions = 3;
+        player.actions = player.maxActions;
+        // 回合开始时先减少愤怒层数，再应用伤害加成
+        if (player.furyStacks > 0)
+        {
+            player.ReduceFury(1);
+        }
+        player.ApplyFuryDamage();
+        
+        // 回合开始时减少涌潮层数
+        if (player.torrentStacks > 0)
+        {
+            player.torrentStacks--;
+            Debug.Log($"Torrent stacks reduced. Remaining: {player.torrentStacks}");
+        }
         turnCount++;
+        
+        // 开始新回合的指标记录
+        if (GameMetrics.Instance != null)
+        {
+            GameMetrics.Instance.StartTurn(turnCount);
+        }
+        
         monsterManager.OnTurnEnd(turnCount);
         Debug.Log("Turn end");
 
@@ -110,7 +147,7 @@ public class TurnManager : MonoBehaviour
             deckManager.ResetFirstDrawFlag();
             
             // 回合结束抓新的手牌
-            deckManager.DrawCards(deckManager.handSize - deckManager.hand.Count);
+            deckManager.DrawCards(deckManager.handSize);
         }
         else {
             monsterManager.nextlevel = true;
@@ -126,6 +163,14 @@ public class TurnManager : MonoBehaviour
         }
 
         ResetCursor();
+        
+        // 处理拒障耐久度和锚点效果
+        LocationManager locationManager = FindObjectOfType<LocationManager>();
+        if (locationManager != null)
+        {
+            locationManager.OnTurnEnd(); // 先处理回合结束效果（锚点）
+            locationManager.OnTurnStart(); // 再处理回合开始效果（拒障）
+        }
     }
 
     public void MoveCursor()
@@ -225,7 +270,7 @@ public class TurnManager : MonoBehaviour
     {
         if (actionText != null)
         {
-            actionText.text = "3/" + player.actions.ToString();
+            actionText.text = player.maxActions.ToString() + "/" + player.actions.ToString();
         }
     }
 }

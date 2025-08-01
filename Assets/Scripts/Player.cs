@@ -1,6 +1,8 @@
 using UnityEngine;
 using UnityEngine.UI;
+using System.Collections;
 using System.Collections.Generic;
+using Effects;
 
 public class Player : MonoBehaviour
 {
@@ -13,15 +15,20 @@ public class Player : MonoBehaviour
     public Vector3 cellGap = new Vector3(0, 0, 0); // Cell Gap
     public int gold = 1000; // 金币数量
     public int actions = 3; //行动点
+    public int maxActions = 3; //最大行动点
     public int health = 3; // 玩家初始血量
     public int armor = 3;
     public List<string> deck;
     public List<Relic> relics;
     public int damage = 1; //默认伤害
     public int damageModifierThisTurn = 0;
+    public int furyStacks = 0; // 愤怒层数
+    public int ferventStacks = 0; // 炙烈层数
+    public int torrentStacks = 0; // 涌潮层数
     public Vector2Int lastAttackDirection { get; set; }
 
     public int cardsUsedThisTurn = 0; //本回合使用的卡牌数量
+    public int movesThisTurn = 0; //本回合移动次数
     public Text healthText; 
     public Text armorText; 
     public bool isShieldActive = false;
@@ -51,14 +58,23 @@ public class Player : MonoBehaviour
 
     public delegate void CardPlayed(Card card);
     public event CardPlayed OnCardPlayed;
+    
+    public delegate void MoveCardUsed(Card card);
+    public event MoveCardUsed OnMoveCardUsed;
 
 
     public bool vineEffectActive = false; 
     public LayerMask attackHighlightLayer;
     public LayerMask moveHighlightLayer;
+    public bool nextWeaponCardDoubleUse = false; // BS06狮鹫势效果
+    public bool nextCardReturnToDeckTop = false; // BS07卷轴匣效果
+    public bool saltBagEffectActive = false; // BS08盐袋效果
+    public bool waveRiderEffectActive = false; // WS05逐浪效果
+    public bool ws01EchoActive = false; // WS01回响效果
 
     private Animator animator;
     public GameObject attackEffectPrefab;
+    public GameObject damageTextPrefab;
     public Vector2Int targetAttackPosition { get; set; }
     public Vector2Int lastAttackSnapshot;
 
@@ -230,6 +246,12 @@ public class Player : MonoBehaviour
 
     public void TakeDamage(int damage)
     {
+        // 记录受到伤害指标
+        if (GameMetrics.Instance != null)
+        {
+            GameMetrics.Instance.RecordDamageTaken(damage);
+        }
+        
         int remainingDamage = damage;
 
         // 如果有护甲，先用护甲抵消一部分伤害
@@ -256,6 +278,10 @@ public class Player : MonoBehaviour
         }
         UpdateHealthText();
         UpdateArmorText();
+        
+        // 显示伤害数字
+        ShowDamageText(damage, false);
+        
         if (health <= 0)
         {
             //("Player has died.");
@@ -477,9 +503,20 @@ public class Player : MonoBehaviour
 
     public void Move(Vector2Int newPosition)
     {
+        Vector2Int oldPosition = position;
         position = newPosition;
         UpdatePosition();
         ClearMoveHighlights();
+        
+        // 增加本回合移动次数
+        movesThisTurn++;
+        
+        // 记录移动指标
+        if (GameMetrics.Instance != null)
+        {
+            int distance = Mathf.Abs(newPosition.x - oldPosition.x) + Mathf.Abs(newPosition.y - oldPosition.y);
+            GameMetrics.Instance.RecordMovement(distance);
+        }
 
         // 调用新方法来检查并处理 ActivatePoint 和 DeactivatePoint
         CheckAndHandlePoints(newPosition);
@@ -543,20 +580,35 @@ public class Player : MonoBehaviour
         lastAttackDirection = attackPosition - position;
         lastAttackSnapshot = attackPosition;
         targetAttackPosition = attackPosition;
-        Vector3 worldPosition = CalculateWorldPosition(attackPosition);
-        GameObject effectInstance = Instantiate(attackEffectPrefab, worldPosition, Quaternion.identity);
-        // 播放攻击动画
-        Destroy(effectInstance, 0.1f);
-        // 基于坐标检测 Monster 的存在
-        GameObject[] monsters = GameObject.FindGameObjectsWithTag("Monster");
-        foreach (GameObject monsterObject in monsters)
+        
+        // 执行攻击（可能执行两次）
+        int attackTimes = (currentCard != null && currentCard.cardType == CardType.Attack && nextWeaponCardDoubleUse) ? 2 : 1;
+        
+        for (int i = 0; i < attackTimes; i++)
         {
-            Monster monster = monsterObject.GetComponent<Monster>();
-            if (monster != null && monster.IsPartOfMonster(attackPosition))
+            Vector3 worldPosition = CalculateWorldPosition(attackPosition);
+            GameObject effectInstance = Instantiate(attackEffectPrefab, worldPosition, Quaternion.identity);
+            Destroy(effectInstance, 0.1f);
+            
+            // 基于坐标检测 Monster 的存在
+            GameObject[] monsters = GameObject.FindGameObjectsWithTag("Monster");
+            foreach (GameObject monsterObject in monsters)
             {
-                monster.TakeDamage(damage + damageModifierThisTurn);
+                Monster monster = monsterObject.GetComponent<Monster>();
+                if (monster != null && monster.IsPartOfMonster(attackPosition))
+                {
+                    monster.TakeDamage(damage + damageModifierThisTurn);
+                }
+            }
+            
+            if (i == 0 && attackTimes > 1)
+            {
+                Debug.Log($"BS06 effect: Attack {i + 1}/{attackTimes}");
             }
         }
+        
+        // BS06标记将在ExecuteCurrentCard中清除
+        
         damage = 1;
         ClearMoveHighlights();
         ExecuteCurrentCard();
@@ -678,6 +730,12 @@ public class Player : MonoBehaviour
         }
         if (currentCard != null)
         {
+            // 记录卡牌使用指标
+            if (GameMetrics.Instance != null)
+            {
+                GameMetrics.Instance.RecordCardPlayed(currentCard.Id, currentCard.cost);
+            }
+            
             deckManager.UseCard(currentCard);
             
             // 如果是攻击卡，执行 OnAttackExecuted 方法
@@ -685,17 +743,53 @@ public class Player : MonoBehaviour
             {
                 //Debug.Log("Executing OnAttackExecuted for: ");
                 Vector2Int snapshot = targetAttackPosition;
-                currentCard.OnCardExecuted(lastAttackSnapshot);   // 只触发攻击卡的特殊效果
-                targetAttackPosition = new Vector2Int(-1, -1); ;
+                
+                // 第一次执行OnCardExecuted
+                currentCard.OnCardExecuted(lastAttackSnapshot);
+                
+                // 如果有BS06效果，再次执行OnCardExecuted
+                if (nextWeaponCardDoubleUse)
+                {
+                    Debug.Log("BS06 effect: Executing OnCardExecuted twice");
+                    currentCard.OnCardExecuted(lastAttackSnapshot);
+                    nextWeaponCardDoubleUse = false; // 清除标记
+                }
+                
+                targetAttackPosition = new Vector2Int(-1, -1);
             }
 
             if (currentCard.cardType == CardType.Move) // Assuming MovementCard is a class for movement cards
             {
                 currentCard.OnCardExecuted();
+                OnMoveCardUsed?.Invoke(currentCard); // 触发移动牌使用事件
+                
+                // 触发涌潮效果
+                if (torrentStacks > 0)
+                {
+                    KeywordEffects.TriggerTorrentEffect(this, position);
+                }
+                
+                // 触发逐浪效果
+                if (waveRiderEffectActive)
+                {
+                    KeywordEffects.TriggerWaveRiderEffect(this, position);
+                }
+                
+                // 触发 WS01 回响效果
+                if (ws01EchoActive)
+                {
+                    KeywordEffects.TriggerWS01EchoEffect(this);
+                }
+                
                 if (vineEffectActive)
                 {
                     TriggerVineEffect();
                 }
+            }
+            
+            if (currentCard.cardType == CardType.Special)
+            {
+                currentCard.OnCardExecuted();
             }
             
 
@@ -731,6 +825,9 @@ public class Player : MonoBehaviour
                 FindObjectOfType<TurnManager>().UpdateActionText();   
                 DisableNonQuickCardButtons();
                 //添加回合条变成红色特效
+                
+                // BS09某种草药效果：当失去所有行动点时触发
+                KeywordEffects.TriggerHerbOnNoActions(this);
             }
         }
     }
@@ -739,7 +836,42 @@ public class Player : MonoBehaviour
     {
         vineEffectActive = false; // Reset the vine effect after the turn
         cardsUsedThisTurn = 0;
+        movesThisTurn = 0; // 重置移动次数
         damageModifierThisTurn = 0;
+        KeywordEffects.ResetBSEffects(this); // 重置BS系列效果
+        
+        // 重置 WS01 效果
+        ws01EchoActive = false;
+    }
+    
+    public void IncreaseMaxActions(int amount)
+    {
+        maxActions += amount;
+        Debug.Log($"Max actions increased by {amount}. New max: {maxActions}");
+    }
+    
+    public void ApplyFuryDamage()
+    {
+        damageModifierThisTurn = furyStacks; // 将愤怒层数应用为伤害修正
+    }
+    
+    public void AddFuryAndApply(int stacks)
+    {
+        furyStacks += stacks;
+        damageModifierThisTurn = furyStacks; // 立即应用愤怒伤害加成
+        Debug.Log($"Added {stacks} fury stacks. Total: {furyStacks}, damage modifier: {damageModifierThisTurn}");
+    }
+    
+    public void ReduceFury(int stacks)
+    {
+        furyStacks = Mathf.Max(0, furyStacks - stacks);
+        Debug.Log($"Reduced {stacks} fury stacks. Remaining: {furyStacks}");
+    }
+    
+    public void AddFervent(int stacks)
+    {
+        ferventStacks += stacks;
+        Debug.Log($"Added {stacks} fervent stacks. Total: {ferventStacks}");
     }
 
     public void OnCardUsed(Card currentCard)
@@ -848,5 +980,11 @@ public class Player : MonoBehaviour
     public void SetGold(int newGold)
     {
         gold = newGold;
+    }
+    
+    public void ShowDamageText(int damage, bool isHeal = false)
+    {
+        Vector3 worldPos = CalculateWorldPosition(position) + Vector3.up * 0.5f;
+        DamageTextManager.ShowDamageText(this, damage, worldPos, damageTextPrefab, isHeal);
     }
 }

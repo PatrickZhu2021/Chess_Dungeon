@@ -21,7 +21,7 @@ public class DarkBishop : Monster
         type        = MonsterType.Bishop;
     }
 
-    public override void MoveTowardsPlayer()
+    public override void PerformMovement()
     {
         if (player == null) return;
         List<Vector2Int> legal = CalculatePossibleMoves();

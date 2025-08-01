@@ -33,7 +33,7 @@ public class bishop_card : CardButtonBase
 
 public class BishopCard : Card
 {
-    public BishopCard() : base(CardType.Move, "M03", 30) { }
+    public BishopCard() : base(CardType.Move, "M03", 30, isLingering: true) { }
 
     public override GameObject GetPrefab()
     {

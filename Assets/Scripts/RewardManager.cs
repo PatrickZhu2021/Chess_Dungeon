@@ -85,6 +85,7 @@ public class RewardManager : MonoBehaviour
     {
         img.sprite = card.GetSprite();
         txt.text = card.GetDescription();
+        txt.fontSize = 20; // 调整字体大小
         Button btn = img.GetComponent<Button>();
         btn.onClick.RemoveAllListeners();
         btn.onClick.AddListener(() => OnCardSelected(card));
@@ -124,7 +125,7 @@ public class RewardManager : MonoBehaviour
 
     private void CloseRewardPanel()
     {
-        rewardPanel.SetActive(false);
+        // rewardPanel.SetActive(false);
     }
     #endregion
 
@@ -175,7 +176,7 @@ public class RewardManager : MonoBehaviour
 
     private void CloseRelicPanel()
     {
-        relicPanel.SetActive(false);
+        // relicPanel.SetActive(false);
     }
     #endregion
 

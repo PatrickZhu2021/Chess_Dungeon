@@ -66,13 +66,37 @@ public class BA04: Card
     }
 
     public override void OnCardExecuted(Vector2Int attackPos)
-    {   
-        // 抽卡效果：抽取等同于造成伤害量的卡牌
-        int damageDealt = GetDamageAmount();
-        DeckManager deckManager = GameObject.FindObjectOfType<DeckManager>();
-        if (deckManager != null)
+    {
+        // 检查是否有怪物在攻击位置，并计算实际造成的伤害
+        int actualDamageDealt = 0;
+        
+        GameObject[] monsters = GameObject.FindGameObjectsWithTag("Monster");
+        foreach (GameObject monsterObject in monsters)
         {
-            deckManager.DrawCards(damageDealt);
+            Monster monster = monsterObject.GetComponent<Monster>();
+            if (monster != null && monster.IsPartOfMonster(attackPos))
+            {
+                // 计算实际造成的伤害（伤害已经由Player.Attack造成）
+                int theoreticalDamage = 1 + player.damageModifierThisTurn;
+                actualDamageDealt = theoreticalDamage; // 假设怪物血量足够，实际伤害等于理论伤害
+                Debug.Log($"BA04 hit monster at {attackPos}, theoretical damage: {theoreticalDamage}");
+                break;
+            }
+        }
+        
+        // 只有在实际造成伤害时才抽卡
+        if (actualDamageDealt > 0)
+        {
+            DeckManager deckManager = GameObject.FindObjectOfType<DeckManager>();
+            if (deckManager != null)
+            {
+                deckManager.DrawCards(actualDamageDealt);
+                Debug.Log($"BA04: Drew {actualDamageDealt} cards based on actual damage dealt");
+            }
+        }
+        else
+        {
+            Debug.Log("BA04: No monster hit, no cards drawn");
         }
     }
 }

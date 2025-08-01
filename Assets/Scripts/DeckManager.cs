@@ -53,10 +53,9 @@ public class DeckManager : MonoBehaviour
         if (!SaveSystem.GameSaveExists())
         {
             InitializeDeck();
-            DrawCards(handSize, () => {
-                DrawForethoughtCards(); // 在普通手牌抓取完成后抓取谋定卡牌
-            });
         }
+        //避免时间问题导致的遗漏抓牌
+        StartCoroutine(DelayedDrawCards());
         InitializeCardEditor();
         UpdateDeckCountText(); // 初始化时更新牌堆数量显示
         UpdateDiscardPileCountText(); // 初始化时更新弃牌堆数量显示
@@ -187,6 +186,45 @@ public class DeckManager : MonoBehaviour
         allCards.Add(new BA05());
         allCards.Add(new BA07());
         allCards.Add(new BA08());
+        allCards.Add(new BA09());
+        allCards.Add(new BA10());
+        allCards.Add(new BA11());
+        allCards.Add(new BA12());
+        allCards.Add(new BA13());
+        allCards.Add(new BA14());
+        allCards.Add(new BS01());
+        allCards.Add(new BS02());
+        allCards.Add(new BS05());
+        allCards.Add(new BS06());
+        allCards.Add(new BS07());
+        allCards.Add(new BS08());
+        allCards.Add(new BS09());
+        allCards.Add(new FA01());
+        allCards.Add(new FA02());
+        allCards.Add(new FA03());
+        allCards.Add(new FA04());
+        allCards.Add(new FA05());
+        allCards.Add(new FA05a());
+        allCards.Add(new FA06());
+        allCards.Add(new FA07());
+        allCards.Add(new FA08());
+        allCards.Add(new FS01());
+        allCards.Add(new FS02());
+        allCards.Add(new FS03());
+        allCards.Add(new FS04());
+        allCards.Add(new FS05());
+        allCards.Add(new WA01());
+        allCards.Add(new WA02());
+        allCards.Add(new WA03());
+        allCards.Add(new WA04());
+        allCards.Add(new WA05());
+        allCards.Add(new WA06());
+        allCards.Add(new WA07());
+        allCards.Add(new WS01());
+        allCards.Add(new WS02());
+        allCards.Add(new WS03());
+        allCards.Add(new WS04());
+        allCards.Add(new WS05());
         UpdateCardEditorPanel();
     }
 
@@ -219,8 +257,8 @@ public class DeckManager : MonoBehaviour
 
             if (deck.Count > 0)
             {
-                // 随机抓牌
-                ShuffleDeck();
+                // 抓牌
+                //ShuffleDeck();
                 UpdateDeckPanel();
                 UpdateDiscardPanel();
                 Card card = deck[0];
@@ -273,13 +311,6 @@ public class DeckManager : MonoBehaviour
     {
         GridLayoutGroup gridLayout = cardPanel.GetComponent<GridLayoutGroup>();
 
-        if (!deck.Contains(specificCard))
-        {
-            Debug.Log("Specific card not found in deck.");
-            yield break;
-        }
-
-        deck.Remove(specificCard);
         hand.Add(specificCard);
 
         // 创建卡牌按钮并添加到 CardPanel 中
@@ -387,8 +418,29 @@ public class DeckManager : MonoBehaviour
     public void UseCard(Card card)
     {
         hand.Remove(card);
-        discardPile.Add(card);
+        
+        // 检查是否为消耗卡牌
+        if (card.isExhaust)
+        {
+            exhaustPile.Add(card);
+            Debug.Log($"Card {card.Id} exhausted");
+        }
+        else
+        {
+            discardPile.Add(card);
+            
+            // 检查BS07效果：将卡牌从弃牌堆移到牌库顶部
+            if (player != null && player.nextCardReturnToDeckTop)
+            {
+                discardPile.Remove(card); // 从弃牌堆移除
+                deck.Insert(0, card); // 放到牌库顶部
+                player.nextCardReturnToDeckTop = false; // 清除标记
+                Debug.Log($"BS07 effect: Card {card.Id} returned to deck top");
+            }
+        }
+        
         UpdateDiscardPileCountText(); // 更新弃牌堆数量显示
+        UpdateDeckCountText(); // 更新牌库数量显示
 
         // 找到并销毁已使用的卡牌按钮
         for (int i = cardButtons.Count - 1; i >= 0; i--)
@@ -465,8 +517,19 @@ public class DeckManager : MonoBehaviour
             }
         }
     }
+    
+    public int DiscardAllCards()
+    {
+        int discardedCount = 0;
+        for (int i = hand.Count - 1; i >= 0; i--)
+        {
+            DiscardCard(i);
+            discardedCount++;
+        }
+        return discardedCount;
+    }
 
-    void ReshuffleDeck()
+    public void ReshuffleDeck()
     {
         if (discardPile.Count > 0)
         {
@@ -771,6 +834,30 @@ public class DeckManager : MonoBehaviour
                 Debug.Log($"{card.Id} card's hoarding effect: +{card.hoardingValue} gold");
             }
         }
+        
+        // 处理凯旋卡牌：从弃牌堆中找到凯旋卡牌并添加到下回合手牌
+        List<Card> triumphCards = new List<Card>();
+        for (int i = discardPile.Count - 1; i >= 0; i--)
+        {
+            if (discardPile[i].isTriumph)
+            {
+                triumphCards.Add(discardPile[i]);
+                discardPile.RemoveAt(i);
+            }
+        }
+        
+        // 将凯旋卡牌直接添加到手牌
+        foreach (Card triumphCard in triumphCards)
+        {
+            hand.Add(triumphCard);
+            Debug.Log($"Triumph card {triumphCard.Id} returned to hand");
+        }
+        
+        // 如果有凯旋卡牌返回，更新手牌显示
+        if (triumphCards.Count > 0)
+        {
+            UpdateHandDisplay();
+        }
     }
     
     public int GetAffinityCount(string Id)
@@ -852,9 +939,9 @@ public class DeckManager : MonoBehaviour
         hand.Clear();
         deck = new List<Card>(newDeck);
         UpdateDeckPanel(); // 更新 UI
-        DrawCards(handSize, () => {
-            DrawForethoughtCards(); // 在普通手牌抓取完成后抓取谋定卡牌
-        });
+        // DrawCards(handSize, () => {
+        //     DrawForethoughtCards(); // 在普通手牌抓取完成后抓取谋定卡牌
+        // });
     }
 
     //未完成
@@ -931,5 +1018,29 @@ public class DeckManager : MonoBehaviour
     public void ResetFirstDrawFlag()
     {
         isFirstDrawOfTurn = true;
+    }
+    
+    public void DrawCardOfType(CardType cardType, int count = 1)
+    {
+        for (int i = 0; i < count; i++)
+        {
+            // 在牌库中查找指定类型的卡牌
+            for (int j = 0; j < deck.Count; j++)
+            {
+                if (deck[j].cardType == cardType)
+                {
+                    DrawCardAt(j);
+                    break;
+                }
+            }
+        }
+    }
+    
+    private IEnumerator DelayedDrawCards()
+    {
+        yield return new WaitForSeconds(0.1f);
+        DrawCards(handSize, () => {
+            DrawForethoughtCards();
+        });
     }
 }

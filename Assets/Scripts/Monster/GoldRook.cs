@@ -41,9 +41,10 @@ public class GoldRook : Monster
     /// 3. 当两个候选位置评分非常接近时，会优先选择距离玩家更远的那个（更安全）。
     /// 4. 同时排除那些会阻挡其他直线攻击怪物（例如 Rook 或 Bishop）的候选位置。
     /// </summary>
-    public override void MoveTowardsPlayer()
+    public override void PerformMovement()
     {
         if (player == null) return;
+        Vector2Int targetPos = GetTargetPosition();
 
         lastRelativePosition = position - player.position;
         List<Vector2Int> possibleMoves = new List<Vector2Int>();
@@ -58,8 +59,8 @@ public class GoldRook : Monster
                 if (!IsValidPosition(candidate) || IsPositionOccupied(candidate))
                     break;
 
-                // 如果候选位置正好为玩家位置，直接移动进行攻击
-                if (candidate == player.position)
+                // 如枟候选位置正好为目标位置，直接移动进行攻击
+                if (candidate == targetPos)
                 {
                     position = candidate;
                     UpdatePosition();
@@ -71,15 +72,15 @@ public class GoldRook : Monster
             }
         }
 
-        // 对候选位置排序：评分越低越好；若评分接近，则优先选择距离玩家更远的
+        // 对候选位置排序：评分越低越好；若评分接近，则优先选择距离目标更远的
         possibleMoves.Sort((a, b) =>
         {
-            float scoreA = EvaluateCandidateMove(a);
-            float scoreB = EvaluateCandidateMove(b);
+            float scoreA = EvaluateCandidateMove(a, targetPos);
+            float scoreB = EvaluateCandidateMove(b, targetPos);
             if (Mathf.Abs(scoreA - scoreB) < 0.001f)
             {
-                float distanceA = Vector2Int.Distance(a, player.position);
-                float distanceB = Vector2Int.Distance(b, player.position);
+                float distanceA = Vector2Int.Distance(a, targetPos);
+                float distanceB = Vector2Int.Distance(b, targetPos);
                 // 距离越大说明越安全，返回值保证排在前面
                 return distanceB.CompareTo(distanceA);
             }
@@ -99,10 +100,9 @@ public class GoldRook : Monster
         position = bestMove;
         UpdatePosition();
 
-        if (position == player.position)
+        if (position == targetPos)
         {
-            Debug.Log("GoldRook directly attacks the player.");
-            //player.TakeDamage(1);
+            Debug.Log("GoldRook reached target.");
         }
     }
 
@@ -113,13 +113,13 @@ public class GoldRook : Monster
     /// - 如果候选位置与玩家距离低于设定的安全距离，则加上惩罚（增加评分）。
     /// 分值越低越优先选择。
     /// </summary>
-    private float EvaluateCandidateMove(Vector2Int candidate)
+    private float EvaluateCandidateMove(Vector2Int candidate, Vector2Int target)
     {
-        float baseDistance = Vector2Int.Distance(candidate, player.position);
+        float baseDistance = Vector2Int.Distance(candidate, target);
         float score = baseDistance;
 
-        // 如果候选位置与玩家处于直接攻击线，则给予奖励（扣除 bonus）
-        if (IsDirectAttackLine(candidate, player.position))
+        // 如果候选位置与目标处于直接攻击线，则给予奖励（扣除 bonus）
+        if (IsDirectAttackLine(candidate, target))
         {
             float bonus = 5f; // 奖励值，可根据需求调整
             score -= bonus;

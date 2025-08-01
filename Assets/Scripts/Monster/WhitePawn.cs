@@ -20,7 +20,7 @@ public class WhitePawn : Monster
         base.Die();
     }
 
-    public override void MoveTowardsPlayer()
+    public override void PerformMovement()
     {
         if (player == null) return;
         lastRelativePosition = position - player.position;
@@ -33,8 +33,9 @@ public class WhitePawn : Monster
         possibleMoves.Add(new Vector2Int(position.x, position.y + 1));  // 上
         possibleMoves.Add(new Vector2Int(position.x, position.y - 1));  // 下
 
-        // 按照接近玩家的优先级排序
-        possibleMoves.Sort((a, b) => Vector2Int.Distance(a, player.position).CompareTo(Vector2Int.Distance(b, player.position)));
+        Vector2Int targetPos = GetTargetPosition();
+        // 按照接近目标的优先级排序
+        possibleMoves.Sort((a, b) => Vector2Int.Distance(a, targetPos).CompareTo(Vector2Int.Distance(b, targetPos)));
 
         // 遍历所有可能的移动方向，找到第一个有效的移动
         foreach (Vector2Int move in possibleMoves)
@@ -47,11 +48,10 @@ public class WhitePawn : Monster
             }
         }
 
-        // 检测是否接触到玩家
-        if (position == player.position)
+        // 检测是否接触到目标
+        if (position == targetPos)
         {
-            Debug.Log("Player attacked by WhitePawn.");
-            //player.TakeDamage(1);  // 假设每次攻击造成 1 点伤害
+            Debug.Log("Target reached by WhitePawn.");
         }
     }
 

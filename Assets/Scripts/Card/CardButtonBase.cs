@@ -25,8 +25,9 @@ public abstract class CardButtonBase : MonoBehaviour, CardButton, IPointerClickH
     private Transform upgradeEffectTransform;
     
     [Header("悬停放大设置")]
-    public float hoverScale = 2.0f;
+    public float hoverScale = 1.6f;
     public float animationSpeed = 8f;
+    public bool applyDefaultScale = true; // 是否应用默认放大
     private Vector3 originalScale;
     private RectTransform rectTransform;
 
@@ -38,6 +39,24 @@ public abstract class CardButtonBase : MonoBehaviour, CardButton, IPointerClickH
         cardImage = GetComponent<Image>();
         rectTransform = GetComponent<RectTransform>();
         originalScale = rectTransform.localScale;
+        
+        // 自动检测是否为编辑界面
+        Transform parent = transform.parent;
+        while (parent != null)
+        {
+            if (parent.name.ToLower().Contains("editor") || parent.name.ToLower().Contains("collection"))
+            {
+                applyDefaultScale = false;
+                break;
+            }
+            parent = parent.parent;
+        }
+        
+        // 只有在applyDefaultScale为true时才设置默认大小为悬浮大小
+        if (applyDefaultScale)
+        {
+            rectTransform.localScale = originalScale * hoverScale;
+        }
     }
 
     protected virtual void Start()
@@ -266,19 +285,19 @@ public abstract class CardButtonBase : MonoBehaviour, CardButton, IPointerClickH
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        if (!isDragging)
+        if (!isDragging && applyDefaultScale)
         {
             StopAllCoroutines();
-            StartCoroutine(ScaleCard(originalScale * hoverScale));
+            StartCoroutine(ScaleCard(originalScale * hoverScale * hoverScale));
         }
     }
     
     public void OnPointerExit(PointerEventData eventData)
     {
-        if (!isDragging)
+        if (!isDragging && applyDefaultScale)
         {
             StopAllCoroutines();
-            StartCoroutine(ScaleCard(originalScale));
+            StartCoroutine(ScaleCard(originalScale * hoverScale));
         }
     }
     

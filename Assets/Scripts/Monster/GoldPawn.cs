@@ -20,15 +20,15 @@ public class GoldPawn : Monster
         base.Die();
     }
 
-    public override void MoveTowardsPlayer()
+    public override void PerformMovement()
     {
         if (player == null) return;
 
         // 记录相对玩家的位置
         lastRelativePosition = position - player.position;
 
-        // 目标位置直接设为玩家的位置
-        Vector2Int targetPosition = player.position;
+        // 获取目标位置（可能是瞩目目标或玩家）
+        Vector2Int targetPosition = GetTargetPosition();
         Debug.Log("GoldPawn: Moving towards player at " + targetPosition);
 
         // 构建候选移动方向（8 个方向：上下左右及四个对角方向）
@@ -65,11 +65,10 @@ public class GoldPawn : Monster
             }
         }
 
-        // 若移动后与玩家重合，则触发攻击
-        if (position == player.position)
+        // 若移动后与目标重合，则触发攻击
+        if (position == targetPosition)
         {
-            Debug.Log("Player attacked by GoldPawn.");
-            // 可在此加入攻击逻辑，例如 player.TakeDamage(1);
+            Debug.Log("Target reached by GoldPawn.");
         }
     }
 
