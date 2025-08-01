@@ -31,7 +31,7 @@ public class I03 : Monster
         base.Die();
     }
 
-    public override void PerformMovement()
+    public override void MoveTowardsPlayer()
     {
         // 检查是否需要血食
         if (needsBloodFeastCheck && !bloodFeastUsed && health <= maxHealth / 2)
@@ -42,6 +42,13 @@ public class I03 : Monster
         }
         
         needsBloodFeastCheck = false; // 清除标记
+        
+        // 调用父类的移动逻辑
+        base.MoveTowardsPlayer();
+    }
+    
+    public override void PerformMovement()
+    {
 
         // 正常移动逻辑（与I01相同）
         if (player == null) return;
