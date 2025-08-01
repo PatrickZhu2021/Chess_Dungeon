@@ -116,9 +116,6 @@ public class TurnManager : MonoBehaviour
             Debug.Log($"Torrent stacks reduced. Remaining: {player.torrentStacks}");
         }
         
-        // T01新回合开始时重置伤害标记
-        T01.ResetTurnDamageFlags();
-        
         turnCount++;
         
         // 开始新回合的指标记录

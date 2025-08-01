@@ -433,6 +433,15 @@ public class MonsterManager : MonoBehaviour
                 monster.ReduceStun(1);
             }
         }
+        
+        // 怪物移动完成后调用OnTurnEnd
+        foreach (Monster monster in monsters)
+        {
+            if (monster != null)
+            {
+                monster.OnTurnEnd();
+            }
+        }
     }
 
     // Moves the given monster to the target grid position.
@@ -475,8 +484,7 @@ public class MonsterManager : MonoBehaviour
             locationManager.PullEverythingDown();
         }
         
-        // T01回合结束重新出现
-        T01.ReappearAllAtTurnEnd();
+
         
         // 移除已被销毁的Monster对象
         monsters.RemoveAll(monster => monster == null);

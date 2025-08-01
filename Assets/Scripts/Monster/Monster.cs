@@ -596,6 +596,11 @@ public class Monster : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
             }
         }
     }
+    
+    public virtual void OnTurnEnd()
+    {
+        // 默认空实现，子类可重写
+    }
 
 
 }

@@ -214,27 +214,13 @@ public class T01 : Monster
         Debug.Log($"{monsterName} reappeared at turn end");
     }
     
-    public static void ResetTurnDamageFlags()
+    public override void OnTurnEnd()
     {
-        foreach (T01 t01 in allT01s)
-        {
-            if (t01 != null)
-            {
-                t01.hasBeenDamagedThisTurn = false;
-            }
-        }
+        ReappearAtTurnEnd();
+        hasBeenDamagedThisTurn = false;
     }
     
-    public static void ReappearAllAtTurnEnd()
-    {
-        foreach (T01 t01 in allT01s)
-        {
-            if (t01 != null)
-            {
-                t01.ReappearAtTurnEnd();
-            }
-        }
-    }
+
     
     void OnDestroy()
     {
