@@ -17,7 +17,7 @@ public class MonsterInfoManager : MonoBehaviour
         if (MonsterInfoPanel != null)
         {
             MonsterInfoPanel.SetActive(true); // 确保面板是可见的
-            MonsterNameText.text = $"Name: {name}";
+            MonsterNameText.text = $"Name: {(monster != null ? monster.GetDisplayName() : name)}";
             MonsterHealthText.text = $"Health: {health}";
             MonsterPositionText.text = $"Position: {position.x}, {position.y}";
             

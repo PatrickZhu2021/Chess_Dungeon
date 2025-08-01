@@ -8,6 +8,7 @@ public class I01 : Monster
         base.Initialize(startPos);
         type = MonsterType.Pawn;
         monsterName = "I01";
+        displayName = "爬行者";
     }
 
     public override void TakeDamage(int damage)

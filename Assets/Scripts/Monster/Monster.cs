@@ -18,6 +18,7 @@ public enum MonsterType
 public class Monster : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
     public string monsterName = "default";
+    public string displayName = ""; // 显示名称，默认为空
     private Animator animator;
     public int health;
     public int maxHealth;
@@ -317,6 +318,11 @@ public class Monster : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     public virtual List<string> GetSkills()
     {
         return new List<string>(); // Default: no skills
+    }
+    
+    public string GetDisplayName()
+    {
+        return string.IsNullOrEmpty(displayName) ? monsterName : displayName;
     }
 
     public void OnPointerEnter(PointerEventData eventData)
