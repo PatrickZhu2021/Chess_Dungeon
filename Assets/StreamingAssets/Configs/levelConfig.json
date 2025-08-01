@@ -68,8 +68,12 @@
         },
         {
             "levelNumber": 6,
-            "monsterTypes": ["WhitePawn", "WhitePawn"],
-            "terrainType": "PlankField"
+            "monsterTemplates": [
+                { 
+                    "monsterTypes": ["B06","B06","B03"],
+                    "terrainType": "PlankField"
+                }
+            ]
         },
         {
             "levelNumber": 7,

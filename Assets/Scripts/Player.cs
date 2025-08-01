@@ -602,13 +602,13 @@ public class Player : MonoBehaviour
                 }
             }
             
-            // 检查是否攻击可攻击的Location
+            // 检查是否攻击Location
             Location[] locations = FindObjectsOfType<Location>();
             foreach (Location location in locations)
             {
                 if (location.position == attackPosition)
                 {
-                    location.Interact();
+                    location.TakeDamage(damage + damageModifierThisTurn);
                 }
             }
             

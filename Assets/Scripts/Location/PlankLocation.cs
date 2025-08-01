@@ -12,16 +12,7 @@ public class PlankLocation : Location
         health = hp;
     }
 
-    public void TakeDamage(int damage)
-    {
-        health -= damage;
-        Debug.Log($"Plank at {position} took {damage} damage, health: {health}/{maxHealth}");
-        
-        if (health <= 0)
-        {
-            DestroyPlank();
-        }
-    }
+
 
     private void DestroyPlank()
     {
@@ -44,5 +35,16 @@ public class PlankLocation : Location
     {
         // 木板被攻击时受到1点伤害
         TakeDamage(1);
+    }
+    
+    public override void TakeDamage(int damage)
+    {
+        health -= damage;
+        Debug.Log($"Plank at {position} took {damage} damage, health: {health}/{maxHealth}");
+        
+        if (health <= 0)
+        {
+            DestroyPlank();
+        }
     }
 }

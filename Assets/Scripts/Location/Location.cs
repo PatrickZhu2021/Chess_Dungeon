@@ -43,6 +43,12 @@ public abstract class Location : MonoBehaviour, IPointerEnterHandler, IPointerEx
 
     // 抽象方法，定义不同类型 Location 的交互效果
     public abstract void Interact();
+    
+    // 虚拟方法，处理受击伤害，默认无效果
+    public virtual void TakeDamage(int damage)
+    {
+        // 默认Location不受伤害
+    }
 }
 
 public class EnterableLocation : Location
