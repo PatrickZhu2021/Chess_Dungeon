@@ -232,6 +232,14 @@ public class MonsterManager : MonoBehaviour
             int tplIndex = Random.Range(0, levelConfig.monsterTemplates.Count);
             MonsterTemplate chosenTpl = levelConfig.monsterTemplates[tplIndex];
             Debug.Log($"[Spawn] Using template #{tplIndex} for Level {levelConfig.levelNumber} with {chosenTpl.monsterTypes.Count} entries");
+            
+            // 如果template有独立地形配置，重新生成地形
+            if (!string.IsNullOrEmpty(chosenTpl.terrainType))
+            {
+                locationManager.ClearAllLocations();
+                locationManager.SpawnLocationsForLevel(chosenTpl.terrainType);
+            }
+            
             // 从 chosenTpl.monsterTypes 里拿到真正的 List<string>
             foreach (string monsterType in chosenTpl.monsterTypes)
             {

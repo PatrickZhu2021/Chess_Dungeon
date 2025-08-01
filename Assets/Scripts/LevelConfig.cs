@@ -15,6 +15,7 @@ public class MonsterTemplate
 {
     // the list of monster type IDs for this particular template
     public List<string> monsterTypes = new List<string>();
+    public string terrainType = "";
 }
 
 [Serializable]

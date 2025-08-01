@@ -86,6 +86,14 @@ public class LocationManager : MonoBehaviour
         {
             GenerateRiverForest();
         }
+        else if (terrainType == "Borderland2")
+        {
+            GenerateBorderland2();
+        }
+        else if (terrainType == "DenseForest2")
+        {
+            GenerateDenseForest2();
+        }
 
     }
 
@@ -184,10 +192,32 @@ public class LocationManager : MonoBehaviour
     /// #F....F#
     /// ########
     /// </summary>
+    private void GenerateASCIILayout(string[] rows, Dictionary<char, System.Action<Vector2Int>> charActions, string layoutName)
+    {
+        int size = rows.Length;
+
+        for (int y = 0; y < size; y++)
+        {
+            int rowIndex = size - 1 - y;
+            string row = rows[rowIndex];
+
+            for (int x = 0; x < row.Length; x++)
+            {
+                char c = row[x];
+                Vector2Int pos = new Vector2Int(x, y);
+                
+                if (charActions.ContainsKey(c))
+                {
+                    charActions[c](pos);
+                }
+            }
+        }
+
+        Debug.Log($"Generated {layoutName} layout with ASCII map.");
+    }
+
     private void GenerateForestMaze()
     {
-
-        // ASCII 关卡布局
         string[] rows = new string[]
         {
             "########",
@@ -201,27 +231,15 @@ public class LocationManager : MonoBehaviour
         };
 
         GameObject forestPrefab = locationPrefabs["Forest"];
-        int size = rows.Length;  // 应当为 8
-
-        for (int y = 0; y < size; y++)
+        var charActions = new Dictionary<char, System.Action<Vector2Int>>
         {
-            // 把 y 翻转，0->7, 1->6, …, 7->0
-            int rowIndex = size - 1 - y;
-            string row = rows[rowIndex];
-
-            for (int x = 0; x < row.Length; x++)
-            {
-                char c = row[x];
-                if (c == '#' && !(x == 4 && y == 4))
-                {
-                    Vector2Int pos = new Vector2Int(x, y);
+            ['#'] = pos => {
+                if (!(pos.x == 4 && pos.y == 4))
                     CreateLocation(forestPrefab, pos);
-                }
             }
-        }
+        };
 
-
-        Debug.Log("Generated ForestMaze layout with ASCII map.");
+        GenerateASCIILayout(rows, charActions, "ForestMaze");
     }
 
     /// <summary>
@@ -238,7 +256,6 @@ public class LocationManager : MonoBehaviour
     /// </summary>
     private void GenerateRiverForest()
     {
-        // ASCII 关卡布局，# = 森林，~ = 河流，. = 空地
         string[] rows = new string[]
         {
             "########",
@@ -252,34 +269,59 @@ public class LocationManager : MonoBehaviour
         };
 
         GameObject forestPrefab = locationPrefabs["Forest"];
-        int size = rows.Length;
-
-        for (int y = 0; y < size; y++)
+        var charActions = new Dictionary<char, System.Action<Vector2Int>>
         {
-            // 把 y 翻转，0->7, 1->6, …, 7->0
-            int rowIndex = size - 1 - y;
-            string row = rows[rowIndex];
+            ['#'] = pos => CreateLocation(forestPrefab, pos),
+            ['~'] = pos => CreateWater(pos)
+        };
 
-            for (int x = 0; x < row.Length; x++)
-            {
-                char c = row[x];
-                Vector2Int pos = new Vector2Int(x, y);
-                
-                if (c == '#')
-                {
-                    // 创建森林
-                    CreateLocation(forestPrefab, pos);
-                }
-                else if (c == '~')
-                {
-                    // 创建河流
-                    CreateWater(pos);
-                }
-                // '.' 代表空地，不需要创建任何对象
-            }
-        }
+        GenerateASCIILayout(rows, charActions, "RiverForest");
+    }
 
-        Debug.Log("Generated RiverForest layout with rivers and forest border.");
+    private void GenerateBorderland2()
+    {
+        string[] rows = new string[]
+        {
+            "########",
+            "#......#",
+            "##....##",
+            "###..###",
+            "###..###",
+            "##....##",
+            "#......#",
+            "########"
+        };
+
+        GameObject forestPrefab = locationPrefabs["Forest"];
+        var charActions = new Dictionary<char, System.Action<Vector2Int>>
+        {
+            ['#'] = pos => CreateLocation(forestPrefab, pos)
+        };
+
+        GenerateASCIILayout(rows, charActions, "Borderland2");
+    }
+
+    private void GenerateDenseForest2()
+    {
+        string[] rows = new string[]
+        {
+            "########",
+            "#.#.#..#",
+            "#..#.#.#",
+            "#.#....#",
+            "#.##.#.#",
+            "#.#.#..#",
+            "##.#.#.#",
+            "########"
+        };
+
+        GameObject forestPrefab = locationPrefabs["Forest"];
+        var charActions = new Dictionary<char, System.Action<Vector2Int>>
+        {
+            ['#'] = pos => CreateLocation(forestPrefab, pos)
+        };
+
+        GenerateASCIILayout(rows, charActions, "DenseForest2");
     }
 
 
