@@ -28,7 +28,7 @@ public class MonsterManager : MonoBehaviour
     public RewardManager rewardManager;
     private LocationManager locationManager;
     private List<LevelConfig> levelConfigs; // 关卡配置列表
-    private Dictionary<string, GameObject> monsterPrefabs = new Dictionary<string, GameObject>();
+
     public bool isLevelCompleted = false;
 
     public Text levelCountText;
@@ -46,25 +46,7 @@ public class MonsterManager : MonoBehaviour
             Debug.LogError("Player object not found!");
         }
         
-        // Load all monster prefabs
-        monsterPrefabs["Slime"] = Resources.Load<GameObject>("Prefabs/Monster/Slime");
-        monsterPrefabs["Bat"] = Resources.Load<GameObject>("Prefabs/Monster/Bat");
-        monsterPrefabs["Hound"] = Resources.Load<GameObject>("Prefabs/Monster/Hound");
-        monsterPrefabs["SlimeKing"] = Resources.Load<GameObject>("Prefabs/Monster/Slime_King");
-        monsterPrefabs["WhitePawn"] = Resources.Load<GameObject>("Prefabs/Monster/white_pawn");
-        monsterPrefabs["WhiteKnight"] = Resources.Load<GameObject>("Prefabs/Monster/white_knight");
-        monsterPrefabs["WhiteBishop"] = Resources.Load<GameObject>("Prefabs/Monster/white_bishop");
-        monsterPrefabs["WhiteRook"] = Resources.Load<GameObject>("Prefabs/Monster/white_rook");
-        monsterPrefabs["WhiteQueen"] = Resources.Load<GameObject>("Prefabs/Monster/white_queen");
-        monsterPrefabs["WhiteKing"] = Resources.Load<GameObject>("Prefabs/Monster/white_king");
-        monsterPrefabs["GoldPawn"] = Resources.Load<GameObject>("Prefabs/Monster/gold_pawn");
-        monsterPrefabs["GoldRook"] = Resources.Load<GameObject>("Prefabs/Monster/gold_rook");
-        monsterPrefabs["DarkPawn"] = Resources.Load<GameObject>("Prefabs/Monster/dark_pawn");
-        monsterPrefabs["DarkRook"] = Resources.Load<GameObject>("Prefabs/Monster/dark_rook");
-        monsterPrefabs["DarkKnight"] = Resources.Load<GameObject>("Prefabs/Monster/dark_knight");
-        monsterPrefabs["DarkBishop"] = Resources.Load<GameObject>("Prefabs/Monster/dark_bishop");
-        monsterPrefabs["DarkQueen"] = Resources.Load<GameObject>("Prefabs/Monster/dark_queen");
-        monsterPrefabs["DarkKing"] = Resources.Load<GameObject>("Prefabs/Monster/dark_king");
+
 
         rewardManager.OnRewardSelectionComplete += OnRewardSelectionComplete;
 
@@ -337,13 +319,25 @@ public class MonsterManager : MonoBehaviour
 
     public Monster CreateMonsterByType(string type)
     {
-        if (monsterPrefabs.TryGetValue(type, out GameObject prefab))
+        System.Type monsterType = System.Type.GetType(type);
+        if (monsterType == null)
+        {
+            Debug.LogError($"Monster type not found: {type}");
+            return null;
+        }
+        
+        GameObject tempObj = new GameObject();
+        Monster tempMonster = tempObj.AddComponent(monsterType) as Monster;
+        GameObject prefab = tempMonster.GetPrefab();
+        Destroy(tempObj);
+        
+        if (prefab != null)
         {
             GameObject monsterObject = Instantiate(prefab);
             return monsterObject.GetComponent<Monster>();
         }
-
-        Debug.LogError($"Unknown or missing monster type: {type}");
+        
+        Debug.LogError($"Prefab not found for monster type: {type}");
         return null;
     }
 

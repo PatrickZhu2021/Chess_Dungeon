@@ -1,13 +1,13 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-public class WhitePawn : Monster
+public class I01 : Monster
 {
     public override void Initialize(Vector2Int startPos)
     {
         base.Initialize(startPos);
         type = MonsterType.Pawn;
-        monsterName = "WhitePawn";
+        monsterName = "I01";
     }
 
     public override void TakeDamage(int damage)
@@ -51,12 +51,12 @@ public class WhitePawn : Monster
         // 检测是否接触到目标
         if (position == targetPos)
         {
-            Debug.Log("Target reached by WhitePawn.");
+            Debug.Log("Target reached by I01.");
         }
     }
 
     public override GameObject GetPrefab()
     {
-        return Resources.Load<GameObject>("Prefabs/Monster/white_pawn");
+        return Resources.Load<GameObject>("Prefabs/Monster/I01");
     }
 }

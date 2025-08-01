@@ -105,7 +105,7 @@ public class WhiteKing : Monster
 
     public override GameObject GetPrefab()
     {
-        return Resources.Load<GameObject>("Prefabs/Monster/WhiteKing");
+        return Resources.Load<GameObject>("Prefabs/Monster/white_king");
     }
 
     public override List<Vector2Int> CalculatePossibleMoves()
