@@ -59,4 +59,19 @@ public class I01 : Monster
     {
         return Resources.Load<GameObject>("Prefabs/Monster/I01");
     }
+
+    public override List<Vector2Int> CalculatePossibleMoves()
+    {
+        List<Vector2Int> possibleMoves = new List<Vector2Int>
+        {
+            position + new Vector2Int(1, 0),   // 右
+            position + new Vector2Int(-1, 0),  // 左
+            position + new Vector2Int(0, 1),   // 上
+            position + new Vector2Int(0, -1)   // 下
+        };
+
+        // 过滤掉无效位置或被占据的位置
+        possibleMoves.RemoveAll(pos => !IsValidPosition(pos) || IsPositionOccupied(pos));
+        return possibleMoves;
+    }
 }

@@ -343,6 +343,17 @@ public class Monster : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
         // 清除之前的高亮
         ClearHighlight();
 
+        // 检查highlightPrefab是否存在
+        if (highlightPrefab == null)
+        {
+            highlightPrefab = Resources.Load<GameObject>("Prefabs/UI/warning");
+            if (highlightPrefab == null)
+            {
+                Debug.LogWarning($"{monsterName}: highlightPrefab not found, skipping highlight");
+                return;
+            }
+        }
+
         // 获取合法的移动路径
         List<Vector2Int> possibleMoves = CalculatePossibleMoves();
 

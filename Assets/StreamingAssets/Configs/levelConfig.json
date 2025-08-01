@@ -52,9 +52,10 @@
         },
         {
             "levelNumber": 10,
-            "monsterTypes": ["WhiteKnight", "WhiteBishop", "GoldRook","WhiteQueen","WhiteKing"],
-            "terrainType": "FortifiedBorderland"
+            "monsterTypes": ["I01","I01","I01","I01","I01"],
+            "terrainType": "Borderland"
         }
+        
     ],
 
     "terrains": [
