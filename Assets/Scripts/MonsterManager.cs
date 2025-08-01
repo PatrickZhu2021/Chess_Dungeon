@@ -15,7 +15,7 @@ public class MonsterManager : MonoBehaviour
     public Vector3 cellGap = new Vector3(0, 0, 0); // Cell Gap
     public bool nextlevel = false;
 
-    private List<Monster> monsters = new List<Monster>();
+    public List<Monster> monsters = new List<Monster>(); // 改为public以支持动态添加
     private List<Scene> scenes = new List<Scene>();
     private List<GameObject> warnings = new List<GameObject>();
     private List<GameObject> pointObjects = new List<GameObject>();
