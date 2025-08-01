@@ -313,6 +313,11 @@ public class Monster : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     {
         return new List<Vector2Int> { position }; // Default to single-tile monster
     }
+    
+    public virtual List<string> GetSkills()
+    {
+        return new List<string>(); // Default: no skills
+    }
 
     public void OnPointerEnter(PointerEventData eventData)
     {

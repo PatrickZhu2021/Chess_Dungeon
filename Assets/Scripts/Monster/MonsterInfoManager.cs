@@ -9,6 +9,7 @@ public class MonsterInfoManager : MonoBehaviour
     public Text MonsterHealthText;     // 用于显示怪物血量的文本
     public Text MonsterPositionText;   // 用于显示怪物位置的文本
     public Text MonsterEffectsText;    // 用于显示特殊效果的文本
+    public Text MonsterSkillsText;     // 用于显示技能的文本
 
     // 更新怪物信息的面板内容
     public void UpdateMonsterInfo(string name, int health, Vector2Int position, Monster monster = null)
@@ -25,6 +26,13 @@ public class MonsterInfoManager : MonoBehaviour
             {
                 string effects = GetEffectsText(monster);
                 MonsterEffectsText.text = effects;
+            }
+            
+            // 显示技能
+            if (MonsterSkillsText != null && monster != null)
+            {
+                string skills = GetSkillsText(monster);
+                MonsterSkillsText.text = skills;
             }
         }
         else
@@ -56,6 +64,12 @@ public class MonsterInfoManager : MonoBehaviour
         }
         
         return effects.Count > 0 ? $"Effects: {string.Join(", ", effects)}" : "Effects: 无";
+    }
+    
+    private string GetSkillsText(Monster monster)
+    {
+        List<string> skills = monster.GetSkills();
+        return skills.Count > 0 ? $"Skills: {string.Join(", ", skills)}" : "Skills: 无";
     }
 
     // 隐藏怪物信息的面板
