@@ -332,14 +332,14 @@ public class LocationManager : MonoBehaviour
     private void GeneratePlankField()
     {
         int mapSize = 8;
-        int centerStart = 3; // 中间4格的起始位置
-        int centerEnd = 5;   // 中间4格的结束位置
+        int centerStart = 3; // 中间2格的起始位置
+        int centerEnd = 4;   // 中间2格的结束位置
 
         for (int x = 0; x < mapSize; x++)
         {
             for (int y = 0; y < mapSize; y++)
             {
-                // 只有中间4格(3,3), (3,4), (4,3), (4,4)留空
+                // 只有中间2x2格(3,3), (3,4), (4,3), (4,4)留空
                 bool isCenter = (x >= centerStart && x <= centerEnd && y >= centerStart && y <= centerEnd);
                 
                 if (!isCenter)

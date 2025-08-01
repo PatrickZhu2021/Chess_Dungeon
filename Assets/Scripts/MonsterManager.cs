@@ -487,8 +487,6 @@ public class MonsterManager : MonoBehaviour
         // 从 LocationManager 获取不可进入位置
         HashSet<Vector2Int> nonEnterablePositions = new HashSet<Vector2Int>(FindObjectOfType<LocationManager>().GetNonEnterablePositions());
 
-        Vector2Int restrictedPosition = new Vector2Int(3, 3); // 永远不会生成的位置
-
         Vector2Int randomPosition;
         List<Vector2Int> monsterParts;
         int attempts = 0;
@@ -506,7 +504,6 @@ public class MonsterManager : MonoBehaviour
                 return new Vector2Int(-1, -1); // Return an invalid position to indicate failure
             }
         } while (occupiedPositions.Overlaps(monsterParts) || 
-         randomPosition == restrictedPosition || 
          !AreAllPositionsValid(monsterParts) || 
          monsterParts.Contains(playerPosition) || 
          monsterParts.Exists(part => locationManager.IsNonEnterablePosition(part)));  // 确认位置是否是不可进入的
