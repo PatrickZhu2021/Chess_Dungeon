@@ -112,8 +112,21 @@
             "levelNumber": 10,
             "monsterTemplates": [
                 { 
+                    "monsterTypes": ["B08"],
+                    "terrainType": "Borderland"
+                },
+                { 
                     "monsterTypes": ["I03","I03","I03","I03","I03","B04","B04","B04","B04"],
                     "terrainType": "DevourerMaw"
+                }
+            ]
+        },
+        {
+            "levelNumber": 11,
+            "monsterTemplates": [
+                { 
+                    "monsterTypes": ["T01","T01","T01","T01","T01","T01","T01","T01","B01"],
+                    "terrainType": "RiverForest"
                 }
             ]
         }
