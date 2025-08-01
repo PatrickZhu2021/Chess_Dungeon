@@ -395,9 +395,9 @@ public class LocationManager : MonoBehaviour
         
         string[] rows = new string[]
         {
-            "........", // y=7 安全区域
-            "........", // y=6 安全区域  
-            "........", // y=5 战斗区域
+            "########", // y=7 最上层Plank
+            "########", // y=6 第二层Plank
+            "########", // y=5 第三层Plank
             "........", // y=4 战斗区域
             "........", // y=3 战斗区域
             "........", // y=2 战斗区域
@@ -407,7 +407,8 @@ public class LocationManager : MonoBehaviour
         
         var charActions = new Dictionary<char, System.Action<Vector2Int>>
         {
-            ['M'] = pos => CreateDevourerMouth(pos)
+            ['M'] = pos => CreateDevourerMouth(pos),
+            ['#'] = pos => CreatePlank(pos)
         };
         
         GenerateASCIILayout(rows, charActions, "DevourerMaw");
@@ -419,9 +420,12 @@ public class LocationManager : MonoBehaviour
         GameObject plankObject = Instantiate(plankPrefab);
         plankObject.transform.position = player.CalculateWorldPosition(position);
         
-        // 添加PlankLocation组件
-        PlankLocation plank = plankObject.AddComponent<PlankLocation>();
-        plank.Initialize(position, "可攻击的木板", false, 1); // 血量为1
+        PlankLocation plank = plankObject.GetComponent<PlankLocation>();
+        if (plank == null)
+        {
+            plank = plankObject.AddComponent<PlankLocation>();
+        }
+        plank.Initialize(position, "可攻击的木板", false, 1);
         
         nonEnterablePositions.Add(position);
         spawnedLocations.Add(plankObject);
@@ -1068,6 +1072,13 @@ public class LocationManager : MonoBehaviour
         foreach (NonEnterableLocation location in nonEnterableLocations)
         {
             nonEnterablePositions.Add(location.position);
+        }
+        
+        // 添加所有PlankLocation的位置
+        PlankLocation[] plankLocations = FindObjectsOfType<PlankLocation>();
+        foreach (PlankLocation plank in plankLocations)
+        {
+            nonEnterablePositions.Add(plank.position);
         }
         
         // 添加其他阻挡性Location的位置
