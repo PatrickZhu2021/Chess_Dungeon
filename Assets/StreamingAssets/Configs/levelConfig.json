@@ -3,57 +3,119 @@
     "levels": [
         {
             "levelNumber": 1,
-            "terrainType": "Borderland",
             "monsterTemplates": [
-                { "monsterTypes": ["WhitePawn","WhitePawn"] },
-                { "monsterTypes": ["WhitePawn","WhiteKnight"] }
-            ],
-            "monsterTypes": ["WhitePawn","WhitePawn"]
+                { 
+                    "monsterTypes": ["B01","B01"],
+                    "terrainType": "Borderland"
+                },
+                { 
+                    "monsterTypes": ["I01","I01","I01","I01"],
+                    "terrainType": "Borderland"
+                }
+            ]
         },
         {
             "levelNumber": 2,
-            "monsterTypes": ["WhitePawn","WhitePawn","WhitePawn"],
-            "terrainType": "Borderland"
+            "monsterTemplates": [
+                { 
+                    "monsterTypes": ["A01","A01","A01"],
+                    "terrainType": "Borderland2"
+                },
+                { 
+                    "monsterTypes": ["I01","I01","I02","I02"],
+                    "terrainType": "Borderland2"
+                }
+            ]
         },
         {
             "levelNumber": 3,
-            "monsterTypes": ["WhitePawn", "WhitePawn","WhiteKnight","WhiteKnight","WhiteKnight"],
-            "terrainType": "ForestMaze"
+            "monsterTemplates": [
+                { 
+                    "monsterTypes": ["B05","B03","B01","B01"],
+                    "terrainType": "ForestMaze"
+                },
+                { 
+                    "monsterTypes": ["I03","I01","I01","I01"],
+                    "terrainType": "Borderland"
+                }
+            ]
         },
         {
             "levelNumber": 4,
-            "monsterTypes": ["WhitePawn", "WhitePawn","WhitePawn","WhiteBishop"],
-            "terrainType": "Borderland"
+            "monsterTemplates": [
+                { 
+                    "monsterTypes": ["I01","I01","I01","I05"],
+                    "terrainType": "Borderland2"
+                },
+                { 
+                    "monsterTypes": ["A02","A02","A02","A02","A02"],
+                    "terrainType": "RiverForest"
+                }
+            ]
         },
         {
             "levelNumber": 5,
-            "monsterTypes": ["GoldPawn", "GoldPawn", "WhiteRook", "WhiteRook"],
-            "terrainType": "DenseForest"
+            "monsterTemplates": [
+                { 
+                    "monsterTypes": ["B06","B06","B03","B03"],
+                    "terrainType": "DenseForest"
+                },
+                { 
+                    "monsterTypes": ["A05"],
+                    "terrainType": "DenseForest2"
+                }
+            ]
         },
         {
             "levelNumber": 6,
-            "monsterTypes": ["WhitePawn", "WhitePawn","WhiteKnight", "WhiteBishop"],
-            "terrainType": "FortifiedBorderland"
+            "monsterTemplates": [
+                { 
+                    "monsterTypes": ["I03","I03"],
+                    "terrainType": "PlankField"
+                }
+            ]
         },
         {
             "levelNumber": 7,
-            "monsterTypes": ["WhitePawn","WhiteQueen"],
-            "terrainType": "FortifiedBorderland"
+            "monsterTemplates": [
+                { 
+                    "monsterTypes": ["I04","I04","I03","I01","I01", "I01"],
+                    "terrainType": "ForestMaze"
+                }
+            ]
         },
         {
             "levelNumber": 8,
-            "monsterTypes": ["WhitePawn", "WhitePawn","WhiteKnight", "WhiteBishop", "WhiteRook"],
-            "terrainType": "FortifiedBorderland"
+            "monsterTemplates": [
+                { 
+                    "monsterTypes": ["A06","A03","A03"],
+                    "terrainType": "DenseForest2"
+                }
+            ]
         },
         {
             "levelNumber": 9,
-            "monsterTypes": ["WhiteQueen","WhiteQueen"],
-            "terrainType": "FortifiedBorderland"
+            "monsterTemplates": [
+                { 
+                    "monsterTypes": ["B07","B06","B04","B04","A01","A01"],
+                    "terrainType": "Prison",
+                    "specialSpawnRules": [
+                        {
+                            "monsterType": "A01",
+                            "spawnArea": "predefined"
+                        }
+                    ]
+                }
+            ]
         },
         {
             "levelNumber": 10,
-            "monsterTypes": ["WhiteKnight", "WhiteBishop", "GoldRook","WhiteQueen","WhiteKing"],
-            "terrainType": "FortifiedBorderland"
+            "monsterTemplates": [
+                { 
+                    "monsterTypes": ["B08"],
+                    "terrainType": "Borderland"
+                }
+            ]
         }
     ],
 
@@ -87,6 +149,42 @@
             "mapSize": 8,
             "openAreaSize": 8,
             "borderObstacleType": "Forest"
+        },
+        {
+            "name": "RiverForest",
+            "mapSize": 8,
+            "openAreaSize": 6,
+            "borderObstacleType": "Forest"
+        },
+        {
+            "name": "Borderland2",
+            "mapSize": 8,
+            "openAreaSize": 6,
+            "borderObstacleType": "Forest"
+        },
+        {
+            "name": "DenseForest2",
+            "mapSize": 8,
+            "openAreaSize": 6,
+            "borderObstacleType": "Forest"
+        },
+        {
+            "name": "PlankField",
+            "mapSize": 8,
+            "openAreaSize": 4,
+            "borderObstacleType": "Plank"
+        },
+        {
+            "name": "Prison",
+            "mapSize": 8,
+            "openAreaSize": 8,
+            "borderObstacleType": "Plank",
+            "specialSpawnArea": {
+                "x": 3,
+                "y": 3,
+                "width": 2,
+                "height": 2
+            }
         }
     ]
 }

@@ -75,7 +75,7 @@ public class GoldPawn : Monster
 
     public override GameObject GetPrefab()
     {
-        return Resources.Load<GameObject>("Prefabs/Monster/GoldPawn");
+        return Resources.Load<GameObject>("Prefabs/Monster/gold_pawn");
     }
 
     /// <summary>

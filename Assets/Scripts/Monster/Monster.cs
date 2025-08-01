@@ -12,12 +12,14 @@ public enum MonsterType
     Bishop,
     Queen,
     King,
+    Beast,
     // 根据需要继续添加其他类型
 }
 
 public class Monster : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
     public string monsterName = "default";
+    public string displayName = ""; // 显示名称，默认为空
     private Animator animator;
     public int health;
     public int maxHealth;
@@ -313,6 +315,21 @@ public class Monster : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     {
         return new List<Vector2Int> { position }; // Default to single-tile monster
     }
+    
+    public virtual List<string> GetSkills()
+    {
+        return new List<string>(); // Default: no skills
+    }
+    
+    public string GetDisplayName()
+    {
+        return string.IsNullOrEmpty(displayName) ? monsterName : displayName;
+    }
+    
+    public virtual int GetAttackDamage()
+    {
+        return 1; // 默认伤害为1
+    }
 
     public void OnPointerEnter(PointerEventData eventData)
     {
@@ -321,7 +338,7 @@ public class Monster : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
         if (infoManager != null)
         {
             // 调用 MonsterInfoManager 更新信息面板
-            infoManager.UpdateMonsterInfo(monsterName, health, position);
+            infoManager.UpdateMonsterInfo(monsterName, health, position, this);
         }
         HighlightPath();
     }
@@ -342,6 +359,17 @@ public class Monster : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     {
         // 清除之前的高亮
         ClearHighlight();
+
+        // 检查highlightPrefab是否存在
+        if (highlightPrefab == null)
+        {
+            highlightPrefab = Resources.Load<GameObject>("Prefabs/UI/warning");
+            if (highlightPrefab == null)
+            {
+                Debug.LogWarning($"{monsterName}: highlightPrefab not found, skipping highlight");
+                return;
+            }
+        }
 
         // 获取合法的移动路径
         List<Vector2Int> possibleMoves = CalculatePossibleMoves();

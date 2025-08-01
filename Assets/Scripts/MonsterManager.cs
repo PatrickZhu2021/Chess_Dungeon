@@ -15,7 +15,7 @@ public class MonsterManager : MonoBehaviour
     public Vector3 cellGap = new Vector3(0, 0, 0); // Cell Gap
     public bool nextlevel = false;
 
-    private List<Monster> monsters = new List<Monster>();
+    public List<Monster> monsters = new List<Monster>(); // 改为public以支持动态添加
     private List<Scene> scenes = new List<Scene>();
     private List<GameObject> warnings = new List<GameObject>();
     private List<GameObject> pointObjects = new List<GameObject>();
@@ -28,7 +28,7 @@ public class MonsterManager : MonoBehaviour
     public RewardManager rewardManager;
     private LocationManager locationManager;
     private List<LevelConfig> levelConfigs; // 关卡配置列表
-    private Dictionary<string, GameObject> monsterPrefabs = new Dictionary<string, GameObject>();
+
     public bool isLevelCompleted = false;
 
     public Text levelCountText;
@@ -46,25 +46,7 @@ public class MonsterManager : MonoBehaviour
             Debug.LogError("Player object not found!");
         }
         
-        // Load all monster prefabs
-        monsterPrefabs["Slime"] = Resources.Load<GameObject>("Prefabs/Monster/Slime");
-        monsterPrefabs["Bat"] = Resources.Load<GameObject>("Prefabs/Monster/Bat");
-        monsterPrefabs["Hound"] = Resources.Load<GameObject>("Prefabs/Monster/Hound");
-        monsterPrefabs["SlimeKing"] = Resources.Load<GameObject>("Prefabs/Monster/Slime_King");
-        monsterPrefabs["WhitePawn"] = Resources.Load<GameObject>("Prefabs/Monster/white_pawn");
-        monsterPrefabs["WhiteKnight"] = Resources.Load<GameObject>("Prefabs/Monster/white_knight");
-        monsterPrefabs["WhiteBishop"] = Resources.Load<GameObject>("Prefabs/Monster/white_bishop");
-        monsterPrefabs["WhiteRook"] = Resources.Load<GameObject>("Prefabs/Monster/white_rook");
-        monsterPrefabs["WhiteQueen"] = Resources.Load<GameObject>("Prefabs/Monster/white_queen");
-        monsterPrefabs["WhiteKing"] = Resources.Load<GameObject>("Prefabs/Monster/white_king");
-        monsterPrefabs["GoldPawn"] = Resources.Load<GameObject>("Prefabs/Monster/gold_pawn");
-        monsterPrefabs["GoldRook"] = Resources.Load<GameObject>("Prefabs/Monster/gold_rook");
-        monsterPrefabs["DarkPawn"] = Resources.Load<GameObject>("Prefabs/Monster/dark_pawn");
-        monsterPrefabs["DarkRook"] = Resources.Load<GameObject>("Prefabs/Monster/dark_rook");
-        monsterPrefabs["DarkKnight"] = Resources.Load<GameObject>("Prefabs/Monster/dark_knight");
-        monsterPrefabs["DarkBishop"] = Resources.Load<GameObject>("Prefabs/Monster/dark_bishop");
-        monsterPrefabs["DarkQueen"] = Resources.Load<GameObject>("Prefabs/Monster/dark_queen");
-        monsterPrefabs["DarkKing"] = Resources.Load<GameObject>("Prefabs/Monster/dark_king");
+
 
         rewardManager.OnRewardSelectionComplete += OnRewardSelectionComplete;
 
@@ -133,6 +115,7 @@ public class MonsterManager : MonoBehaviour
         // 清除上一关的动态障碍物
         LocationManager locationManager = FindObjectOfType<LocationManager>();
         locationManager.ClearAllLocations();
+        locationManager.ClearMonsterSpawnPositions();
 
         // 获取当前关卡配置并生成对应的地形
         LevelConfig levelConfig = levelConfigs.Find(l => l.levelNumber == level);
@@ -250,13 +233,46 @@ public class MonsterManager : MonoBehaviour
             int tplIndex = Random.Range(0, levelConfig.monsterTemplates.Count);
             MonsterTemplate chosenTpl = levelConfig.monsterTemplates[tplIndex];
             Debug.Log($"[Spawn] Using template #{tplIndex} for Level {levelConfig.levelNumber} with {chosenTpl.monsterTypes.Count} entries");
+            
+            // 如果template有独立地形配置，重新生成地形
+            if (!string.IsNullOrEmpty(chosenTpl.terrainType))
+            {
+                locationManager.ClearAllLocations();
+                locationManager.SpawnLocationsForLevel(chosenTpl.terrainType);
+            }
+            
+            // 创建特殊生成区域的位置索引
+            Dictionary<string, int> areaIndices = new Dictionary<string, int>();
+            
             // 从 chosenTpl.monsterTypes 里拿到真正的 List<string>
             foreach (string monsterType in chosenTpl.monsterTypes)
             {
                 Debug.Log($"[Spawn] -> Template spawning: {monsterType}");
                 Monster monster = CreateMonsterByType(monsterType);
                 if (monster != null)
-                    SpawnMonster(monster);
+                {
+                    // 检查是否有特殊生成规则
+                    SpecialSpawnRule rule = chosenTpl.specialSpawnRules?.Find(r => r.monsterType == monsterType);
+                    if (rule != null && !string.IsNullOrEmpty(rule.spawnArea))
+                    {
+                        List<Vector2Int> areaPositions = locationManager.GetSpecialSpawnArea(rule.spawnArea);
+                        if (!areaIndices.ContainsKey(rule.spawnArea)) areaIndices[rule.spawnArea] = 0;
+                        
+                        if (areaIndices[rule.spawnArea] < areaPositions.Count)
+                        {
+                            SpawnMonsterAtPosition(monster, areaPositions[areaIndices[rule.spawnArea]]);
+                            areaIndices[rule.spawnArea]++;
+                        }
+                        else
+                        {
+                            SpawnMonster(monster);
+                        }
+                    }
+                    else
+                    {
+                        SpawnMonster(monster);
+                    }
+                }
                 else 
                     Debug.LogWarning($"[Spawn] !! CreateMonsterByType returned null for '{monsterType}'");
             }
@@ -337,13 +353,25 @@ public class MonsterManager : MonoBehaviour
 
     public Monster CreateMonsterByType(string type)
     {
-        if (monsterPrefabs.TryGetValue(type, out GameObject prefab))
+        System.Type monsterType = System.Type.GetType(type);
+        if (monsterType == null)
+        {
+            Debug.LogError($"Monster type not found: {type}");
+            return null;
+        }
+        
+        GameObject tempObj = new GameObject();
+        Monster tempMonster = tempObj.AddComponent(monsterType) as Monster;
+        GameObject prefab = tempMonster.GetPrefab();
+        Destroy(tempObj);
+        
+        if (prefab != null)
         {
             GameObject monsterObject = Instantiate(prefab);
             return monsterObject.GetComponent<Monster>();
         }
-
-        Debug.LogError($"Unknown or missing monster type: {type}");
+        
+        Debug.LogError($"Prefab not found for monster type: {type}");
         return null;
     }
 
@@ -363,6 +391,22 @@ public class MonsterManager : MonoBehaviour
         monster.Initialize(spawnPosition);
         monsters.Add(monster);
         Debug.Log($"{monster.GetType().Name} spawned at position: " + spawnPosition);
+    }
+
+    public void SpawnMonsterAtPosition(Monster monster, Vector2Int position)
+    {
+        if (!IsTileValid(position))
+        {
+            Debug.LogWarning($"Position {position} is not valid, falling back to random spawn.");
+            SpawnMonster(monster);
+            return;
+        }
+
+        Vector3 worldPosition = player.CalculateWorldPosition(position);
+        monster.transform.position = worldPosition;
+        monster.Initialize(position);
+        monsters.Add(monster);
+        Debug.Log($"{monster.GetType().Name} spawned at predefined position: " + position);
     }
 
     public void MoveMonsters()
@@ -485,8 +529,6 @@ public class MonsterManager : MonoBehaviour
         // 从 LocationManager 获取不可进入位置
         HashSet<Vector2Int> nonEnterablePositions = new HashSet<Vector2Int>(FindObjectOfType<LocationManager>().GetNonEnterablePositions());
 
-        Vector2Int restrictedPosition = new Vector2Int(3, 3); // 永远不会生成的位置
-
         Vector2Int randomPosition;
         List<Vector2Int> monsterParts;
         int attempts = 0;
@@ -504,10 +546,10 @@ public class MonsterManager : MonoBehaviour
                 return new Vector2Int(-1, -1); // Return an invalid position to indicate failure
             }
         } while (occupiedPositions.Overlaps(monsterParts) || 
-         randomPosition == restrictedPosition || 
          !AreAllPositionsValid(monsterParts) || 
          monsterParts.Contains(playerPosition) || 
-         monsterParts.Exists(part => locationManager.IsNonEnterablePosition(part)));  // 确认位置是否是不可进入的
+         monsterParts.Exists(part => locationManager.IsNonEnterablePosition(part)) ||
+         IsInAnySpecialSpawnArea(monsterParts));  // 避免在特殊区域内生成
 
         return randomPosition;
     }
@@ -640,6 +682,12 @@ public class MonsterManager : MonoBehaviour
         Debug.Log("Level completed immediately after all enemies defeated!");
     }
 
+    private bool IsInAnySpecialSpawnArea(List<Vector2Int> positions)
+    {
+        List<Vector2Int> allSpecialPositions = locationManager.GetMonsterSpawnPositions();
+        return positions.Exists(pos => allSpecialPositions.Contains(pos));
+    }
+    
     public bool IsTileValid(Vector2Int tilePosition)
     {
         // Check board boundaries (assuming boardSize is an integer representing board width/height)

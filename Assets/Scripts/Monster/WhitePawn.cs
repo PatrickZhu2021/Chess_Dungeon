@@ -57,6 +57,6 @@ public class WhitePawn : Monster
 
     public override GameObject GetPrefab()
     {
-        return Resources.Load<GameObject>("Prefabs/Monster/WhitePawn");
+        return Resources.Load<GameObject>("Prefabs/Monster/white_pawn");
     }
 }

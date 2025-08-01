@@ -223,7 +223,7 @@ public class GoldRook : Monster
 
     public override GameObject GetPrefab()
     {
-        return Resources.Load<GameObject>("Prefabs/Monster/GoldRook");
+        return Resources.Load<GameObject>("Prefabs/Monster/gold_rook");
     }
 
     /// <summary>

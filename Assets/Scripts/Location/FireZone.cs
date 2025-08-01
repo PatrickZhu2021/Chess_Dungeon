@@ -36,6 +36,12 @@ public class FireZone : MonoBehaviour
             return;
         }
 
+        Player player = FindObjectOfType<Player>();
+        int baseDamage = 2;
+        int ferventBonus = player != null ? player.ferventStacks : 0;
+        int totalDamage = baseDamage + ferventBonus;
+        
+        // 对怪物造成伤害
         foreach (Monster monster in FindObjectsOfType<Monster>())
         {
             Vector3 pos = monster.transform.position;
@@ -43,12 +49,21 @@ public class FireZone : MonoBehaviour
                        || IsCellTouchedByPolygonEdges(pos, polygonPoints);
             if (hit)
             {
-                Player player = FindObjectOfType<Player>();
-                int baseDamage = 2;
-                int ferventBonus = player != null ? player.ferventStacks : 0;
-                int totalDamage = baseDamage + ferventBonus;
                 monster.TakeDamage(totalDamage);
-                Debug.Log($"FireZone damage: {baseDamage} base + {ferventBonus} fervent = {totalDamage} total");
+                Debug.Log($"FireZone damage to monster: {baseDamage} base + {ferventBonus} fervent = {totalDamage} total");
+            }
+        }
+        
+        // 对Location造成伤害
+        foreach (Location location in FindObjectsOfType<Location>())
+        {
+            Vector3 pos = player.CalculateWorldPosition(location.position);
+            bool hit = IsPointInPolygon(pos, polygonPoints)
+                       || IsCellTouchedByPolygonEdges(pos, polygonPoints);
+            if (hit)
+            {
+                location.TakeDamage(totalDamage);
+                Debug.Log($"FireZone damage to location at {location.position}: {totalDamage} damage");
             }
         }
 
@@ -64,6 +79,12 @@ public class FireZone : MonoBehaviour
             return;
         }
 
+        Player player = FindObjectOfType<Player>();
+        int baseDamage = 2;
+        int ferventBonus = player != null ? player.ferventStacks : 0;
+        int totalDamage = baseDamage + ferventBonus;
+        
+        // 对怪物造成伤害
         foreach (Monster monster in FindObjectsOfType<Monster>())
         {
             Vector3 pos = monster.transform.position;
@@ -71,12 +92,21 @@ public class FireZone : MonoBehaviour
                        || IsCellTouchedByPolygonEdges(pos, polygonPoints);
             if (hit)
             {
-                Player player = FindObjectOfType<Player>();
-                int baseDamage = 2;
-                int ferventBonus = player != null ? player.ferventStacks : 0;
-                int totalDamage = baseDamage + ferventBonus;
                 monster.TakeDamage(totalDamage);
-                Debug.Log($"FireZone damage only: {baseDamage} base + {ferventBonus} fervent = {totalDamage} total");
+                Debug.Log($"FireZone damage only to monster: {baseDamage} base + {ferventBonus} fervent = {totalDamage} total");
+            }
+        }
+        
+        // 对Location造成伤害
+        foreach (Location location in FindObjectsOfType<Location>())
+        {
+            Vector3 pos = player.CalculateWorldPosition(location.position);
+            bool hit = IsPointInPolygon(pos, polygonPoints)
+                       || IsCellTouchedByPolygonEdges(pos, polygonPoints);
+            if (hit)
+            {
+                location.TakeDamage(totalDamage);
+                Debug.Log($"FireZone damage only to location at {location.position}: {totalDamage} damage");
             }
         }
     }

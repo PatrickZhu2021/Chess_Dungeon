@@ -14,6 +14,8 @@ public class LocationManager : MonoBehaviour
     public List<BarrierLocation> activeBarriers = new List<BarrierLocation>(); // 拒障列表
     public AnchorLocation activeAnchor = null; // 当前锚点（同时只能存在1个）
     public List<MireLocation> activeMires = new List<MireLocation>(); // 潮沼列表
+    private List<Vector2Int> waterPositions = new List<Vector2Int>(); // 水单元格位置
+    private Dictionary<string, List<Vector2Int>> specialSpawnAreas = new Dictionary<string, List<Vector2Int>>(); // 特殊生成区域
     private Player player;
     private List<TerrainConfig> terrainConfigs = new List<TerrainConfig>();
 
@@ -30,6 +32,7 @@ public class LocationManager : MonoBehaviour
         locationPrefabs["Wall_Corner_UR"] = Resources.Load<GameObject>("Prefabs/Location/Wall_Corner_UR"); // 右上角
         locationPrefabs["Wall_Corner_LL"] = Resources.Load<GameObject>("Prefabs/Location/Wall_Corner_LL"); // 左下角
         locationPrefabs["Wall_Corner_LR"] = Resources.Load<GameObject>("Prefabs/Location/Wall_Corner_LR"); // 右下角
+        locationPrefabs["Plank"] = Resources.Load<GameObject>("Prefabs/Location/Plank");
 
     
         LoadTerrainConfigs();
@@ -80,6 +83,26 @@ public class LocationManager : MonoBehaviour
         else if (terrainType == "ForestMaze")
         {
             GenerateForestMaze();
+        }
+        else if (terrainType == "RiverForest")
+        {
+            GenerateRiverForest();
+        }
+        else if (terrainType == "Borderland2")
+        {
+            GenerateBorderland2();
+        }
+        else if (terrainType == "DenseForest2")
+        {
+            GenerateDenseForest2();
+        }
+        else if (terrainType == "PlankField")
+        {
+            GeneratePlankField();
+        }
+        else if (terrainType == "Prison")
+        {
+            GeneratePrison();
         }
 
     }
@@ -179,44 +202,206 @@ public class LocationManager : MonoBehaviour
     /// #F....F#
     /// ########
     /// </summary>
-    private void GenerateForestMaze()
+    private void GenerateASCIILayout(string[] rows, Dictionary<char, System.Action<Vector2Int>> charActions, string layoutName)
     {
-
-        // ASCII 关卡布局
-        string[] rows = new string[]
-        {
-            "########",
-            "#F.....#",
-            "#.##.#.#",
-            "#...F..#",
-            "#.##.#.#",
-            "#.#F.#F#",
-            "#F...#F#",
-            "########"
-        };
-
-        GameObject forestPrefab = locationPrefabs["Forest"];
-        int size = rows.Length;  // 应当为 8
+        int size = rows.Length;
 
         for (int y = 0; y < size; y++)
         {
-            // 把 y 翻转，0->7, 1->6, …, 7->0
             int rowIndex = size - 1 - y;
             string row = rows[rowIndex];
 
             for (int x = 0; x < row.Length; x++)
             {
                 char c = row[x];
-                if (c == '#' && !(x == 4 && y == 4))
+                Vector2Int pos = new Vector2Int(x, y);
+                
+                if (charActions.ContainsKey(c))
                 {
-                    Vector2Int pos = new Vector2Int(x, y);
-                    CreateLocation(forestPrefab, pos);
+                    charActions[c](pos);
                 }
             }
         }
 
+        Debug.Log($"Generated {layoutName} layout with ASCII map.");
+    }
 
-        Debug.Log("Generated ForestMaze layout with ASCII map.");
+    private void GenerateForestMaze()
+    {
+        string[] rows = new string[]
+        {
+            "########",
+            "#F.....#",
+            "#.##.#.#",
+            "#...F..#",
+            "#.##...#",
+            "#.#F.#F#",
+            "#F...###",
+            "########"
+        };
+
+        GameObject forestPrefab = locationPrefabs["Forest"];
+        var charActions = new Dictionary<char, System.Action<Vector2Int>>
+        {
+            ['#'] = pos => {
+                if (!(pos.x == 4 && pos.y == 4))
+                    CreateLocation(forestPrefab, pos);
+            }
+        };
+
+        GenerateASCIILayout(rows, charActions, "ForestMaze");
+    }
+
+    /// <summary>
+    /// "河流森林"：周围一圈是森林，中间有几条河流
+    /// ASCII map:
+    /// ########
+    /// #......#
+    /// #.~~~~.#
+    /// #......#
+    /// #..~~..#
+    /// #.~~~~.#
+    /// #......#
+    /// ########
+    /// </summary>
+    private void GenerateRiverForest()
+    {
+        string[] rows = new string[]
+        {
+            "########",
+            "#......#",
+            "#.~~~~.#",
+            "#......#",
+            "#..~~..#",
+            "#.~~~~.#",
+            "#......#",
+            "########"
+        };
+
+        GameObject forestPrefab = locationPrefabs["Forest"];
+        var charActions = new Dictionary<char, System.Action<Vector2Int>>
+        {
+            ['#'] = pos => CreateLocation(forestPrefab, pos),
+            ['~'] = pos => CreateWater(pos)
+        };
+
+        GenerateASCIILayout(rows, charActions, "RiverForest");
+    }
+
+    private void GenerateBorderland2()
+    {
+        string[] rows = new string[]
+        {
+            "########",
+            "#......#",
+            "##....##",
+            "###..###",
+            "###..###",
+            "##....##",
+            "#......#",
+            "########"
+        };
+
+        GameObject forestPrefab = locationPrefabs["Forest"];
+        var charActions = new Dictionary<char, System.Action<Vector2Int>>
+        {
+            ['#'] = pos => CreateLocation(forestPrefab, pos)
+        };
+
+        GenerateASCIILayout(rows, charActions, "Borderland2");
+    }
+
+    private void GenerateDenseForest2()
+    {
+        string[] rows = new string[]
+        {
+            "########",
+            "#.#.#..#",
+            "#..#.#.#",
+            "#.#....#",
+            "#.##.#.#",
+            "#.#.#..#",
+            "##.#.#.#",
+            "########"
+        };
+
+        GameObject forestPrefab = locationPrefabs["Forest"];
+        var charActions = new Dictionary<char, System.Action<Vector2Int>>
+        {
+            ['#'] = pos => CreateLocation(forestPrefab, pos)
+        };
+
+        GenerateASCIILayout(rows, charActions, "DenseForest2");
+    }
+
+    private void GeneratePlankField()
+    {
+        int mapSize = 8;
+        int centerStart = 3; // 中间2格的起始位置
+        int centerEnd = 4;   // 中间2格的结束位置
+
+        for (int x = 0; x < mapSize; x++)
+        {
+            for (int y = 0; y < mapSize; y++)
+            {
+                // 只有中间2x2格(3,3), (3,4), (4,3), (4,4)留空
+                bool isCenter = (x >= centerStart && x <= centerEnd && y >= centerStart && y <= centerEnd);
+                
+                if (!isCenter)
+                {
+                    CreatePlank(new Vector2Int(x, y));
+                }
+            }
+        }
+        
+        Debug.Log("Generated PlankField with destructible planks.");
+    }
+
+    private void GeneratePrison()
+    {
+        string[] rows = new string[]
+        {
+            "........",
+            "........",
+            "..####..",
+            "..#AA#..",
+            "..#AA#..",
+            "..####..",
+            "........",
+            "........"
+        };
+
+        GameObject plankPrefab = locationPrefabs["Plank"];
+        var charActions = new Dictionary<char, System.Action<Vector2Int>>
+        {
+            ['#'] = pos => CreatePlank(pos),
+            ['A'] = pos => AddToSpecialSpawnArea("predefined", pos)
+        };
+
+        GenerateASCIILayout(rows, charActions, "Prison");
+    }
+
+    public void CreatePlank(Vector2Int position)
+    {
+        GameObject plankPrefab = locationPrefabs["Plank"];
+        GameObject plankObject = Instantiate(plankPrefab);
+        plankObject.transform.position = player.CalculateWorldPosition(position);
+        
+        // 添加PlankLocation组件
+        PlankLocation plank = plankObject.AddComponent<PlankLocation>();
+        plank.Initialize(position, "可攻击的木板", false, 1); // 血量为1
+        
+        nonEnterablePositions.Add(position);
+        spawnedLocations.Add(plankObject);
+        
+        Debug.Log($"Plank created at {position} with 1 health");
+    }
+
+    public void RemovePlank(Vector2Int position, GameObject plankObject)
+    {
+        nonEnterablePositions.Remove(position);
+        spawnedLocations.Remove(plankObject);
+        Debug.Log($"Plank removed from position {position}");
     }
 
 
@@ -661,6 +846,51 @@ public class LocationManager : MonoBehaviour
         }
         
         return false; // 没有被阻止
+    }
+    
+    public void CreateWater(Vector2Int position)
+    {
+        GameObject waterPrefab = Resources.Load<GameObject>("Prefabs/Location/Water");
+        if (waterPrefab == null)
+        {
+            Debug.LogError("Water prefab not found");
+            return;
+        }
+        
+        GameObject waterObject = Instantiate(waterPrefab);
+        waterObject.transform.position = player.CalculateWorldPosition(position);
+        
+        waterPositions.Add(position);
+        nonEnterablePositions.Add(position); // 水对大部分单位是障碍物
+        spawnedLocations.Add(waterObject);
+        Debug.Log($"Water created at {position}");
+    }
+    
+    public bool IsWaterPosition(Vector2Int position)
+    {
+        return waterPositions.Contains(position);
+    }
+    
+    public void AddToSpecialSpawnArea(string areaName, Vector2Int position)
+    {
+        if (!specialSpawnAreas.ContainsKey(areaName))
+            specialSpawnAreas[areaName] = new List<Vector2Int>();
+        specialSpawnAreas[areaName].Add(position);
+    }
+    
+    public List<Vector2Int> GetSpecialSpawnArea(string areaName)
+    {
+        return specialSpawnAreas.ContainsKey(areaName) ? new List<Vector2Int>(specialSpawnAreas[areaName]) : new List<Vector2Int>();
+    }
+    
+    public List<Vector2Int> GetMonsterSpawnPositions()
+    {
+        return GetSpecialSpawnArea("predefined");
+    }
+    
+    public void ClearMonsterSpawnPositions()
+    {
+        specialSpawnAreas.Clear();
     }
     
     public void OnTurnStart()

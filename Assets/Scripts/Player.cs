@@ -183,10 +183,11 @@ public class Player : MonoBehaviour
             Monster monster = monsterObject.GetComponent<Monster>();
             if (monster != null && monster.IsPartOfMonster(position))
             {
+                int monsterDamage = monster.GetAttackDamage();
                 if (isShieldActive)
                 {
                     // 架盾状态下：玩家受到伤害，不改变玩家位置，而是将攻击的敌人重定位到玩家周围
-                    TakeDamage(1); // 玩家受到伤害
+                    TakeDamage(monsterDamage); // 使用怪物的攻击伤害
                     Vector2Int newEnemyPos = FindSurroundingPosition(position, true); // skipCenter 为 true，不允许返回玩家所在的位置
                     monster.position = newEnemyPos;
                     monster.UpdatePosition();
@@ -194,7 +195,7 @@ public class Player : MonoBehaviour
                 else
                 {
                     // 非架盾状态：玩家受到伤害，并被击退
-                    TakeDamage(1); // 玩家受到伤害
+                    TakeDamage(monsterDamage); // 使用怪物的攻击伤害
                     Vector2Int knockbackDirection = -monster.lastRelativePosition;
                     Vector2Int desiredPos = position + knockbackDirection;
                     // 使用 FindSurroundingPosition 方法，skipCenter 为 false 表示允许返回理想击退位置
@@ -598,6 +599,16 @@ public class Player : MonoBehaviour
                 if (monster != null && monster.IsPartOfMonster(attackPosition))
                 {
                     monster.TakeDamage(damage + damageModifierThisTurn);
+                }
+            }
+            
+            // 检查是否攻击Location
+            Location[] locations = FindObjectsOfType<Location>();
+            foreach (Location location in locations)
+            {
+                if (location.position == attackPosition)
+                {
+                    location.TakeDamage(damage + damageModifierThisTurn);
                 }
             }
             

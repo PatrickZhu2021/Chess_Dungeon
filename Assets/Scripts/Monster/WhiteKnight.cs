@@ -84,7 +84,7 @@ public class WhiteKnight : Monster
 
     public override GameObject GetPrefab()
     {
-        return Resources.Load<GameObject>("Prefabs/Monster/WhiteKnight");
+        return Resources.Load<GameObject>("Prefabs/Monster/white_knight");
     }
 
     public override List<Vector2Int> CalculatePossibleMoves()
