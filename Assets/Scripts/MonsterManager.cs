@@ -241,9 +241,8 @@ public class MonsterManager : MonoBehaviour
                 locationManager.SpawnLocationsForLevel(chosenTpl.terrainType);
             }
             
-            // 获取预定义的怪物生成位置（笼子内）
-            List<Vector2Int> predefinedPositions = locationManager.GetMonsterSpawnPositions();
-            int positionIndex = 0;
+            // 创建特殊生成区域的位置索引
+            Dictionary<string, int> areaIndices = new Dictionary<string, int>();
             
             // 从 chosenTpl.monsterTypes 里拿到真正的 List<string>
             foreach (string monsterType in chosenTpl.monsterTypes)
@@ -252,11 +251,22 @@ public class MonsterManager : MonoBehaviour
                 Monster monster = CreateMonsterByType(monsterType);
                 if (monster != null)
                 {
-                    // A01固定生成在笼子里，其他怪物在外面随机生成
-                    if (monsterType == "A01" && positionIndex < predefinedPositions.Count)
+                    // 检查是否有特殊生成规则
+                    SpecialSpawnRule rule = chosenTpl.specialSpawnRules?.Find(r => r.monsterType == monsterType);
+                    if (rule != null && !string.IsNullOrEmpty(rule.spawnArea))
                     {
-                        SpawnMonsterAtPosition(monster, predefinedPositions[positionIndex]);
-                        positionIndex++;
+                        List<Vector2Int> areaPositions = locationManager.GetSpecialSpawnArea(rule.spawnArea);
+                        if (!areaIndices.ContainsKey(rule.spawnArea)) areaIndices[rule.spawnArea] = 0;
+                        
+                        if (areaIndices[rule.spawnArea] < areaPositions.Count)
+                        {
+                            SpawnMonsterAtPosition(monster, areaPositions[areaIndices[rule.spawnArea]]);
+                            areaIndices[rule.spawnArea]++;
+                        }
+                        else
+                        {
+                            SpawnMonster(monster);
+                        }
                     }
                     else
                     {
@@ -539,7 +549,7 @@ public class MonsterManager : MonoBehaviour
          !AreAllPositionsValid(monsterParts) || 
          monsterParts.Contains(playerPosition) || 
          monsterParts.Exists(part => locationManager.IsNonEnterablePosition(part)) ||
-         monsterParts.Exists(part => locationManager.GetMonsterSpawnPositions().Contains(part)));  // 避免在笼子内生成
+         IsInAnySpecialSpawnArea(monsterParts));  // 避免在特殊区域内生成
 
         return randomPosition;
     }
@@ -672,6 +682,12 @@ public class MonsterManager : MonoBehaviour
         Debug.Log("Level completed immediately after all enemies defeated!");
     }
 
+    private bool IsInAnySpecialSpawnArea(List<Vector2Int> positions)
+    {
+        List<Vector2Int> allSpecialPositions = locationManager.GetMonsterSpawnPositions();
+        return positions.Exists(pos => allSpecialPositions.Contains(pos));
+    }
+    
     public bool IsTileValid(Vector2Int tilePosition)
     {
         // Check board boundaries (assuming boardSize is an integer representing board width/height)

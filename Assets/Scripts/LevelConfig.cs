@@ -11,11 +11,19 @@ public class LevelConfig
 }
 
 [Serializable]
+public class SpecialSpawnRule
+{
+    public string monsterType;
+    public string spawnArea; // "predefined" 表示使用预定义位置
+}
+
+[Serializable]
 public class MonsterTemplate
 {
     // the list of monster type IDs for this particular template
     public List<string> monsterTypes = new List<string>();
     public string terrainType = "";
+    public List<SpecialSpawnRule> specialSpawnRules = new List<SpecialSpawnRule>();
 }
 
 [Serializable]

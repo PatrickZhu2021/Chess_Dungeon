@@ -15,7 +15,7 @@ public class LocationManager : MonoBehaviour
     public AnchorLocation activeAnchor = null; // 当前锚点（同时只能存在1个）
     public List<MireLocation> activeMires = new List<MireLocation>(); // 潮沼列表
     private List<Vector2Int> waterPositions = new List<Vector2Int>(); // 水单元格位置
-    private List<Vector2Int> monsterSpawnPositions = new List<Vector2Int>(); // 怪物生成位置
+    private Dictionary<string, List<Vector2Int>> specialSpawnAreas = new Dictionary<string, List<Vector2Int>>(); // 特殊生成区域
     private Player player;
     private List<TerrainConfig> terrainConfigs = new List<TerrainConfig>();
 
@@ -375,7 +375,7 @@ public class LocationManager : MonoBehaviour
         var charActions = new Dictionary<char, System.Action<Vector2Int>>
         {
             ['#'] = pos => CreatePlank(pos),
-            ['A'] = pos => monsterSpawnPositions.Add(pos)
+            ['A'] = pos => AddToSpecialSpawnArea("predefined", pos)
         };
 
         GenerateASCIILayout(rows, charActions, "Prison");
@@ -871,14 +871,26 @@ public class LocationManager : MonoBehaviour
         return waterPositions.Contains(position);
     }
     
+    public void AddToSpecialSpawnArea(string areaName, Vector2Int position)
+    {
+        if (!specialSpawnAreas.ContainsKey(areaName))
+            specialSpawnAreas[areaName] = new List<Vector2Int>();
+        specialSpawnAreas[areaName].Add(position);
+    }
+    
+    public List<Vector2Int> GetSpecialSpawnArea(string areaName)
+    {
+        return specialSpawnAreas.ContainsKey(areaName) ? new List<Vector2Int>(specialSpawnAreas[areaName]) : new List<Vector2Int>();
+    }
+    
     public List<Vector2Int> GetMonsterSpawnPositions()
     {
-        return new List<Vector2Int>(monsterSpawnPositions);
+        return GetSpecialSpawnArea("predefined");
     }
     
     public void ClearMonsterSpawnPositions()
     {
-        monsterSpawnPositions.Clear();
+        specialSpawnAreas.Clear();
     }
     
     public void OnTurnStart()

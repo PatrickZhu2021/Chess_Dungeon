@@ -98,7 +98,13 @@
             "monsterTemplates": [
                 { 
                     "monsterTypes": ["B07","B06","B04","B04","A01","A01"],
-                    "terrainType": "Prison"
+                    "terrainType": "Prison",
+                    "specialSpawnRules": [
+                        {
+                            "monsterType": "A01",
+                            "spawnArea": "predefined"
+                        }
+                    ]
                 }
             ]
         },
@@ -106,7 +112,7 @@
             "levelNumber": 10,
             "monsterTemplates": [
                 { 
-                    "monsterTypes": ["A06"],
+                    "monsterTypes": ["B08"],
                     "terrainType": "Borderland"
                 }
             ]
