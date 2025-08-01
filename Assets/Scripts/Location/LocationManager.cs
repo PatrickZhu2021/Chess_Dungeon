@@ -396,8 +396,8 @@ public class LocationManager : MonoBehaviour
         string[] rows = new string[]
         {
             "########", // y=7 最上层Plank
-            "########", // y=6 第二层Plank
-            "########", // y=5 第三层Plank
+            "........", // y=6 战斗区域
+            "........", // y=5 战斗区域
             "........", // y=4 战斗区域
             "........", // y=3 战斗区域
             "........", // y=2 战斗区域
@@ -458,8 +458,9 @@ public class LocationManager : MonoBehaviour
             mouth = mouthObject.AddComponent<DevourerMouth>();
         }
         
-        mouth.Initialize(position, "吞噬者之口", true);
+        mouth.Initialize(position, "吞噬者之口", false);
         devourerMouths.Add(mouth);
+        nonEnterablePositions.Add(position);
         spawnedLocations.Add(mouthObject);
         
         Debug.Log($"DevourerMouth created at {position}");
@@ -1082,6 +1083,13 @@ public class LocationManager : MonoBehaviour
         foreach (PlankLocation plank in plankLocations)
         {
             nonEnterablePositions.Add(plank.position);
+        }
+        
+        // 添加所有DevourerMouth的位置
+        foreach (DevourerMouth mouth in devourerMouths)
+        {
+            if (mouth != null)
+                nonEnterablePositions.Add(mouth.position);
         }
         
         // 添加其他阻挡性Location的位置

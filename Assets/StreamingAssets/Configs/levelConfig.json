@@ -112,7 +112,7 @@
             "levelNumber": 10,
             "monsterTemplates": [
                 { 
-                    "monsterTypes": ["I03","I03","I03","I03","I03","I03","I03","I03"],
+                    "monsterTypes": ["I03","I03","I03","I03","I03","B04","B04","B04","B04"],
                     "terrainType": "DevourerMaw"
                 }
             ]
