@@ -52,7 +52,7 @@
         },
         {
             "levelNumber": 10,
-            "monsterTypes": ["I05"],
+            "monsterTypes": ["B01"],
             "terrainType": "Borderland"
         }
     ],
