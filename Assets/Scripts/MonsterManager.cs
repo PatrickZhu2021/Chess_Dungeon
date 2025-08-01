@@ -549,7 +549,8 @@ public class MonsterManager : MonoBehaviour
          !AreAllPositionsValid(monsterParts) || 
          monsterParts.Contains(playerPosition) || 
          monsterParts.Exists(part => locationManager.IsNonEnterablePosition(part)) ||
-         IsInAnySpecialSpawnArea(monsterParts));  // 避免在特殊区域内生成
+         IsInAnySpecialSpawnArea(monsterParts) ||
+         !IsValidTerrainSpawn(monsterParts));  // 特殊地形生成限制
 
         return randomPosition;
     }
@@ -686,6 +687,26 @@ public class MonsterManager : MonoBehaviour
     {
         List<Vector2Int> allSpecialPositions = locationManager.GetMonsterSpawnPositions();
         return positions.Exists(pos => allSpecialPositions.Contains(pos));
+    }
+    
+    private bool IsValidTerrainSpawn(List<Vector2Int> positions)
+    {
+        // 获取当前关卡的地形类型
+        string terrainType = GetCurrentTerrainType();
+        if (string.IsNullOrEmpty(terrainType))
+            return true;
+            
+        return TerrainSpawnRules.IsValidSpawnPosition(positions, terrainType);
+    }
+    
+    private string GetCurrentTerrainType()
+    {
+        LevelConfig currentLevelConfig = levelConfigs?.Find(l => l.levelNumber == currentLevel);
+        if (currentLevelConfig?.monsterTemplates != null && currentLevelConfig.monsterTemplates.Count > 0)
+        {
+            return currentLevelConfig.monsterTemplates[0].terrainType;
+        }
+        return currentLevelConfig?.terrainType;
     }
     
     public bool IsTileValid(Vector2Int tilePosition)

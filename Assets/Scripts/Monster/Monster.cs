@@ -89,6 +89,12 @@ public class Monster : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
         // 更新业力连接线位置
         UpdateKarmaLinkLine();
     }
+    
+    public void SetPosition(Vector2Int newPosition)
+    {
+        position = newPosition;
+        UpdatePosition();
+    }
 
     public virtual List<Vector2Int> CalculatePossibleMoves()
     {

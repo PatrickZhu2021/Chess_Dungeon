@@ -112,8 +112,8 @@
             "levelNumber": 10,
             "monsterTemplates": [
                 { 
-                    "monsterTypes": ["B08"],
-                    "terrainType": "Borderland"
+                    "monsterTypes": ["I01", "I02", "A01"],
+                    "terrainType": "DevourerMaw"
                 }
             ]
         }
@@ -185,6 +185,12 @@
                 "width": 2,
                 "height": 2
             }
+        },
+        {
+            "name": "DevourerMaw",
+            "mapSize": 8,
+            "openAreaSize": 8,
+            "borderObstacleType": ""
         }
     ]
 }

@@ -18,6 +18,10 @@ public class LocationManager : MonoBehaviour
     private Dictionary<string, List<Vector2Int>> specialSpawnAreas = new Dictionary<string, List<Vector2Int>>(); // 特殊生成区域
     private Player player;
     private List<TerrainConfig> terrainConfigs = new List<TerrainConfig>();
+    
+    // DevourerMaw 相关
+    public List<DevourerMouth> devourerMouths = new List<DevourerMouth>();
+    private bool isDevourerLevel = false;
 
 
     void Awake()
@@ -103,6 +107,10 @@ public class LocationManager : MonoBehaviour
         else if (terrainType == "Prison")
         {
             GeneratePrison();
+        }
+        else if (terrainType == "DevourerMaw")
+        {
+            GenerateDevourerMaw();
         }
 
     }
@@ -380,6 +388,30 @@ public class LocationManager : MonoBehaviour
 
         GenerateASCIILayout(rows, charActions, "Prison");
     }
+    
+    private void GenerateDevourerMaw()
+    {
+        isDevourerLevel = true;
+        
+        string[] rows = new string[]
+        {
+            "........", // y=7 安全区域
+            "........", // y=6 安全区域  
+            "........", // y=5 战斗区域
+            "........", // y=4 战斗区域
+            "........", // y=3 战斗区域
+            "........", // y=2 战斗区域
+            "........", // y=1 危险区域
+            "MMMMMMMM"  // y=0 怪物嘴部（8个核心）
+        };
+        
+        var charActions = new Dictionary<char, System.Action<Vector2Int>>
+        {
+            ['M'] = pos => CreateDevourerMouth(pos)
+        };
+        
+        GenerateASCIILayout(rows, charActions, "DevourerMaw");
+    }
 
     public void CreatePlank(Vector2Int position)
     {
@@ -402,6 +434,37 @@ public class LocationManager : MonoBehaviour
         nonEnterablePositions.Remove(position);
         spawnedLocations.Remove(plankObject);
         Debug.Log($"Plank removed from position {position}");
+    }
+    
+    public void CreateDevourerMouth(Vector2Int position)
+    {
+        GameObject mouthPrefab = Resources.Load<GameObject>("Prefabs/Location/DevourerMouth");
+        if (mouthPrefab == null)
+        {
+            // 如果没有专用prefab，使用Forest作为临时替代
+            mouthPrefab = locationPrefabs["Forest"];
+        }
+        
+        GameObject mouthObject = Instantiate(mouthPrefab);
+        mouthObject.transform.position = player.CalculateWorldPosition(position);
+        
+        DevourerMouth mouth = mouthObject.GetComponent<DevourerMouth>();
+        if (mouth == null)
+        {
+            mouth = mouthObject.AddComponent<DevourerMouth>();
+        }
+        
+        mouth.Initialize(position, "吞噬者之口", true);
+        devourerMouths.Add(mouth);
+        spawnedLocations.Add(mouthObject);
+        
+        Debug.Log($"DevourerMouth created at {position}");
+    }
+    
+    public void OnDevourerMouthDestroyed(DevourerMouth mouth)
+    {
+        devourerMouths.Remove(mouth);
+        Debug.Log($"DevourerMouth destroyed. Remaining: {devourerMouths.Count}");
     }
 
 
@@ -903,5 +966,134 @@ public class LocationManager : MonoBehaviour
                 activeBarriers[i].ReduceDurability();
             }
         }
+        
+        // DevourerMaw关卡的下拉逻辑
+        if (isDevourerLevel)
+        {
+            PullEverythingDown();
+        }
+    }
+    
+    private void PullEverythingDown()
+    {
+        // 拉拽玩家
+        if (player.position.y > 0)
+        {
+            Vector2Int newPlayerPos = new Vector2Int(player.position.x, player.position.y - 1);
+            player.SetPosition(newPlayerPos);
+            Debug.Log($"Player pulled down to {newPlayerPos}");
+        }
+        
+        // 拉拽所有怪物（除了最下排）
+        MonsterManager monsterManager = FindObjectOfType<MonsterManager>();
+        if (monsterManager != null)
+        {
+            Monster[] monsters = FindObjectsOfType<Monster>();
+            foreach (Monster monster in monsters)
+            {
+                if (monster.position.y > 0)
+                {
+                    Vector2Int newMonsterPos = new Vector2Int(monster.position.x, monster.position.y - 1);
+                    monster.SetPosition(newMonsterPos);
+                    Debug.Log($"Monster {monster.name} pulled down to {newMonsterPos}");
+                }
+            }
+        }
+        
+        // 拉拽所有Location（除了最下排的DevourerMouth）
+        Location[] allLocations = FindObjectsOfType<Location>();
+        foreach (Location location in allLocations)
+        {
+            if (location.position.y > 0 && !(location is DevourerMouth))
+            {
+                Vector2Int newLocationPos = new Vector2Int(location.position.x, location.position.y - 1);
+                location.position = newLocationPos;
+                location.transform.position = player.CalculateWorldPosition(newLocationPos);
+                Debug.Log($"Location {location.GetType().Name} pulled down to {newLocationPos}");
+            }
+        }
+        
+        // 更新nonEnterablePositions列表
+        UpdateNonEnterablePositionsAfterPull();
+        
+        // 处理被拉到最下一格的单位
+        HandleDevourerEffects();
+    }
+    
+    private void HandleDevourerEffects()
+    {
+        MonsterManager monsterManager = FindObjectOfType<MonsterManager>();
+        
+        // 杀死所有在y=0的敌人
+        if (monsterManager != null)
+        {
+            Monster[] monsters = FindObjectsOfType<Monster>();
+            for (int i = monsters.Length - 1; i >= 0; i--)
+            {
+                Monster monster = monsters[i];
+                if (monster.position.y <= 0)
+                {
+                    Debug.Log($"Monster {monster.monsterName} devoured at y=0!");
+                    monsterManager.RemoveMonster(monster);
+                    Destroy(monster.gameObject);
+                }
+            }
+        }
+        
+        // 消灭所有在y=0的Location（除了DevourerMouth）
+        Location[] allLocations = FindObjectsOfType<Location>();
+        for (int i = allLocations.Length - 1; i >= 0; i--)
+        {
+            Location location = allLocations[i];
+            if (location.position.y <= 0 && !(location is DevourerMouth))
+            {
+                Debug.Log($"Location {location.GetType().Name} devoured at y=0!");
+                RemoveLocation(location);
+                Destroy(location.gameObject);
+            }
+        }
+        
+        // 处理玩家被拉到y=0的情况
+        if (player.position.y <= 0)
+        {
+            Debug.Log("Player partially devoured! Taking 5 damage and moving up!");
+            player.TakeDamage(5);
+            player.SetPosition(new Vector2Int(player.position.x, 1)); // 移动到y=1
+        }
+    }
+    
+    private void UpdateNonEnterablePositionsAfterPull()
+    {
+        // 重新构建nonEnterablePositions列表
+        nonEnterablePositions.Clear();
+        
+        // 添加所有NonEnterableLocation的位置
+        NonEnterableLocation[] nonEnterableLocations = FindObjectsOfType<NonEnterableLocation>();
+        foreach (NonEnterableLocation location in nonEnterableLocations)
+        {
+            nonEnterablePositions.Add(location.position);
+        }
+        
+        // 添加其他阻挡性Location的位置
+        foreach (BarrierLocation barrier in activeBarriers)
+        {
+            if (barrier != null)
+                nonEnterablePositions.Add(barrier.position);
+        }
+    }
+    
+    public bool CheckDevourerVictory()
+    {
+        if (!isDevourerLevel) return false;
+        
+        int destroyedMouths = 0;
+        foreach (DevourerMouth mouth in devourerMouths)
+        {
+            if (mouth == null || mouth.IsDestroyed())
+                destroyedMouths++;
+        }
+        
+        // 胜利条件：摧毁至少4个嘴部 且 玩家在安全区域（y >= 6）
+        return destroyedMouths >= 4 && player.position.y >= 6;
     }
 }

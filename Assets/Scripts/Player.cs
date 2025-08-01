@@ -972,6 +972,7 @@ public class Player : MonoBehaviour
     public void SetPosition(Vector2Int newPosition)
     {
         position = newPosition;
+        UpdatePosition(); // 更新玩家prefab的世界位置
     }
 
     // 示例方法：设置玩家生命值
