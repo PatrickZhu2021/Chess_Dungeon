@@ -8,6 +8,8 @@ using UnityEngine.SceneManagement;
 
 public class DeckManager : MonoBehaviour
 {
+    public System.Action OnCardPlayed;
+    
     public List<Card> hand = new List<Card>();
     public List<Card> deck = new List<Card>();
     public List<Card> discardPile = new List<Card>();
@@ -418,6 +420,9 @@ public class DeckManager : MonoBehaviour
     public void UseCard(Card card)
     {
         hand.Remove(card);
+        
+        // 触发卡牌使用事件
+        OnCardPlayed?.Invoke();
         
         // 检查是否为消耗卡牌
         if (card.isExhaust)

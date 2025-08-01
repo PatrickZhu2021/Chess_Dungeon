@@ -129,6 +129,15 @@
                     "terrainType": "RiverForest"
                 }
             ]
+        },
+        {
+            "levelNumber": 12,
+            "monsterTemplates": [
+                { 
+                    "monsterTypes": ["T02"],
+                    "terrainType": "Borderland"
+                }
+            ]
         }
     ],
 
