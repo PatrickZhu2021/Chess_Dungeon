@@ -321,7 +321,7 @@ public class Monster : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
         if (infoManager != null)
         {
             // 调用 MonsterInfoManager 更新信息面板
-            infoManager.UpdateMonsterInfo(monsterName, health, position);
+            infoManager.UpdateMonsterInfo(monsterName, health, position, this);
         }
         HighlightPath();
     }
