@@ -68,8 +68,8 @@
         },
         {
             "levelNumber": 6,
-            "monsterTypes": ["WhitePawn", "WhitePawn","WhiteKnight", "WhiteBishop"],
-            "terrainType": "FortifiedBorderland"
+            "monsterTypes": ["WhitePawn", "WhitePawn"],
+            "terrainType": "PlankField"
         },
         {
             "levelNumber": 7,
@@ -141,6 +141,12 @@
             "mapSize": 8,
             "openAreaSize": 6,
             "borderObstacleType": "Forest"
+        },
+        {
+            "name": "PlankField",
+            "mapSize": 8,
+            "openAreaSize": 4,
+            "borderObstacleType": "Plank"
         }
     ]
 }

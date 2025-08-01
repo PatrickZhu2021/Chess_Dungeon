@@ -31,6 +31,7 @@ public class LocationManager : MonoBehaviour
         locationPrefabs["Wall_Corner_UR"] = Resources.Load<GameObject>("Prefabs/Location/Wall_Corner_UR"); // 右上角
         locationPrefabs["Wall_Corner_LL"] = Resources.Load<GameObject>("Prefabs/Location/Wall_Corner_LL"); // 左下角
         locationPrefabs["Wall_Corner_LR"] = Resources.Load<GameObject>("Prefabs/Location/Wall_Corner_LR"); // 右下角
+        locationPrefabs["Plank"] = Resources.Load<GameObject>("Prefabs/Location/Plank");
 
     
         LoadTerrainConfigs();
@@ -93,6 +94,10 @@ public class LocationManager : MonoBehaviour
         else if (terrainType == "DenseForest2")
         {
             GenerateDenseForest2();
+        }
+        else if (terrainType == "PlankField")
+        {
+            GeneratePlankField();
         }
 
     }
@@ -322,6 +327,52 @@ public class LocationManager : MonoBehaviour
         };
 
         GenerateASCIILayout(rows, charActions, "DenseForest2");
+    }
+
+    private void GeneratePlankField()
+    {
+        int mapSize = 8;
+        int centerStart = 3; // 中间4格的起始位置
+        int centerEnd = 5;   // 中间4格的结束位置
+
+        for (int x = 0; x < mapSize; x++)
+        {
+            for (int y = 0; y < mapSize; y++)
+            {
+                // 只有中间4格(3,3), (3,4), (4,3), (4,4)留空
+                bool isCenter = (x >= centerStart && x <= centerEnd && y >= centerStart && y <= centerEnd);
+                
+                if (!isCenter)
+                {
+                    CreatePlank(new Vector2Int(x, y));
+                }
+            }
+        }
+        
+        Debug.Log("Generated PlankField with destructible planks.");
+    }
+
+    public void CreatePlank(Vector2Int position)
+    {
+        GameObject plankPrefab = locationPrefabs["Plank"];
+        GameObject plankObject = Instantiate(plankPrefab);
+        plankObject.transform.position = player.CalculateWorldPosition(position);
+        
+        // 添加PlankLocation组件
+        PlankLocation plank = plankObject.AddComponent<PlankLocation>();
+        plank.Initialize(position, "可攻击的木板", false, 1); // 血量为1
+        
+        nonEnterablePositions.Add(position);
+        spawnedLocations.Add(plankObject);
+        
+        Debug.Log($"Plank created at {position} with 1 health");
+    }
+
+    public void RemovePlank(Vector2Int position, GameObject plankObject)
+    {
+        nonEnterablePositions.Remove(position);
+        spawnedLocations.Remove(plankObject);
+        Debug.Log($"Plank removed from position {position}");
     }
 
 

@@ -602,6 +602,16 @@ public class Player : MonoBehaviour
                 }
             }
             
+            // 检查是否攻击可攻击的Location
+            Location[] locations = FindObjectsOfType<Location>();
+            foreach (Location location in locations)
+            {
+                if (location.position == attackPosition)
+                {
+                    location.Interact();
+                }
+            }
+            
             if (i == 0 && attackTimes > 1)
             {
                 Debug.Log($"BS06 effect: Attack {i + 1}/{attackTimes}");
