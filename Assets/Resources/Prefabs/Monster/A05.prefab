@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 3569285770981315116}
   - component: {fileID: 3377515208225334516}
   - component: {fileID: 7297015937715195869}
+  - component: {fileID: 1346794127845774475}
   m_Layer: 7
   m_Name: A05
   m_TagString: Monster
@@ -170,3 +171,32 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3381790849320777569}
   m_CullTransparentMesh: 1
+--- !u!114 &1346794127845774475
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3381790849320777569}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 892dae972fd06db4da3faf002c7df98e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  monsterName: default
+  displayName: 
+  health: 0
+  maxHealth: 0
+  pieceValue: 0
+  type: 0
+  healthFillRenderer: {fileID: 0}
+  position: {x: 0, y: 0}
+  healthBarPrefab: {fileID: 0}
+  player: {fileID: 0}
+  lastRelativePosition: {x: 0, y: 0}
+  stunnedStacks: 0
+  lureStacks: 0
+  karmaLinkedMonster: {fileID: 0}
+  infoManager: {fileID: 0}
+  highlightPrefab: {fileID: 0}
+  damageTextPrefab: {fileID: 0}
