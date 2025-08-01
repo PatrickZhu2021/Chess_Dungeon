@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 7604700823451542480}
   - component: {fileID: 6773963571949814308}
   - component: {fileID: 3569285770981315116}
+  - component: {fileID: -2946612728273615326}
   m_Layer: 7
   m_Name: RitualPoint
   m_TagString: Monster
@@ -74,8 +75,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 158606717
-  m_SortingLayer: 3
+  m_SortingLayerID: 382257533
+  m_SortingLayer: 2
   m_SortingOrder: 0
   m_Sprite: {fileID: 772973991, guid: 7e5e4a2fcb87c8640a3af23fd9b42445, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -134,3 +135,18 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 1, y: 0.9375}
   m_EdgeRadius: 0
+--- !u!114 &-2946612728273615326
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3381790849320777569}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 95599956953492f4fa0468db17288b4f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  position: {x: 0, y: 0}
+  description: 
+  isAccessible: 0

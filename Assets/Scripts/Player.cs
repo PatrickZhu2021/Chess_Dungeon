@@ -559,6 +559,17 @@ public class Player : MonoBehaviour
                 Decharge();
             }
         }
+        
+        // 检查玩家是否接触了RitualPoint
+        RitualPoint[] ritualPoints = FindObjectsOfType<RitualPoint>();
+        foreach (RitualPoint ritualPoint in ritualPoints)
+        {
+            if (ritualPoint.position == newPosition)
+            {
+                ritualPoint.Interact();
+                break;
+            }
+        }
     }
 
     public void Charge() {

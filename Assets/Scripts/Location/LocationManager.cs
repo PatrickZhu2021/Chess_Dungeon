@@ -112,6 +112,10 @@ public class LocationManager : MonoBehaviour
         {
             GenerateDevourerMaw();
         }
+        else if (terrainType == "RitualField")
+        {
+            GenerateRitualField();
+        }
 
     }
 
@@ -412,6 +416,51 @@ public class LocationManager : MonoBehaviour
         };
         
         GenerateASCIILayout(rows, charActions, "DevourerMaw");
+    }
+    
+    private void GenerateRitualField()
+    {
+        string[] rows = new string[]
+        {
+            "R......R",
+            "........",
+            "..R..R..",
+            "........",
+            "........",
+            "..R..R..",
+            "........",
+            "R......R"
+        };
+        
+        var charActions = new Dictionary<char, System.Action<Vector2Int>>
+        {
+            ['R'] = pos => CreateRitualPoint(pos)
+        };
+        
+        GenerateASCIILayout(rows, charActions, "RitualField");
+    }
+    
+    public void CreateRitualPoint(Vector2Int position)
+    {
+        GameObject ritualPointPrefab = Resources.Load<GameObject>("Prefabs/Location/RitualPoint");
+        if (ritualPointPrefab == null)
+        {
+            Debug.LogError("RitualPoint prefab not found");
+            return;
+        }
+        
+        GameObject ritualPointObject = Instantiate(ritualPointPrefab);
+        ritualPointObject.transform.position = player.CalculateWorldPosition(position);
+        
+        RitualPoint ritualPoint = ritualPointObject.GetComponent<RitualPoint>();
+        if (ritualPoint == null)
+        {
+            ritualPoint = ritualPointObject.AddComponent<RitualPoint>();
+        }
+        
+        ritualPoint.Initialize(position, "仪式点，接触后阻止T02本回合移动", true);
+        spawnedLocations.Add(ritualPointObject);
+        Debug.Log($"RitualPoint created at {position}");
     }
 
     public void CreatePlank(Vector2Int position)

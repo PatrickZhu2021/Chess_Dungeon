@@ -4,12 +4,13 @@ using System.Collections.Generic;
 public class T02 : Monster
 {
     private static List<T02> allT02s = new List<T02>();
+    private bool isMovementBlocked = false;
 
     public override void Initialize(Vector2Int startPos)
     {
-        health = 3;
+        health = 6;
         base.Initialize(startPos);
-        type = MonsterType.Beast;
+        type = MonsterType.King;
         monsterName = "T02";
         displayName = "反应体";
         
@@ -29,7 +30,10 @@ public class T02 : Monster
 
     private void OnCardPlayed()
     {
-        base.MoveTowardsPlayer();
+        if (!isMovementBlocked)
+        {
+            base.MoveTowardsPlayer();
+        }
     }
 
     public override void PerformMovement()
@@ -49,6 +53,37 @@ public class T02 : Monster
             position = newPosition;
             UpdatePosition();
         }
+    }
+
+    public void SetMovementBlocked(bool blocked)
+    {
+        isMovementBlocked = blocked;
+        Debug.Log($"T02 {monsterName} movement blocked: {blocked}");
+    }
+    
+    public override void OnTurnEnd()
+    {
+        // 回合结束时重置移动阻止状态
+        isMovementBlocked = false;
+    }
+
+    public override List<Vector2Int> CalculatePossibleMoves()
+    {
+        List<Vector2Int> possibleMoves = new List<Vector2Int>
+        {
+            position + new Vector2Int(1, 0),   // 右
+            position + new Vector2Int(-1, 0),  // 左
+            position + new Vector2Int(0, 1),   // 上
+            position + new Vector2Int(0, -1),  // 下
+            position + new Vector2Int(1, 1),   // 右上
+            position + new Vector2Int(-1, 1),  // 左上
+            position + new Vector2Int(1, -1),  // 右下
+            position + new Vector2Int(-1, -1)  // 左下
+        };
+
+        // 过滤掉无效位置或被占据的位置
+        possibleMoves.RemoveAll(pos => !IsValidPosition(pos) || IsPositionOccupied(pos));
+        return possibleMoves;
     }
 
     void OnDestroy()

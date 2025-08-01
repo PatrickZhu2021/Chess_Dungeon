@@ -135,7 +135,7 @@
             "monsterTemplates": [
                 { 
                     "monsterTypes": ["T02"],
-                    "terrainType": "Borderland"
+                    "terrainType": "RitualField"
                 }
             ]
         }
@@ -210,6 +210,12 @@
         },
         {
             "name": "DevourerMaw",
+            "mapSize": 8,
+            "openAreaSize": 8,
+            "borderObstacleType": ""
+        },
+        {
+            "name": "RitualField",
             "mapSize": 8,
             "openAreaSize": 8,
             "borderObstacleType": ""
