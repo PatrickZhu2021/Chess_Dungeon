@@ -115,6 +115,7 @@ public class MonsterManager : MonoBehaviour
         // 清除上一关的动态障碍物
         LocationManager locationManager = FindObjectOfType<LocationManager>();
         locationManager.ClearAllLocations();
+        locationManager.ClearMonsterSpawnPositions();
 
         // 获取当前关卡配置并生成对应的地形
         LevelConfig levelConfig = levelConfigs.Find(l => l.levelNumber == level);
@@ -240,13 +241,28 @@ public class MonsterManager : MonoBehaviour
                 locationManager.SpawnLocationsForLevel(chosenTpl.terrainType);
             }
             
+            // 获取预定义的怪物生成位置（笼子内）
+            List<Vector2Int> predefinedPositions = locationManager.GetMonsterSpawnPositions();
+            int positionIndex = 0;
+            
             // 从 chosenTpl.monsterTypes 里拿到真正的 List<string>
             foreach (string monsterType in chosenTpl.monsterTypes)
             {
                 Debug.Log($"[Spawn] -> Template spawning: {monsterType}");
                 Monster monster = CreateMonsterByType(monsterType);
                 if (monster != null)
-                    SpawnMonster(monster);
+                {
+                    // A01固定生成在笼子里，其他怪物在外面随机生成
+                    if (monsterType == "A01" && positionIndex < predefinedPositions.Count)
+                    {
+                        SpawnMonsterAtPosition(monster, predefinedPositions[positionIndex]);
+                        positionIndex++;
+                    }
+                    else
+                    {
+                        SpawnMonster(monster);
+                    }
+                }
                 else 
                     Debug.LogWarning($"[Spawn] !! CreateMonsterByType returned null for '{monsterType}'");
             }
@@ -365,6 +381,22 @@ public class MonsterManager : MonoBehaviour
         monster.Initialize(spawnPosition);
         monsters.Add(monster);
         Debug.Log($"{monster.GetType().Name} spawned at position: " + spawnPosition);
+    }
+
+    public void SpawnMonsterAtPosition(Monster monster, Vector2Int position)
+    {
+        if (!IsTileValid(position))
+        {
+            Debug.LogWarning($"Position {position} is not valid, falling back to random spawn.");
+            SpawnMonster(monster);
+            return;
+        }
+
+        Vector3 worldPosition = player.CalculateWorldPosition(position);
+        monster.transform.position = worldPosition;
+        monster.Initialize(position);
+        monsters.Add(monster);
+        Debug.Log($"{monster.GetType().Name} spawned at predefined position: " + position);
     }
 
     public void MoveMonsters()
@@ -506,7 +538,8 @@ public class MonsterManager : MonoBehaviour
         } while (occupiedPositions.Overlaps(monsterParts) || 
          !AreAllPositionsValid(monsterParts) || 
          monsterParts.Contains(playerPosition) || 
-         monsterParts.Exists(part => locationManager.IsNonEnterablePosition(part)));  // 确认位置是否是不可进入的
+         monsterParts.Exists(part => locationManager.IsNonEnterablePosition(part)) ||
+         monsterParts.Exists(part => locationManager.GetMonsterSpawnPositions().Contains(part)));  // 避免在笼子内生成
 
         return randomPosition;
     }

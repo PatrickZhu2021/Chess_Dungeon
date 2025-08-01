@@ -77,23 +77,39 @@
         },
         {
             "levelNumber": 7,
-            "monsterTypes": ["WhitePawn","WhiteQueen"],
-            "terrainType": "FortifiedBorderland"
+            "monsterTemplates": [
+                { 
+                    "monsterTypes": ["I04","I04","I03","I01","I01", "I01"],
+                    "terrainType": "ForestMaze"
+                }
+            ]
         },
         {
             "levelNumber": 8,
-            "monsterTypes": ["WhitePawn", "WhitePawn","WhiteKnight", "WhiteBishop", "WhiteRook"],
-            "terrainType": "FortifiedBorderland"
+            "monsterTemplates": [
+                { 
+                    "monsterTypes": ["A06","A03","A03"],
+                    "terrainType": "DenseForest2"
+                }
+            ]
         },
         {
             "levelNumber": 9,
-            "monsterTypes": ["WhiteQueen","WhiteQueen"],
-            "terrainType": "FortifiedBorderland"
+            "monsterTemplates": [
+                { 
+                    "monsterTypes": ["B07","B06","B04","B04","A01","A01"],
+                    "terrainType": "Prison"
+                }
+            ]
         },
         {
             "levelNumber": 10,
-            "monsterTypes": ["A06"],
-            "terrainType": "Borderland"
+            "monsterTemplates": [
+                { 
+                    "monsterTypes": ["A06"],
+                    "terrainType": "Borderland"
+                }
+            ]
         }
     ],
 
@@ -151,6 +167,18 @@
             "mapSize": 8,
             "openAreaSize": 4,
             "borderObstacleType": "Plank"
+        },
+        {
+            "name": "Prison",
+            "mapSize": 8,
+            "openAreaSize": 8,
+            "borderObstacleType": "Plank",
+            "specialSpawnArea": {
+                "x": 3,
+                "y": 3,
+                "width": 2,
+                "height": 2
+            }
         }
     ]
 }

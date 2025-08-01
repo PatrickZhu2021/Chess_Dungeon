@@ -15,6 +15,7 @@ public class LocationManager : MonoBehaviour
     public AnchorLocation activeAnchor = null; // 当前锚点（同时只能存在1个）
     public List<MireLocation> activeMires = new List<MireLocation>(); // 潮沼列表
     private List<Vector2Int> waterPositions = new List<Vector2Int>(); // 水单元格位置
+    private List<Vector2Int> monsterSpawnPositions = new List<Vector2Int>(); // 怪物生成位置
     private Player player;
     private List<TerrainConfig> terrainConfigs = new List<TerrainConfig>();
 
@@ -98,6 +99,10 @@ public class LocationManager : MonoBehaviour
         else if (terrainType == "PlankField")
         {
             GeneratePlankField();
+        }
+        else if (terrainType == "Prison")
+        {
+            GeneratePrison();
         }
 
     }
@@ -229,9 +234,9 @@ public class LocationManager : MonoBehaviour
             "#F.....#",
             "#.##.#.#",
             "#...F..#",
-            "#.##.#.#",
+            "#.##...#",
             "#.#F.#F#",
-            "#F...#F#",
+            "#F...###",
             "########"
         };
 
@@ -350,6 +355,30 @@ public class LocationManager : MonoBehaviour
         }
         
         Debug.Log("Generated PlankField with destructible planks.");
+    }
+
+    private void GeneratePrison()
+    {
+        string[] rows = new string[]
+        {
+            "........",
+            "........",
+            "..####..",
+            "..#AA#..",
+            "..#AA#..",
+            "..####..",
+            "........",
+            "........"
+        };
+
+        GameObject plankPrefab = locationPrefabs["Plank"];
+        var charActions = new Dictionary<char, System.Action<Vector2Int>>
+        {
+            ['#'] = pos => CreatePlank(pos),
+            ['A'] = pos => monsterSpawnPositions.Add(pos)
+        };
+
+        GenerateASCIILayout(rows, charActions, "Prison");
     }
 
     public void CreatePlank(Vector2Int position)
@@ -840,6 +869,16 @@ public class LocationManager : MonoBehaviour
     public bool IsWaterPosition(Vector2Int position)
     {
         return waterPositions.Contains(position);
+    }
+    
+    public List<Vector2Int> GetMonsterSpawnPositions()
+    {
+        return new List<Vector2Int>(monsterSpawnPositions);
+    }
+    
+    public void ClearMonsterSpawnPositions()
+    {
+        monsterSpawnPositions.Clear();
     }
     
     public void OnTurnStart()
