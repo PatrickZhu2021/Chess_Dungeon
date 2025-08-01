@@ -5,6 +5,9 @@ public class T01 : Monster
 {
     private static int sharedHealth = 8;
     private static List<T01> allT01s = new List<T01>();
+    private bool hasBeenDamagedThisTurn = false;
+    private bool isDisappeared = false;
+    private Vector2Int disappearedPosition;
 
     public override void Initialize(Vector2Int startPos)
     {
@@ -25,7 +28,7 @@ public class T01 : Monster
 
     public override void PerformMovement()
     {
-        if (player == null) return;
+        if (player == null || isDisappeared) return;
         
         Vector2Int playerPosition = player.position;
         LocationManager locationManager = FindObjectOfType<LocationManager>();
@@ -83,14 +86,29 @@ public class T01 : Monster
 
     public override void TakeDamage(int damageAmount)
     {
-        sharedHealth -= damageAmount;
+        if (hasBeenDamagedThisTurn || isDisappeared) return;
+        
+        // 一回合最多受到一点伤害
+        int actualDamage = Mathf.Min(damageAmount, 1);
+        
+        sharedHealth -= actualDamage;
         if (sharedHealth < 0) sharedHealth = 0;
+        
+        hasBeenDamagedThisTurn = true;
+        
+        // 显示伤害数字
+        ShowDamageText(actualDamage, false);
         
         UpdateAllT01Health();
         
         if (sharedHealth <= 0)
         {
             DestroyAllT01s();
+        }
+        else
+        {
+            // 受到伤害后消失
+            DisappearAfterDamage();
         }
     }
 
@@ -168,6 +186,56 @@ public class T01 : Monster
         }
     }
 
+    private void DisappearAfterDamage()
+    {
+        if (isDisappeared) return;
+        
+        isDisappeared = true;
+        disappearedPosition = position;
+        
+        // 隐藏怪物
+        gameObject.SetActive(false);
+        
+        Debug.Log($"{monsterName} disappeared after taking damage");
+    }
+    
+    public void ReappearAtTurnEnd()
+    {
+        if (!isDisappeared) return;
+        
+        isDisappeared = false;
+        hasBeenDamagedThisTurn = false;
+        
+        // 重新出现在原位置
+        position = disappearedPosition;
+        gameObject.SetActive(true);
+        UpdatePosition();
+        
+        Debug.Log($"{monsterName} reappeared at turn end");
+    }
+    
+    public static void ResetTurnDamageFlags()
+    {
+        foreach (T01 t01 in allT01s)
+        {
+            if (t01 != null)
+            {
+                t01.hasBeenDamagedThisTurn = false;
+            }
+        }
+    }
+    
+    public static void ReappearAllAtTurnEnd()
+    {
+        foreach (T01 t01 in allT01s)
+        {
+            if (t01 != null)
+            {
+                t01.ReappearAtTurnEnd();
+            }
+        }
+    }
+    
     void OnDestroy()
     {
         allT01s.Remove(this);

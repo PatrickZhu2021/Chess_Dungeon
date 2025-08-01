@@ -475,6 +475,9 @@ public class MonsterManager : MonoBehaviour
             locationManager.PullEverythingDown();
         }
         
+        // T01回合结束重新出现
+        T01.ReappearAllAtTurnEnd();
+        
         // 移除已被销毁的Monster对象
         monsters.RemoveAll(monster => monster == null);
         nextlevel = true;
