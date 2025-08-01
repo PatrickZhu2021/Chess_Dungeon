@@ -229,11 +229,11 @@ public class LocationManager : MonoBehaviour
     /// ASCII map:
     /// ########
     /// #......#
-    /// #.~..~.#
+    /// #.~~~~.#
     /// #......#
     /// #..~~..#
+    /// #.~~~~.#
     /// #......#
-    /// #.~..~.#
     /// ########
     /// </summary>
     private void GenerateRiverForest()
@@ -243,11 +243,11 @@ public class LocationManager : MonoBehaviour
         {
             "########",
             "#......#",
-            "#.~..~.#",
+            "#.~~~~.#",
             "#......#",
             "#..~~..#",
+            "#.~~~~.#",
             "#......#",
-            "#.~..~.#",
             "########"
         };
 

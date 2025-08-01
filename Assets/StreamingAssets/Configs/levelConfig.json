@@ -52,7 +52,7 @@
         },
         {
             "levelNumber": 10,
-            "monsterTypes": ["A02", "A01"],
+            "monsterTypes": ["A02", "A02"],
             "terrainType": "RiverForest"
         }
     ],
