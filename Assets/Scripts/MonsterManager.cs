@@ -469,6 +469,12 @@ public class MonsterManager : MonoBehaviour
     //回合结束检查是否进入下一个回合/开始新关卡
     public void OnTurnEnd(int turnCount)
     {
+        // DevourerMaw关卡的下拉逻辑（在怪物移动前执行）
+        if (locationManager != null && locationManager.isDevourerLevel)
+        {
+            locationManager.PullEverythingDown();
+        }
+        
         // 移除已被销毁的Monster对象
         monsters.RemoveAll(monster => monster == null);
         nextlevel = true;

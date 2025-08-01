@@ -21,7 +21,7 @@ public class LocationManager : MonoBehaviour
     
     // DevourerMaw 相关
     public List<DevourerMouth> devourerMouths = new List<DevourerMouth>();
-    private bool isDevourerLevel = false;
+    public bool isDevourerLevel = false;
 
 
     void Awake()
@@ -967,14 +967,10 @@ public class LocationManager : MonoBehaviour
             }
         }
         
-        // DevourerMaw关卡的下拉逻辑
-        if (isDevourerLevel)
-        {
-            PullEverythingDown();
-        }
+
     }
     
-    private void PullEverythingDown()
+    public void PullEverythingDown()
     {
         // 拉拽玩家
         if (player.position.y > 0)
@@ -1082,18 +1078,5 @@ public class LocationManager : MonoBehaviour
         }
     }
     
-    public bool CheckDevourerVictory()
-    {
-        if (!isDevourerLevel) return false;
-        
-        int destroyedMouths = 0;
-        foreach (DevourerMouth mouth in devourerMouths)
-        {
-            if (mouth == null || mouth.IsDestroyed())
-                destroyedMouths++;
-        }
-        
-        // 胜利条件：摧毁至少4个嘴部 且 玩家在安全区域（y >= 6）
-        return destroyedMouths >= 4 && player.position.y >= 6;
-    }
+
 }

@@ -176,13 +176,7 @@ public class TurnManager : MonoBehaviour
         {
             locationManager.OnTurnStart(); // 处理回合开始效果（拒障）
             
-            // 检查DevourerMaw关卡胜利条件
-            if (locationManager.CheckDevourerVictory())
-            {
-                Debug.Log("DevourerMaw Victory!");
-                // 触发胜利逻辑
-                monsterManager.TriggerLevelComplete();
-            }
+
         }
     }
 
