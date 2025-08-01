@@ -55,31 +55,79 @@ Chess Dungeon is a Unity-based tactical card game that combines chess-like movem
 ### 👹 Monster System
 
 #### Core Monster Classes
-- **Monster.cs** - Base monster class with health, movement, AI
-- **MonsterManager.cs** - Spawns, manages, and controls all monsters
+- **Monster.cs** - Base monster class with health, movement, AI, status effects
+- **MonsterManager.cs** - Spawns, manages, and controls all monsters with special spawn rules
 - **MonsterInfoManager.cs** - UI display for monster information
 
-#### Monster Types
-- **Chess Pieces**: WhitePawn, WhiteKnight, WhiteBishop, WhiteRook, WhiteQueen, WhiteKing
-- **Dark Pieces**: DarkPawn, DarkKnight, DarkBishop, DarkRook, DarkQueen, DarkKing
-- **Creatures**: Slime, SlimeKing, Bat, Hound
-- **Special**: GoldPawn, GoldRook
+#### Monster Categories
+
+**A系列 (Aerial/Advanced)**
+- **A01-A06** - Advanced creatures with special abilities
+- **A05** - 混血龙种 (Hybrid Dragon) - Queen movement + Wings ability
+
+**B系列 (Beast/Boss)**
+- **B01-B07** - Beast creatures with varying abilities
+- **B08** - 强盗王 (Bandit King) - Boss with mode switching + Wings + Skills:
+  - Cycles through Rook/Knight/Bishop/Queen movement modes each turn
+  - Wings ability: Can fly over obstacles but can't land on them
+  - Special skills when can't move: Create planks, summon monsters
+  - At 6 HP: Special turn clears all locations + transforms other monsters
+
+**I系列 (Insect/Infantry)**
+- **I01-I05** - Basic to intermediate creatures
+
+**Chess Pieces**
+- **White/Dark Series**: Pawn, Knight, Bishop, Rook, Queen, King
+- **Gold Series**: GoldPawn, GoldRook
+
+#### Monster Abilities
+- **Wings (翅膀)**: Can move through obstacles but not land on them (A05, B08)
+- **Mode Switching**: Changes movement pattern each turn (B08)
+- **Summoning**: Can spawn other monsters (B08)
+- **Status Effects**: Stun, Lure, Karma Link support
+- **Special Turns**: Triggered by health thresholds (B08)
 
 ### 🗺️ Level & Location System
 
 #### Level Management
-- **LevelManager.cs** - Controls level progression and configuration
-- **LevelConfig.cs** - Data structures for level definitions
-- **MonsterManager.cs** - Also handles level-specific monster spawning
+- **LevelConfig.cs** - Data structures for level definitions with monster templates
+- **MonsterManager.cs** - Handles level-specific monster spawning with special rules
+- **SpecialSpawnRule** - Configuration for monster-specific spawn areas
 
 #### Location System
-- **LocationManager.cs** - Manages terrain generation and environmental hazards
+- **LocationManager.cs** - Manages terrain generation, ASCII layouts, and special spawn areas
 - **Location.cs** - Base class for interactive map elements
-- **Specific Locations**:
-  - `Forest.cs` - Blocking terrain
-  - `Wall.cs` - Impassable barriers
-  - `FirePoint.cs/FireZone.cs` - Fire-based hazards
-  - `ActivatePoints.cs` - Energy system activation points
+
+#### Location Types
+**Terrain Obstacles**
+- **Forest.cs** - Blocking terrain (non-enterable)
+- **Wall.cs** - Impassable barriers with corner variants
+- **PlankLocation.cs** - Destructible wooden barriers (1 HP)
+
+**Interactive Locations**
+- **FirePoint.cs/FireZone.cs** - Fire-based hazards with duration
+- **ActivatePoints.cs** - Energy system activation points
+- **BarrierLocation.cs** - Temporary barriers with durability
+- **AnchorLocation.cs** - Pulls player at turn end
+- **MireLocation.cs** - Traps and removes monsters that step on them
+
+#### Terrain Generation
+**ASCII-Based Layouts**
+- **Prison** - Plank-surrounded 2x2 center with special spawn areas
+- **ForestMaze** - Complex forest patterns with clearings
+- **RiverForest** - Forest borders with water streams
+- **PlankField** - Destructible plank coverage with open center
+
+**Procedural Terrains**
+- **Borderland** - Edge obstacles with open center
+- **DenseForest** - Cross-pattern forest with open corridors
+- **FortifiedBorderland** - Wall borders with corner pieces
+
+#### Special Spawn System
+- **specialSpawnAreas** - Dictionary-based spawn area management
+- **ASCII Integration** - Characters in ASCII maps define spawn zones
+- **Monster-Area Binding** - Configuration links monster types to specific areas
+- **Exclusion Logic** - Random spawning avoids special areas
 
 #### Level Selection
 - **NodeManager.cs** - Manages level selection map
@@ -155,7 +203,46 @@ Chess Dungeon is a Unity-based tactical card game that combines chess-like movem
 5. **Progression**: Save game state and return to level selection
 
 ## Configuration Files
-- `levelConfig.json` - Level definitions, monster spawns, terrain types
+
+### levelConfig.json Structure
+```json
+{
+  "levels": [
+    {
+      "levelNumber": 9,
+      "monsterTemplates": [
+        {
+          "monsterTypes": ["B07","B06","B04","B04","A01","A01"],
+          "terrainType": "Prison",
+          "specialSpawnRules": [
+            {
+              "monsterType": "A01",
+              "spawnArea": "predefined"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "terrains": [
+    {
+      "name": "Prison",
+      "mapSize": 8,
+      "specialSpawnArea": {
+        "x": 3, "y": 3, "width": 2, "height": 2
+      }
+    }
+  ]
+}
+```
+
+### Configuration Features
+- **Monster Templates** - Multiple spawn configurations per level
+- **Special Spawn Rules** - Link monster types to specific areas
+- **Terrain Definitions** - ASCII layouts with special area markers
+- **Dynamic Generation** - Procedural and template-based terrain
+
+### Other Configuration
 - Card definitions embedded in code classes
 - Relic configurations in ScriptableObjects
 
