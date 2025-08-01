@@ -52,8 +52,8 @@
         },
         {
             "levelNumber": 10,
-            "monsterTypes": ["A05"],
-            "terrainType": "RiverForest"
+            "monsterTypes": ["A06"],
+            "terrainType": "Borderland"
         }
     ],
 
