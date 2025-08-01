@@ -324,6 +324,11 @@ public class Monster : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     {
         return string.IsNullOrEmpty(displayName) ? monsterName : displayName;
     }
+    
+    public virtual int GetAttackDamage()
+    {
+        return 1; // 默认伤害为1
+    }
 
     public void OnPointerEnter(PointerEventData eventData)
     {
