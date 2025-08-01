@@ -101,6 +101,7 @@ public class T01 : Monster
             if (t01 != null)
             {
                 t01.health = sharedHealth;
+                t01.UpdateHealthBar();
             }
         }
     }
@@ -156,6 +157,15 @@ public class T01 : Monster
         
         possibleMoves.RemoveAll(pos => !IsValidPositionForT01(pos) || IsPositionOccupied(pos));
         return possibleMoves;
+    }
+
+    private void UpdateHealthBar()
+    {
+        if (healthFillRenderer != null)
+        {
+            float healthRatio = (float)health / maxHealth;
+            healthFillRenderer.transform.localScale = new Vector3(healthRatio, 1, 1);
+        }
     }
 
     void OnDestroy()
