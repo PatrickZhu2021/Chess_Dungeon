@@ -70,7 +70,7 @@
             "levelNumber": 6,
             "monsterTemplates": [
                 { 
-                    "monsterTypes": ["B06","B06","B03"],
+                    "monsterTypes": ["I03","I03","I03"],
                     "terrainType": "PlankField"
                 }
             ]

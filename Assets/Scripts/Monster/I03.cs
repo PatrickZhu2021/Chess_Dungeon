@@ -4,6 +4,7 @@ using System.Collections.Generic;
 public class I03 : Monster
 {
     private bool bloodFeastUsed = false; // 血食技能是否已使用
+    private bool needsBloodFeastCheck = false; // 是否需要检查血食
 
     public override void Initialize(Vector2Int startPos)
     {
@@ -17,6 +18,12 @@ public class I03 : Monster
     public override void TakeDamage(int damage)
     {
         base.TakeDamage(damage);
+        
+        // 受伤后标记需要检查血食
+        if (!bloodFeastUsed && health > 0)
+        {
+            needsBloodFeastCheck = true;
+        }
     }
 
     public override void Die()
@@ -26,12 +33,15 @@ public class I03 : Monster
 
     public override void PerformMovement()
     {
-        // 检查血食技能触发条件
-        if (!bloodFeastUsed && health <= maxHealth / 2)
+        // 检查是否需要血食
+        if (needsBloodFeastCheck && !bloodFeastUsed && health <= maxHealth / 2)
         {
+            needsBloodFeastCheck = false;
             TriggerBloodFeast();
-            return; // 血食回合不进行其他行为
+            return; // 血食回合不进行移动
         }
+        
+        needsBloodFeastCheck = false; // 清除标记
 
         // 正常移动逻辑（与I01相同）
         if (player == null) return;
