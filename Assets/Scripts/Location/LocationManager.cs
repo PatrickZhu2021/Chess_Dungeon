@@ -1018,6 +1018,9 @@ public class LocationManager : MonoBehaviour
         
         // 处理被拉到最下一格的单位
         HandleDevourerEffects();
+        
+        // 补充顶部Plank层
+        RefillTopPlanks();
     }
     
     private void HandleDevourerEffects()
@@ -1089,5 +1092,30 @@ public class LocationManager : MonoBehaviour
         }
     }
     
-
+    private void RefillTopPlanks()
+    {
+        if (!isDevourerLevel) return;
+        
+        // 检查y=7位置是否有Plank，如果没有则创建
+        for (int x = 0; x < 8; x++)
+        {
+            Vector2Int topPosition = new Vector2Int(x, 7);
+            bool hasPlank = false;
+            
+            PlankLocation[] existingPlanks = FindObjectsOfType<PlankLocation>();
+            foreach (PlankLocation plank in existingPlanks)
+            {
+                if (plank.position == topPosition)
+                {
+                    hasPlank = true;
+                    break;
+                }
+            }
+            
+            if (!hasPlank)
+            {
+                CreatePlank(topPosition);
+            }
+        }
+    }
 }
